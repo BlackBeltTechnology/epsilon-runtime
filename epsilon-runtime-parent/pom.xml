@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>hu.blackbelt.epsilon</groupId>
+    <artifactId>epsilon-runtime-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.1.0-SNAPSHOT</version>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.3.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            hu.blackbelt.epsilon.runtime.*;version=${project.version}
+                        </Export-Package>
+                        <Import-Package>!lombok,*</Import-Package>
+                        <Include-Resource>{maven-resources}</Include-Resource>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-workflow</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-emf</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-hutn</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-workflow-emf</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-spreadsheets</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.uml2.uml</groupId>
+            <artifactId>resources</artifactId>
+            <version>5.0.0-v20140602-0749</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.emf</groupId>
+                    <artifactId>ecore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.emf.ecore</groupId>
+                    <artifactId>xmi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.emf.mapping</groupId>
+                    <artifactId>ecore2xml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>hu.blackbelt.epsilon</groupId>
+                <artifactId>epsilon-runtime-utils</artifactId>
+                <version>1.1.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
