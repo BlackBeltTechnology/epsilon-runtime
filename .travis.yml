@@ -1,0 +1,26 @@
+language: java
+
+before_install:
+  - echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
+  - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
+  - export PROJECT_VERSION=$(mvn help:evaluate -N -Dexpression=project.version | grep -v '\[' | sed "s/-SNAPSHOT/-$TRAVIS_BUILD_NUMBER/")
+  - mvn versions:set -DnewVersion=$PROJECT_VERSION -f ./epsilon-runtime-parent/pom.xml
+  - mvn versions:set -DnewVersion=$PROJECT_VERSION
+
+before_deploy:
+  - export RELEASE_PACKAGE_FILES=$(find . -name *.jar)
+
+deploy:
+  provider: releases
+  api_key:
+    secure: Gi/F1IzZUTz2iuWVMbwrk9NiQpei1wrMsciQ+OqS71ayyuH4gnurkm2TiEiB/PJrwJ6gQdFZHEPpfTxlEOmpYhOiuBnXS6mT7wTyLVJHFY+zO1Z3Sbi8VSIBLFLVx4E8zguU1pqX+aJuuSrD6N1bQaCK3vskQ9Sxxf1o8Lh7nfyQnjoyz83KotqDICvIJrR8OfbPfvfQ8/jNPP/gZ6vUWFtxTZbd/3j3QBxb2lZn8mCLS/Ekp20OfAhM3xQB2BgHRAVIMfZ1U42xN8dXrLeCQxY4fLXMS4QXxCKx3ysGLLT3C0Sl7jzW0RTat0Gbhhvo++AMf56bxB9Fc4z/YJ/LIPn1867utp9S2Mev1heQ5RTxezWIm2mZUs0fawalCNREwZgN6KS1caSwUeJhMu2DAsRsipmNzycEDmVptHtH0t3JXkBhXCGW3glqH9hG6sS821krykCErnOgPXroifQ7q1wmCHTjYpzEXJzZa1h0mXJwp3WXWkuX1b4D2vwh6EWT4mdDBtQw3Ie5M3HqUgsvtXUNQPBiCHVnnAtML4WCkAgJwqWIAjpPdKdcpGB2EjULGhLU/16S8l1DiFcHJnOfiLfaE12ToHMIwlwyO+vyoANSEqO7LbZlhODjg0mZ2h0pkifUN8+DA9IF73u3TLT29EzojGwOt0m2JA4q2SjkVas=
+  file_glob: true
+  file: "${RELEASE_PKG_FILE}"
+  on:
+    repo: BlackBeltTechnology/epsilon-runtime
+
+install:
+  - mvn --settings .maven.xml install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true -B -V 
+
+script: 
+  - mvn clean deploy --settings .maven.xml -DskipTests=true -B -U -Prelease
