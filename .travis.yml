@@ -8,7 +8,7 @@ cache:
 before_install:
   - echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
   - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
-  - export PROJECT_VERSION=$(mvn help:evaluate -N -Dexpression=project.version | grep -v '\['")
+  - export PROJECT_VERSION=$(mvn help:evaluate -N -Dexpression=project.version | grep -v '\[')
   - mvn versions:set -DnewVersion=$PROJECT_VERSION -f ./epsilon-runtime-parent/pom.xml
   - mvn versions:set -DnewVersion=$PROJECT_VERSION
 
