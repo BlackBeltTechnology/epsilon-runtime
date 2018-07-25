@@ -22,7 +22,9 @@ deploy:
     name: v$PROJECT_VERSION
 
 install:
-  mvn --settings .maven.xml install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true 
+  - echo "Run Install"
+  - mvn --settings .maven.xml install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true 
 
 script: 
-  mvn clean deploy --settings .maven.xml -DskipTests=true -P release
+  - echo "Run script"
+  - mvn clean deploy --settings .maven.xml -DskipTests=true -P release
