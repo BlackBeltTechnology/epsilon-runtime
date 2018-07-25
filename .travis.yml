@@ -1,5 +1,5 @@
 language: java
-
+jdk: oraclejdk8
 cache:
   directories:
   - $HOME/.m2
@@ -7,9 +7,6 @@ cache:
 before_install:
   - echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
   - echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
-  - export project_version=$(mvn help:evaluate -N -Dexpression=project.version | grep -v '\[')
-  - mvn --settings .maven.xml versions:set -DnewVersion=$project_version -f ./epsilon-runtime-parent/pom.xml
-  - mvn --settings .maven.xml versions:set -DnewVersion=$project_version 
 
 deploy:
   provider: releases
