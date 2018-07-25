@@ -12,14 +12,14 @@ before_deploy:
 
 deploy:
   provider: releases
-    api_key: ${GITHUB_OAUTH_TOKEN}
-    file:
-      - epsilon-runtime-utils/target/epsilon-runtime-utils-$project_version.jar
-      - epsilon-runtime-executable/target/epsilon-runtime-executable-$project_version.jar
-    skip_cleanup: true
-    on:
-      repo: BlackBeltTechnology/epsilon-runtime
-    name: $PROJECT_VERSION
+  api_key: ${GITHUB_OAUTH_TOKEN}
+  file:
+    - epsilon-runtime-utils/target/epsilon-runtime-utils-$project_version.jar
+    - epsilon-runtime-executable/target/epsilon-runtime-executable-$project_version.jar
+  skip_cleanup: true
+  on:
+    repo: BlackBeltTechnology/epsilon-runtime
+    name: v$PROJECT_VERSION
 
 install:
   mvn --settings .maven.xml install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true 
