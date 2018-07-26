@@ -52,3 +52,5 @@ local.properties
 .springBeans
 .recommenders/
 **/.DS_Store
+wercker.env
+/**/.wercker
