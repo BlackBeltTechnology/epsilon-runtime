@@ -12,7 +12,7 @@ build:
       pom: epsilon-runtime-parent/pom.xml
       
     - wercker/maven:
-     name: Set the version to ${VERSION_FROM_POM_BASE_VERSION}-${VERSION_FROM_GIT_TAG_CURRENT_BRANCH_VALID_NAME}_${VERSION_FROM_GIT_TAG_COMMIT_COUNT}
+     name: Set the version
       goals: versions:set
       pom: ./epsilon-runtime-parent/pom.xml
       maven_opts: -DnewVersion=${VERSION_FROM_POM_BASE_VERSION}-${VERSION_FROM_GIT_TAG_CURRENT_BRANCH_VALID_NAME}_${VERSION_FROM_GIT_TAG_COMMIT_COUNT}
