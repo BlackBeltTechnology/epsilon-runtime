@@ -44,11 +44,7 @@ release:
                 echo "Only release version can be deployed"
                 exit 1
              fi
-
-    - blackbelttechnology/import-gpg-keys@1.0.2:
-      secretkeys: $GPG_SECRET_KEYS 
-      ownertrust: $GPG_OWNERTRUST
-
+             
     - wercker/maven:
       goals: clean install
       settings: .maven.xml

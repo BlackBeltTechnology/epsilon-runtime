@@ -25,24 +25,24 @@
 	                <version>1.2.0</version>
 	                <configuration>
 	                    <repositoryId>https://github.com/BlackBeltTechnology/epsilon-runtime.git</repositoryId>
-	                    <description>${env.WERCKER_GIT_BRANCH} ${env.WERCKER_BUILD_ID} ${env.WERCKER_APPLICATION_URL}</description>
+                        <description>Branch: ${env.WERCKER_GIT_BRANCH} Wercker: ${env.WERCKER_RUN_URL}</description>
 	                    <releaseName>${project.version}</releaseName>
+                        <prerelease>true</prerelease>
 	                    <tag>${project.version}</tag>
-	                    
-	                    <!-- If your project has additional artifacts, such as ones produced by
-	                     the maven-assembly-plugin, you can define the following
-	                     (requires version 1.1.1 of the plugin or higher): -->
-	                    <!--
-	                     <fileSets>
-	                     <fileSet>
-	                     <directory>${project.build.directory}</directory>
-	                     <includes>
-	                     <include>${project.artifactId}*.tar.gz</include>
-	                     <include>${project.artifactId}*.zip</include>
-	                     </includes>
-	                     </fileSet>
-	                     </fileSets>
-	                     -->
+	                    <fileSets>
+                            <fileSet>
+                                <directory>epsilon-runtime-utils/target</directory>
+                                <includes>
+                                    <include>*.jar</include>
+                                </includes>
+                            </fileSet>
+                            <fileSet>
+                                <directory>epsilon-runtime-execution/target</directory>
+                                <includes>
+                                    <include>*.jar</include>
+                                </includes>
+                            </fileSet>
+                        </fileSets>
 	                </configuration>
 	                <executions>
 	                    <execution>
