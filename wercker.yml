@@ -5,21 +5,17 @@ command-timeout: 60
 build:
   steps:	
     - blackbelttechnology/version-from-git-tag@1.0.4
-      name: Get version info from GIT
-
+ 
     - blackbelttechnology/version-from-pom@1.0.2:
-      name: Get version from Parent POM
-      pom: epsilon-runtime-parent/pom.xml
+       pom: epsilon-runtime-parent/pom.xml
       
     - wercker/maven:
-     name: Set the version
       goals: versions:set
       pom: ./epsilon-runtime-parent/pom.xml
       maven_opts: -DnewVersion=${VERSION_FROM_POM_BASE_VERSION}-${VERSION_FROM_GIT_TAG_CURRENT_BRANCH_VALID_NAME}_${VERSION_FROM_GIT_TAG_COMMIT_COUNT}
       cache_repo: true
 
     - wercker/maven:
-      name: Build and release to Github
       goals: clean install
       settings: .maven.xml
       profiles: release-github
