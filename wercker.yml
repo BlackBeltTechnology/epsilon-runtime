@@ -4,7 +4,7 @@ command-timeout: 60
 
 build:
   steps:	
-    - blackbelttechnology/version-from-git-tag@1.0.3	
+    - blackbelttechnology/version-from-git-tag@1.0.4
 
     - blackbelttechnology/version-from-pom@1.0.2:
       pom: epsilon-runtime-parent/pom.xml
