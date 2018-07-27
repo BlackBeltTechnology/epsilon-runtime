@@ -3,17 +3,19 @@
     <servers>
         <server>
             <!-- Maven Central Deployment -->
-            <id>ossrh</id>
+            <id>ossrh</id>	
             <username>${env.SONATYPE_USERNAME}</username>
             <password>${env.SONATYPE_PASSWORD}</password>
         </server>
-
+        <server>
+           <id>${env.GPG_KEYNAME}</id>
+           <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+        </server>        
 
         <server>
-           <id>gpg.passphrase</id>
-           <passphrase>${env.GPG_PASSPHRASE}</passphrase>
-        </server>
-        
+        	  <id>github</id>
+        	  <privateKey>${env.GITHUB_ACCESS_TOKEN}</privateKey>
+         </server>
     </servers>
 
     <profiles>
@@ -23,8 +25,23 @@
           <activeByDefault>true</activeByDefault>
         </activation>
         <properties>
+          <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
           <gpg.executable>${env.GPG_EXECUTABLE}</gpg.executable>
+          <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
         </properties>
       </profile>
-    </profiles>
+<!--
+      <profile>
+          <id>release-github</id>
+          <repositories>
+              <repository>
+                 <id>github</id>
+                 <url>https://github.com/BlackBeltTechnology/epsilon-runtime.git</url>
+                 <snapshots><enabled>false</enabled></snapshots>
+                 <releases><enabled>false</enabled></releases>
+              </repository>
+          </repositpries>
+      </profile>
+-->
+ </profiles>
 </settings>

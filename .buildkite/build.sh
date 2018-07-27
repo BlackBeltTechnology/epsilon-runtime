@@ -1,6 +1,6 @@
  #!/bin/bash
- 
-set -ex
+ set -ex
+
 MAVEN_PROJECT_VERSION=$(python -c "import xml.etree.ElementTree as ET; print(ET.parse(open('pom.xml')).getroot().find('{http://maven.apache.org/POM/4.0.0}version').text)")
 PROJECT_VERSION=$(echo $MAVEN_PROJECT_VERSION | sed "s/-SNAPSHOT/-$BUILDKITE_BUILD_NUMBER/")
 
