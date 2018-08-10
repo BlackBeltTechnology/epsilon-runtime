@@ -148,7 +148,7 @@ release:
     - script:
         name: git checkout master
         code: |-
-             git checkout -b master origin/master
+             git checkout -f -b master origin/master
 
 
     - script:
