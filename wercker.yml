@@ -103,13 +103,12 @@ release:
       pom: ./epsilon-runtime-parent/pom.xml
       maven_opts: -DnewVersion=${VERSION_FROM_POM_BASE_VERSION} -DgenerateBackupPoms=false
       settings: .maven.xml
-      profiles: release-github,release-blackbelt
       cache_repo: true
 
     - wercker/maven:
       goals: clean deploy
       settings: .maven.xml
-      profiles: release-blackbelt
+      profiles: release-github,release-blackbelt
       cache_repo: true
 
     - script:
