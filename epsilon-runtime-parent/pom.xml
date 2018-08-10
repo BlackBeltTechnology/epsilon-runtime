@@ -169,49 +169,12 @@
             <dependency>
                 <groupId>hu.blackbelt.epsilon</groupId>
                 <artifactId>epsilon-runtime-utils</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
+                <version>1.1.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
     
-    <profiles>
-        <profile>
-            <id>release-github</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>de.jutzig</groupId>
-                        <artifactId>github-release-plugin</artifactId>
-                        <version>1.2.0</version>
-                        <configuration>
-                            <repositoryId>https://github.com/BlackBeltTechnology/epsilon-maven-plugin.git</repositoryId>
-                            <description>Branch: ${env.WERCKER_GIT_BRANCH} Wercker: ${env.WERCKER_RUN_URL}</description>
-                            <releaseName>${project.version}</releaseName>
-                            <prerelease>true</prerelease>
-                            <tag>${project.version}</tag>
-                            <fileSets>
-                                <fileSet>
-                                    <directory>target</directory>
-                                    <includes>
-                                        <include>*.jar</include>
-                                    </includes>
-                                </fileSet>
-                            </fileSets>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>release-to-github</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>release</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        
+    <profiles>        
         <profile>
             <id>release-blackbelt</id>
             <distributionManagement>
