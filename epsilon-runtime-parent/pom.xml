@@ -55,7 +55,18 @@
                         <Export-Package>
                             hu.blackbelt.epsilon.runtime.*;version=${project.version}
                         </Export-Package>
-                        <Import-Package>!lombok,*</Import-Package>
+                        <Import-Package>
+                            !lombok,
+                            com.google.common.base;version="[14.0,30)",
+                            com.google.common.cache;version="[14.0,30)",
+                            com.google.common.collect;version="[14.0,30)",
+                            com.google.common.io;version="[14.0,30)",
+                            com.google.common.primitives;version="[14.0,30)",
+                            com.google.common.hash;version="[14.0,30)",
+                            com.google.common.util.concurrent;version="[14.0,30)",
+                            javax.annotation;version="[1.0,2)",
+                            *
+                        </Import-Package>
                         <Include-Resource>{maven-resources}</Include-Resource>
                     </instructions>
                 </configuration>
