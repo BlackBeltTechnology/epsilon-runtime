@@ -108,7 +108,7 @@ release:
     - wercker/maven:
       goals: clean deploy
       settings: .maven.xml
-      profiles: release-github,release-blackbelt
+      profiles: release-github,release-central
       cache_repo: true
 
     - script:
