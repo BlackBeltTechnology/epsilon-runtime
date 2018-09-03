@@ -1,47 +1,48 @@
 <settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/SETTINGS/1.0.0" xsi:schemalocation="http://maven.apache.org/SETTINGS/1.0.0
-                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    http://maven.apache.org/xsd/settings-1.0.0.xsd">
     <servers>
         <server>
             <!-- Maven Central Deployment -->
-            <id>ossrh</id>	
+            <id>ossrh</id>
             <username>${env.SONATYPE_USERNAME}</username>
             <password>${env.SONATYPE_PASSWORD}</password>
         </server>
         <server>
-           <id>${env.GPG_KEYNAME}</id>
-           <passphrase>${env.GPG_PASSPHRASE}</passphrase>
-        </server>        
-
+            <id>${env.GPG_KEYNAME}</id>
+            <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+        </server>
+        
         <server>
-        	  <id>github</id>
-        	  <privateKey>${env.GITHUB_ACCESS_TOKEN}</privateKey>
-         </server>
+            <id>github</id>
+            <privateKey>${env.GITHUB_ACCESS_TOKEN}</privateKey>
+        </server>
+        
+        <server>
+            <id>blackbelt-nexus-distribution</id>
+            <username>${env.BLACKBELT_NEXUS_USERNAME}</username>
+            <password>${env.BLACKBELT_NEXUS_PASSWORD}</password>
+        </server>
+        
+        
     </servers>
-
+    
     <profiles>
-      <profile>
-        <id>ossrh</id>
-        <activation>
-          <activeByDefault>true</activeByDefault>
-        </activation>
-        <properties>
-          <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
-          <gpg.executable>${env.GPG_EXECUTABLE}</gpg.executable>
-          <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
-        </properties>
-      </profile>
-<!--
-      <profile>
-          <id>release-github</id>
-          <repositories>
-              <repository>
-                 <id>github</id>
-                 <url>https://github.com/BlackBeltTechnology/epsilon-runtime.git</url>
-                 <snapshots><enabled>false</enabled></snapshots>
-                 <releases><enabled>false</enabled></releases>
-              </repository>
-          </repositpries>
-      </profile>
--->
- </profiles>
+        <profile>
+            <id>ossrh</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
+                <gpg.executable>${env.GPG_EXECUTABLE}</gpg.executable>
+                <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+            </properties>
+        </profile>
+    </profiles>
+    
+    
+    <pluginGroups>
+        <pluginGroup>com.amashchenko.maven.plugin</pluginGroup>
+    </pluginGroups>
+    
 </settings>

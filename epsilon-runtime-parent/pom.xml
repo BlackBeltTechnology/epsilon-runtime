@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.0-SNAPSHOT</version>
-
+    <version>1.1.3</version>
+    
     <name>epsilon-runtime</name>
     <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
     <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
@@ -14,7 +14,7 @@
         <url>https://github.com/BlackBeltTechnology/epsilon-runtime/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
-
+    
     <scm>
         <connection>scm:git:git://github.com/BlackBeltTechnology/epsilon-runtime.git</connection>
         <developerConnection>
@@ -22,7 +22,7 @@
         </developerConnection>
         <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
     </scm>
-
+    
     <developers>
         <developer>
             <id>robson</id>
@@ -33,7 +33,7 @@
             <organizationUrl>http://www.blackbelt.hu</organizationUrl>
         </developer>
     </developers>
-
+    
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -41,10 +41,10 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
+    
     <build>
         <plugins>
-
+            
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -55,12 +55,23 @@
                         <Export-Package>
                             hu.blackbelt.epsilon.runtime.*;version=${project.version}
                         </Export-Package>
-                        <Import-Package>!lombok,*</Import-Package>
+                        <Import-Package>
+                            !lombok,
+                            com.google.common.base;version="[14.0,30)",
+                            com.google.common.cache;version="[14.0,30)",
+                            com.google.common.collect;version="[14.0,30)",
+                            com.google.common.io;version="[14.0,30)",
+                            com.google.common.primitives;version="[14.0,30)",
+                            com.google.common.hash;version="[14.0,30)",
+                            com.google.common.util.concurrent;version="[14.0,30)",
+                            javax.annotation;version="[1.0,2)",
+                            *
+                        </Import-Package>
                         <Include-Resource>{maven-resources}</Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
-
+            
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -102,46 +113,46 @@
             <artifactId>epsilon-emf</artifactId>
             <version>1.4.0</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>epsilon-hutn</artifactId>
             <version>1.4.0</version>
         </dependency>
-
-
+        
+        
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>epsilon-workflow-emf</artifactId>
             <version>1.4.0</version>
         </dependency>
-
-
+        
+        
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>epsilon-spreadsheets</artifactId>
             <version>1.4.0</version>
         </dependency>
-
-
+        
+        
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
             <version>2.9.0</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.0</version>
         </dependency>
-
+        
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.eclipse.uml2.uml</groupId>
             <artifactId>resources</artifactId>
@@ -161,20 +172,35 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        
     </dependencies>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>hu.blackbelt.epsilon</groupId>
                 <artifactId>epsilon-runtime-utils</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
+                <version>1.1.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <profiles>
+    
+    <profiles>        
+        <profile>
+            <id>release-blackbelt</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>blackbelt-nexus-distribution</id>
+                    <url>https://nexus.blackbelt.cloud/repository/maven-epsilon-snapshot/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>blackbelt-nexus-distribution</id>
+                    <url>https://nexus.blackbelt.cloud/repository/maven-epsilon-release/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        
+        
         <profile>
             <id>release-central</id>
             <build>
@@ -190,7 +216,7 @@
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-
+                    
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -204,21 +230,21 @@
                             </execution>
                         </executions>
                     </plugin>
-<!--
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
--->
+                    <!--
+                     <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-javadoc-plugin</artifactId>
+                     <version>2.9.1</version>
+                     <executions>
+                     <execution>
+                     <id>attach-javadocs</id>
+                     <goals>
+                     <goal>jar</goal>
+                     </goals>
+                     </execution>
+                     </executions>
+                     </plugin>
+                     -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
