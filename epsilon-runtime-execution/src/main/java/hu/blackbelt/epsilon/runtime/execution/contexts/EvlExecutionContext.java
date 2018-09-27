@@ -63,15 +63,15 @@ public class EvlExecutionContext extends EolExecutionContext {
 
             unsatisfiedWarnings.forEach(e -> {
                 final String key = e.getConstraint().getName() + MODULE_NAME_SEPARATOR + e.getMessage();
-                if (!warningsNotFound.remove(key) && !expectedWarnings.contains(key)) {
-                    unexpectedWarnings.add(e.getMessage());
+                if (!warningsNotFound.remove(key) && (expectedWarnings == null || !expectedWarnings.contains(key))) {
+                    unexpectedWarnings.add(key);
                 }
             });
 
             unsatisfiedErrors.forEach(e -> {
                 final String key = e.getConstraint().getName() + MODULE_NAME_SEPARATOR + e.getMessage();
-                if (!errorsNotFound.remove(key) && !expectedErrors.contains(key)) {
-                    unexpectedErrors.add(e.getMessage());
+                if (!errorsNotFound.remove(key) && (expectedErrors == null || !expectedErrors.contains(key))) {
+                    unexpectedErrors.add(key);
                 }
             });
 
