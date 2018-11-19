@@ -17,6 +17,11 @@ import java.util.Map;
 @Builder(builderMethodName = "buildXmlModelContext")
 public class XmlModelContext extends EmfModelContext implements ModelContext {
 
+    /**
+     * Validate model against Ecore metamodel and fail on validation errors.
+     */
+    boolean validateModel;
+
     @Override
     public String toString() {
         return "XmlModel{" +
@@ -33,6 +38,7 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
                 ", fileBasedMetamodelUris=" + getFileBasedMetamodelUris() +
                 ", modelUri='" + getModelUri() + '\'' +
                 ", reuseUnmodifiedFileBasedMetamodels=" + isReuseUnmodifiedFileBasedMetamodels() +
+                ", validateModel='" + validateModel + '\'' +
                 '}';
     }
 

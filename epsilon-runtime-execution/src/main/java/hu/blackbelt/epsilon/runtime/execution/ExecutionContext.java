@@ -109,7 +109,8 @@ public class ExecutionContext implements AutoCloseable {
         }
         */
         // URI source = null;
-        URI source = new File(sourceDirectory, eolProgram.getSource()).toURI();
+        File sourceFile = new File(eolProgram.getSource());
+        URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
         context.put(EglExecutionContext.ARTIFACT_ROOT, source);
 
         IEolExecutableModule eolModule = eolProgram.getModule(context);
