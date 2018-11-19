@@ -8,7 +8,12 @@ import org.eclipse.epsilon.eol.IEolExecutableModule;
 import org.eclipse.epsilon.evl.EvlModule;
 import org.eclipse.epsilon.evl.execute.UnsatisfiedConstraint;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor

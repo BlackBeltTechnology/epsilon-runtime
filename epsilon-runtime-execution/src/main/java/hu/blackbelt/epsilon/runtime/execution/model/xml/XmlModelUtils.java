@@ -8,7 +8,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.epsilon.emc.emf.xml.XmlModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
-import org.eclipse.epsilon.eol.models.*;
+import org.eclipse.epsilon.eol.models.ModelRepository;
 
 import java.io.File;
 
