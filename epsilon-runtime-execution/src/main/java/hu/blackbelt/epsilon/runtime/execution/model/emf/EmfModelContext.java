@@ -94,6 +94,12 @@ public class EmfModelContext implements ModelContext {
     boolean reuseUnmodifiedFileBasedMetamodels;
 
 
+    /**
+     * Validate model against Ecore metamodel and fail on validation errors.
+     */
+    boolean validateModel;
+
+
     @Override
     public String toString() {
         return "EmfModel{" +
@@ -110,6 +116,7 @@ public class EmfModelContext implements ModelContext {
                 ", fileBasedMetamodelUris=" + fileBasedMetamodelUris +
                 ", modelUri='" + modelUri + '\'' +
                 ", reuseUnmodifiedFileBasedMetamodels=" + reuseUnmodifiedFileBasedMetamodels +
+                ", validateModel='" + validateModel + '\'' +
                 '}';
     }
 

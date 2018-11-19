@@ -1,6 +1,7 @@
 package hu.blackbelt.epsilon.runtime.execution.model.xml;
 
 import hu.blackbelt.epsilon.runtime.execution.Log;
+import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
@@ -83,6 +84,10 @@ public final class XmlModelUtils {
         
         model.load(properties);
         model.setName(xmlModelContext.getName());
+        if (xmlModelContext.validateModel && !ModelValidator.getValidationErrors(log, model).isEmpty()) {
+            throw new IllegalStateException("Invalid model: " + model.getName());
+        }
+
         repository.addModel(model);
         return model;
     }
