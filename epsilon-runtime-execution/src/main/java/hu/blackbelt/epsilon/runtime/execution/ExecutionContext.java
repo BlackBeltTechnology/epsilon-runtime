@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Builder
@@ -142,8 +143,11 @@ public class ExecutionContext implements AutoCloseable {
         log.info("Running program: " + source);
 
         executeModule(eolModule, source,
-                params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue()))
+                Stream.concat(
+                        params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
+                        context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))
                         .collect(Collectors.toList()));
+
 
         eolProgram.post(context);
 
@@ -190,6 +194,10 @@ public class ExecutionContext implements AutoCloseable {
             if (profile) {
                 eolModule.getContext().getExecutorFactory().addExecutionListener(new ProfilingExecutionListener());
             }
+
+            StringBuffer sb = new StringBuffer();
+            parameters.forEach(p -> sb.append("\t" + p.getName() + " - " + p.toString() + "\n"));
+            log.info("Parameters: \n" + sb.toString());
 
             Object result = eolModule.execute();
             // getLog().info("EolExecutionContext executeAll result: " + result.toString());
