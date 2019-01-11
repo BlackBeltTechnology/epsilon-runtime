@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.eclipse.epsilon.ecl.trace.MatchTrace;
-import org.eclipse.epsilon.eol.IEolExecutableModule;
+import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.etl.EtlModule;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class EtlExecutionContext extends EolExecutionContext {
     }
 
     @Override
-    public IEolExecutableModule getModule(Map<Object, Object> context) {
+    public IEolModule getModule(Map<Object, Object> context) {
         return etlModule;
     };
 

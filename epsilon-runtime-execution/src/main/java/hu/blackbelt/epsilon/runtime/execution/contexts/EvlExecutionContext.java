@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.epsilon.eol.IEolExecutableModule;
+import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.evl.EvlModule;
 import org.eclipse.epsilon.evl.execute.UnsatisfiedConstraint;
 
@@ -44,7 +44,7 @@ public class EvlExecutionContext extends EolExecutionContext {
         }
     }
 
-    public IEolExecutableModule getModule(Map<Object, Object> context) {
+    public IEolModule getModule(Map<Object, Object> context) {
         return module;
     }
 

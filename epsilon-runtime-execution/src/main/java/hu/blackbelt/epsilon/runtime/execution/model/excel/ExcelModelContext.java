@@ -1,5 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution.model.excel;
 
+import com.google.common.base.Strings;
 import hu.blackbelt.epsilon.runtime.execution.Log;
 import hu.blackbelt.epsilon.runtime.execution.ModelContext;
 import lombok.Builder;

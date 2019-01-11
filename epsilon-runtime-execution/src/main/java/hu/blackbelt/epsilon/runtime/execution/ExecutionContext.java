@@ -1,5 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
@@ -18,8 +19,9 @@ import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.epsilon.common.parse.problem.ParseProblem;
+import org.eclipse.epsilon.emc.emf.CachedResourceSet;
 import org.eclipse.epsilon.emc.emf.tools.EmfTool;
-import org.eclipse.epsilon.eol.IEolExecutableModule;
+import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.eol.execute.context.Variable;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.ModelRepository;
@@ -68,6 +70,8 @@ public class ExecutionContext implements AutoCloseable {
     @SneakyThrows
     public void init() {
 
+        CachedResourceSet.getCache().clear();
+
         // Check if global package registry contains the EcorePackage
         if (EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI) == null) {
             EPackage.Registry.INSTANCE.put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
@@ -114,7 +118,7 @@ public class ExecutionContext implements AutoCloseable {
         URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
         context.put(EglExecutionContext.ARTIFACT_ROOT, source);
 
-        IEolExecutableModule eolModule = eolProgram.getModule(context);
+        IEolModule eolModule = eolProgram.getModule(context);
 
         // Determinate any mode have alias or not
         boolean isAliasExists = false;
@@ -159,7 +163,7 @@ public class ExecutionContext implements AutoCloseable {
     }
 
     @SneakyThrows
-    private void executeModule(IEolExecutableModule eolModule, URI source, List<Variable> parameters) {
+    private void executeModule(IEolModule eolModule, URI source, List<Variable> parameters) {
         for (IModel m : projectModelRepository.getModels()) {
             log.info("  Model: " + m.getName() + " Aliases: " + String.join(", ", m.getAliases()));
         }
@@ -242,6 +246,7 @@ public class ExecutionContext implements AutoCloseable {
     public void addModel(ModelContext modelContext) {
         log.info("Model: " + modelContext.toString());
         Map<String, org.eclipse.emf.common.util.URI> uris = modelContext.getArtifacts().entrySet().stream()
+                .filter(e -> !Strings.isNullOrEmpty(e.getValue()))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey(),
                         entry -> artifactResolver.getArtifactAsEclipseURI(entry.getValue())));
