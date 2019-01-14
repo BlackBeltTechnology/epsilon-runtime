@@ -1,3 +1,14 @@
+## epsilon-runtime 1.1.5
+
+### ChangeLog
+
+#### Bug
+
+#### New feature
+
+* [#6] Support of export trace data in ETL transformations
+* [#9] Update epsilon to 1.5.1
+
 ## epsilon-runtime 1.1.4
 
 ### ChangeLog

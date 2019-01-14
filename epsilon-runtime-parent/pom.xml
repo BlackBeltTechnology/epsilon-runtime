@@ -5,7 +5,7 @@
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
     
     <name>epsilon-runtime</name>
     <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
@@ -14,7 +14,10 @@
         <url>https://github.com/BlackBeltTechnology/epsilon-runtime/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
-    
+    <properties>
+        <epsilon-version>1.5.1</epsilon-version>
+    </properties>
+
     <scm>
         <connection>scm:git:git://github.com/BlackBeltTechnology/epsilon-runtime.git</connection>
         <developerConnection>
@@ -104,34 +107,40 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>epsilon-workflow</artifactId>
-            <version>1.4.0</version>
+            <version>${epsilon-version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>epsilon-emf</artifactId>
-            <version>1.4.0</version>
+            <version>${epsilon-version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>epsilon-hutn</artifactId>
-            <version>1.4.0</version>
+            <version>${epsilon-version}</version>
         </dependency>
         
         
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>epsilon-workflow-emf</artifactId>
-            <version>1.4.0</version>
+            <version>${epsilon-version}</version>
         </dependency>
         
         
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>epsilon-spreadsheets</artifactId>
-            <version>1.4.0</version>
+            <version>${epsilon-version}</version>
         </dependency>
         
         
@@ -180,7 +189,7 @@
             <dependency>
                 <groupId>hu.blackbelt.epsilon</groupId>
                 <artifactId>epsilon-runtime-utils</artifactId>
-                <version>1.1.4</version>
+                <version>1.1.5</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

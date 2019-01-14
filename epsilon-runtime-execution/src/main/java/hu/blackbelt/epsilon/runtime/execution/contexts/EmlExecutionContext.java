@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.ecl.trace.MatchTrace;
 import org.eclipse.epsilon.eml.EmlModule;
-import org.eclipse.epsilon.eol.IEolExecutableModule;
+import org.eclipse.epsilon.eol.IEolModule;
 
 import java.util.List;
 import java.util.Map;
@@ -24,13 +24,13 @@ public class EmlExecutionContext extends EtlExecutionContext {
     private EmlModule emlModule = new EmlModule();
 
     @Builder(builderMethodName = "emlExecutionContextBuilder")
-    public EmlExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace) {
-        super(source, parameters);
+    public EmlExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace, String exportTransformationTrace) {
+        super(source, parameters, exportTransformationTrace);
         this.useMatchTrace = useMatchTrace;
     }
 
     @Override
-    public IEolExecutableModule getModule(Map<Object, Object> context) {
+    public IEolModule getModule(Map<Object, Object> context) {
         if (useMatchTrace != null) {
             emlModule.getContext().setMatchTrace((MatchTrace)context.get(useMatchTrace));
         }

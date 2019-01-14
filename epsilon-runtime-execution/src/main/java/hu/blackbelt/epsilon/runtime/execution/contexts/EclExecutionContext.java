@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.ecl.EclModule;
 import org.eclipse.epsilon.ecl.trace.MatchTrace;
-import org.eclipse.epsilon.eol.IEolExecutableModule;
+import org.eclipse.epsilon.eol.IEolModule;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class EclExecutionContext extends EolExecutionContext {
     }
 
     @Override
-    public IEolExecutableModule getModule(Map<Object, Object> context) throws ScriptExecutionException {
+    public IEolModule getModule(Map<Object, Object> context) throws ScriptExecutionException {
         if (useMatchTrace != null) {
             if (context.get(useMatchTrace) != null) {
                 eclModule.getContext().setMatchTrace((MatchTrace)context.get(useMatchTrace));

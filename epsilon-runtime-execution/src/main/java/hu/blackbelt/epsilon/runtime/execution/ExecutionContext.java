@@ -1,5 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
@@ -18,8 +19,9 @@ import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.epsilon.common.parse.problem.ParseProblem;
+import org.eclipse.epsilon.emc.emf.CachedResourceSet;
 import org.eclipse.epsilon.emc.emf.tools.EmfTool;
-import org.eclipse.epsilon.eol.IEolExecutableModule;
+import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.eol.execute.context.Variable;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.ModelRepository;
@@ -33,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Builder
@@ -66,6 +69,8 @@ public class ExecutionContext implements AutoCloseable {
 
     @SneakyThrows
     public void init() {
+
+        CachedResourceSet.getCache().clear();
 
         // Check if global package registry contains the EcorePackage
         if (EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI) == null) {
@@ -113,7 +118,7 @@ public class ExecutionContext implements AutoCloseable {
         URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
         context.put(EglExecutionContext.ARTIFACT_ROOT, source);
 
-        IEolExecutableModule eolModule = eolProgram.getModule(context);
+        IEolModule eolModule = eolProgram.getModule(context);
 
         // Determinate any mode have alias or not
         boolean isAliasExists = false;
@@ -142,8 +147,11 @@ public class ExecutionContext implements AutoCloseable {
         log.info("Running program: " + source);
 
         executeModule(eolModule, source,
-                params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue()))
+                Stream.concat(
+                        params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
+                        context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))
                         .collect(Collectors.toList()));
+
 
         eolProgram.post(context);
 
@@ -155,7 +163,7 @@ public class ExecutionContext implements AutoCloseable {
     }
 
     @SneakyThrows
-    private void executeModule(IEolExecutableModule eolModule, URI source, List<Variable> parameters) {
+    private void executeModule(IEolModule eolModule, URI source, List<Variable> parameters) {
         for (IModel m : projectModelRepository.getModels()) {
             log.info("  Model: " + m.getName() + " Aliases: " + String.join(", ", m.getAliases()));
         }
@@ -190,6 +198,10 @@ public class ExecutionContext implements AutoCloseable {
             if (profile) {
                 eolModule.getContext().getExecutorFactory().addExecutionListener(new ProfilingExecutionListener());
             }
+
+            StringBuffer sb = new StringBuffer();
+            parameters.forEach(p -> sb.append("\t" + p.getName() + " - " + p.toString() + "\n"));
+            log.info("Parameters: \n" + sb.toString());
 
             Object result = eolModule.execute();
             // getLog().info("EolExecutionContext executeAll result: " + result.toString());
@@ -234,6 +246,7 @@ public class ExecutionContext implements AutoCloseable {
     public void addModel(ModelContext modelContext) {
         log.info("Model: " + modelContext.toString());
         Map<String, org.eclipse.emf.common.util.URI> uris = modelContext.getArtifacts().entrySet().stream()
+                .filter(e -> !Strings.isNullOrEmpty(e.getValue()))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey(),
                         entry -> artifactResolver.getArtifactAsEclipseURI(entry.getValue())));
