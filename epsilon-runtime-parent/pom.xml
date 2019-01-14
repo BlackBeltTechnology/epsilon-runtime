@@ -5,7 +5,7 @@
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.5-SNAPSHOT</version>
+    <version>1.1.5</version>
     
     <name>epsilon-runtime</name>
     <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
@@ -189,7 +189,7 @@
             <dependency>
                 <groupId>hu.blackbelt.epsilon</groupId>
                 <artifactId>epsilon-runtime-utils</artifactId>
-                <version>1.1.5-SNAPSHOT</version>
+                <version>1.1.5</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
