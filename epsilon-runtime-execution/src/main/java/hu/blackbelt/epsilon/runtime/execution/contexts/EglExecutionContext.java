@@ -10,7 +10,7 @@ import org.eclipse.epsilon.egl.EglFileGeneratingTemplateFactory;
 import org.eclipse.epsilon.egl.EglTemplateFactory;
 import org.eclipse.epsilon.egl.EglTemplateFactoryModuleAdapter;
 import org.eclipse.epsilon.egl.exceptions.EglRuntimeException;
-import org.eclipse.epsilon.eol.IEolExecutableModule;
+import org.eclipse.epsilon.eol.IEolModule;
 
 import java.io.File;
 import java.net.URI;
@@ -65,7 +65,7 @@ public class EglExecutionContext extends EolExecutionContext {
 
 
     @Override
-    public IEolExecutableModule getModule(Map<Object, Object> context) throws ScriptExecutionException {
+    public IEolModule getModule(Map<Object, Object> context) throws ScriptExecutionException {
         EglTemplateFactoryModuleAdapter module = new EglTemplateFactoryModuleAdapter(getTemplateFactory(context));
         return module;
     }

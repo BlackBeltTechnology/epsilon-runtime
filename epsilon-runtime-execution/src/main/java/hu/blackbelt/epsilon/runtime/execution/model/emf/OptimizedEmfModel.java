@@ -1,6 +1,7 @@
 package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 
 import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.loadResourceToResourceSet;
 
+@Slf4j
 public class OptimizedEmfModel extends EmfModel {
 
     protected ResourceSet createResourceSet() {
@@ -23,7 +25,7 @@ public class OptimizedEmfModel extends EmfModel {
 
     public void loadModelFromUri() throws EolModelLoadingException {
         ResourceSet resourceSet = createResourceSet();
-        resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("model", new OptimizedXmiResourceImpl.Factory());
+        resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(resourceSet.getResourceFactoryRegistry().DEFAULT_EXTENSION, new OptimizedXmiResourceImpl.Factory());
 
         super.determinePackagesFrom(resourceSet);
 

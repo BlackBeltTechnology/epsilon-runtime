@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.eol.EolModule;
-import org.eclipse.epsilon.eol.IEolExecutableModule;
+import org.eclipse.epsilon.eol.IEolModule;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class EolExecutionContext {
         this.parameters = parameters;
     }
 
-    public IEolExecutableModule getModule(Map<Object, Object> context) throws ScriptExecutionException {
+    public IEolModule getModule(Map<Object, Object> context) throws ScriptExecutionException {
         return module;
     };
 
