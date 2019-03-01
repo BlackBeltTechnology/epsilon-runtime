@@ -2,10 +2,8 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 import hu.blackbelt.epsilon.runtime.execution.Log;
 import hu.blackbelt.epsilon.runtime.execution.ModelContext;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.common.util.StringProperties;
@@ -20,8 +18,6 @@ import java.util.Map;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class EmfModelContext implements ModelContext {
 
     Map<String, String> artifacts;
@@ -99,6 +95,27 @@ public class EmfModelContext implements ModelContext {
      */
     boolean validateModel;
 
+    @java.beans.ConstructorProperties({"artifacts", "name", "aliases", "metaModelFile", "platformAlias", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "fileBasedMetamodelUris", "modelUri", "reuseUnmodifiedFileBasedMetamodels", "validateModel"})
+    public EmfModelContext(Map<String, String> artifacts, String name, List<String> aliases, File metaModelFile, String platformAlias, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, List<String> metaModelUris, List<String> fileBasedMetamodelUris, String modelUri, boolean reuseUnmodifiedFileBasedMetamodels, boolean validateModel) {
+        this.artifacts = artifacts;
+        this.name = name;
+        this.aliases = aliases;
+        this.metaModelFile = metaModelFile;
+        this.platformAlias = platformAlias;
+        this.readOnLoad = readOnLoad;
+        this.storeOnDisposal = storeOnDisposal;
+        this.cached = cached;
+        this.expand = expand;
+        this.metaModelUris = metaModelUris;
+        this.fileBasedMetamodelUris = fileBasedMetamodelUris;
+        this.modelUri = modelUri;
+        this.reuseUnmodifiedFileBasedMetamodels = reuseUnmodifiedFileBasedMetamodels;
+        this.validateModel = validateModel;
+    }
+
+    public EmfModelContext() {
+    }
+
 
     @Override
     public String toString() {
@@ -135,5 +152,6 @@ public class EmfModelContext implements ModelContext {
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap) throws EolModelLoadingException {
         return EmfModelUtils.loadEmf(log, resourceSet, repository, this, uriMap.get("model"));
     }
+
 
 }

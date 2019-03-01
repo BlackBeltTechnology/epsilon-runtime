@@ -11,16 +11,31 @@ import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 @Data
-@Builder(builderMethodName = "buildXmlModelContext")
 public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     /**
      * Validate model against Ecore metamodel and fail on validation errors.
      */
     boolean validateModel;
+
+    public XmlModelContext() {
+    }
+
+    @Builder(builderMethodName = "buildXmlModelContext")
+    public XmlModelContext(Map<String, String> artifacts, String name, List<String> aliases, File metaModelFile,
+                           String platformAlias, boolean readOnLoad, boolean storeOnDisposal, boolean cached,
+                           boolean expand, List<String> metaModelUris, List<String> fileBasedMetamodelUris,
+                           String modelUri, boolean reuseUnmodifiedFileBasedMetamodels, boolean validateModel) {
+        super(artifacts, name, aliases, metaModelFile, platformAlias, readOnLoad, storeOnDisposal, cached, expand,
+                metaModelUris, fileBasedMetamodelUris, modelUri, reuseUnmodifiedFileBasedMetamodels, validateModel);
+        this.validateModel = validateModel;
+    }
+
 
     @Override
     public String toString() {
@@ -41,6 +56,9 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
                 ", validateModel='" + validateModel + '\'' +
                 '}';
     }
+
+
+
 
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap) throws EolModelLoadingException {

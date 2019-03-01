@@ -33,16 +33,17 @@ public final class XmlModelUtils {
         properties.put(XmlModel.PROPERTY_EXPAND, xmlModelContext.isExpand() + "");
         properties.put(XmlModel.PROPERTY_CACHED, xmlModelContext.isCached() + "");
         properties.put(XmlModel.PROPERTY_REUSE_UNMODIFIED_FILE_BASED_METAMODELS, xmlModelContext.isReuseUnmodifiedFileBasedMetamodels() + "");
-        properties.put(XmlModel.PROPERTY_XSD_FILE, xsd + "");
+        properties.put(XmlModel.PROPERTY_XSD_FILE, xsd.toFileString() + "");
 
-        String metamodelUri = xmlModelContext.getMetaModelUris().stream().collect(joining(","));
+
+        //String metamodelUri = xmlModelContext.getMetaModelUris().stream().collect(joining(","));
         //File modelFile = emfModel.getModelFile();
-        String modelUri = xmlModelContext.getMetaModelUris().stream().collect(joining(","));
+        //String modelUri = xmlModelContext.getMetaModelUris().stream().collect(joining(","));
         File metamodelFile = xmlModelContext.getMetaModelFile();
 
-        if (metamodelUri != null) {
-            properties.put(XmlModel.PROPERTY_METAMODEL_URI, metamodelUri + "");
-        }
+        //if (metamodelUri != null) {
+        //    properties.put(XmlModel.PROPERTY_METAMODEL_URI, metamodelUri + "");
+        //}
 
         /*
         if (modelFile != null && modelUri != null) {
