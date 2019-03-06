@@ -15,9 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.epsilon.common.parse.problem.ParseProblem;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
 import org.eclipse.epsilon.emc.emf.tools.EmfTool;
@@ -49,7 +47,7 @@ public class ExecutionContext implements AutoCloseable {
     private Map<Object, Object> context = new HashMap();
 
     @Builder.Default
-    private ResourceSet resourceSet = EmfUtils.initResourceSet();
+    private ResourceSet resourceSet = EmfUtils.initDefaultCachedResourceSet();
 
     @Builder.Default
     private ModelRepository projectModelRepository = new ModelRepository();
@@ -73,14 +71,15 @@ public class ExecutionContext implements AutoCloseable {
         CachedResourceSet.getCache().clear();
 
         // Check if global package registry contains the EcorePackage
+        /*
         if (EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI) == null) {
             EPackage.Registry.INSTANCE.put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
-        }
+        } */
 
         addMetaModels();
         addModels();
 
-        log.info("URL converters: \n\t" + URIConverter.URI_MAP.entrySet().stream()
+        log.info("URL converters: \n\t" + resourceSet.getURIConverter().getURIMap().entrySet().stream()
                 .map(e -> e.getKey() + "->" + e.getValue()).collect(Collectors.joining("\n\t")));
 
     }

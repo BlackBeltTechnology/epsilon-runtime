@@ -28,21 +28,21 @@ public final class XmlModelUtils {
         } else {
             properties.put(XmlModel.PROPERTY_ALIASES, "");
         }
-        properties.put(XmlModel.PROPERTY_READONLOAD, xmlModelContext.isReadOnLoad()+ "");
-        properties.put(XmlModel.PROPERTY_STOREONDISPOSAL, xmlModelContext.isStoreOnDisposal() + "");
-        properties.put(XmlModel.PROPERTY_EXPAND, xmlModelContext.isExpand() + "");
-        properties.put(XmlModel.PROPERTY_CACHED, xmlModelContext.isCached() + "");
-        properties.put(XmlModel.PROPERTY_REUSE_UNMODIFIED_FILE_BASED_METAMODELS, xmlModelContext.isReuseUnmodifiedFileBasedMetamodels() + "");
-        properties.put(XmlModel.PROPERTY_XSD_FILE, xsd + "");
+        properties.put(XmlModel.PROPERTY_READONLOAD, xmlModelContext.getReadOnLoad()+ "");
+        properties.put(XmlModel.PROPERTY_STOREONDISPOSAL, xmlModelContext.getStoreOnDisposal() + "");
+        properties.put(XmlModel.PROPERTY_EXPAND, xmlModelContext.getExpand() + "");
+        properties.put(XmlModel.PROPERTY_CACHED, xmlModelContext.getCached() + "");
+        properties.put(XmlModel.PROPERTY_XSD_FILE, xsd.toFileString() + "");
 
-        String metamodelUri = xmlModelContext.getMetaModelUris().stream().collect(joining(","));
+
+        //String metamodelUri = xmlModelContext.getMetaModelUris().stream().collect(joining(","));
         //File modelFile = emfModel.getModelFile();
-        String modelUri = xmlModelContext.getMetaModelUris().stream().collect(joining(","));
+        //String modelUri = xmlModelContext.getMetaModelUris().stream().collect(joining(","));
         File metamodelFile = xmlModelContext.getMetaModelFile();
 
-        if (metamodelUri != null) {
-            properties.put(XmlModel.PROPERTY_METAMODEL_URI, metamodelUri + "");
-        }
+        //if (metamodelUri != null) {
+        //    properties.put(XmlModel.PROPERTY_METAMODEL_URI, metamodelUri + "");
+        //}
 
         /*
         if (modelFile != null && modelUri != null) {
@@ -66,7 +66,7 @@ public final class XmlModelUtils {
         if (xmlModelContext.getPlatformAlias() != null && !xmlModelContext.getPlatformAlias().trim().equals("")) {
             properties.put(XmlModel.PROPERTY_MODEL_URI, xmlModelContext.getPlatformAlias());
             log.info(String.format("Registering MODEL_URI: %s Alias URI: %s" , uri.toString(), xmlModelContext.getPlatformAlias()));
-            URIConverter.INSTANCE.URI_MAP.put(URI.createURI(xmlModelContext.getPlatformAlias()), uri);
+            resourceSet.getURIConverter().getURIMap().put(URI.createURI(xmlModelContext.getPlatformAlias()), uri);
         } else {
             log.info(String.format("Registering MODEL_URI: %s", uri.toString()));        	
         }
@@ -84,7 +84,7 @@ public final class XmlModelUtils {
         
         model.load(properties);
         model.setName(xmlModelContext.getName());
-        if (xmlModelContext.validateModel && !ModelValidator.getValidationErrors(log, model).isEmpty()) {
+        if (xmlModelContext.getValidateModel() && !ModelValidator.getValidationErrors(log, model).isEmpty()) {
             throw new IllegalStateException("Invalid model: " + model.getName());
         }
 
@@ -93,7 +93,7 @@ public final class XmlModelUtils {
     }
 
     public static XmlModel createXmlModel(ResourceSet resourceSet) {
-        return new OptimizedXmlModel();
+        return new DefaultRuntimeXmlModel();
         //return new EmfModel();
     }
 

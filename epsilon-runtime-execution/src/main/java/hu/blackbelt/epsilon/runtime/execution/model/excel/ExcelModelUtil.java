@@ -29,7 +29,7 @@ public class ExcelModelUtil {
         if (!Strings.isNullOrEmpty(excelModelContext.getSpreadSheetPassword())) {
             properties.put(ExcelModel.SPREADSHEET_PASSWORD, excelModelContext.getSpreadSheetPassword() + "");
         }
-        if (excelConfigurationFile != null) {
+        if (excelConfigurationFile != null && !"".equals(excelConfigurationFile)) {
             properties.put(ExcelModel.CONFIGURATION_FILE, excelConfigurationFile.toFileString() + "");
         }
 

@@ -10,17 +10,17 @@ import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 
 import java.util.HashMap;
 
-public class OptimizedXmlResourceImpl extends XMLResourceImpl {
+public class DefaultRuntimeXmlResourceImpl extends XMLResourceImpl {
 
 
     protected boolean useXmiIds = super.useUUIDs();
 
-    public OptimizedXmlResourceImpl() {
+    public DefaultRuntimeXmlResourceImpl() {
         super();
         setOptimizedOptions();
     }
 
-    public OptimizedXmlResourceImpl(URI uri) {
+    public DefaultRuntimeXmlResourceImpl(URI uri) {
         super(uri);
         setOptimizedOptions();
     }
@@ -36,7 +36,6 @@ public class OptimizedXmlResourceImpl extends XMLResourceImpl {
         this.getDefaultLoadOptions().put(XMLResource.OPTION_USE_XML_NAME_TO_FEATURE_MAP, new HashMap<Object,Object>());
         this.getDefaultLoadOptions().put(XMLResource.OPTION_DISABLE_NOTIFY, Boolean.TRUE);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_CONFIGURATION_CACHE, Boolean.TRUE);
-
     }
 
     @Override
@@ -56,7 +55,7 @@ public class OptimizedXmlResourceImpl extends XMLResourceImpl {
 
         @Override
         public Resource createResource(URI uri) {
-            return new OptimizedXmlResourceImpl(uri);
+            return new DefaultRuntimeXmlResourceImpl(uri);
         }
 
     }

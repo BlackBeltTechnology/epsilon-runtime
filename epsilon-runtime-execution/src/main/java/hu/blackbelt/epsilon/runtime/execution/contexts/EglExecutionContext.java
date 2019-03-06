@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
-@NoArgsConstructor
 public class EglExecutionContext extends EolExecutionContext {
 
     public static final String ARTIFACT_ROOT = "ARTIFACT_ROOT";

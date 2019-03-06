@@ -1,17 +1,32 @@
-package hu.blackbelt.epsilon.runtime.execution.model.xml;
+package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
-import org.eclipse.epsilon.emc.emf.xml.XmlModel;
+import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 
 import java.util.HashMap;
 
 import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.loadResourceToResourceSet;
 
-public class OptimizedXmlModel extends XmlModel {
+@Slf4j
+public class DefaultRuntimeEmfModel extends EmfModel {
+
+    ResourceSet resourceSet;
+
+    public DefaultRuntimeEmfModel(ResourceSet resourceSet) {
+        this.resourceSet = resourceSet;
+    }
+
+    public DefaultRuntimeEmfModel() {
+        this.resourceSet = createResourceSet();
+        this.resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap()
+                .put(resourceSet.getResourceFactoryRegistry().DEFAULT_EXTENSION,
+                        new DefaultRuntimeXmiResourceImpl.Factory());
+    }
 
     protected ResourceSet createResourceSet() {
         CachedResourceSet ret =  new CachedResourceSet();
@@ -20,10 +35,8 @@ public class OptimizedXmlModel extends XmlModel {
         return ret;
     }
 
-    public void loadModelFromUri() throws EolModelLoadingException {
-        ResourceSet resourceSet = createResourceSet();
 
-        resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xml", new OptimizedXmlResourceImpl.Factory());
+    public void loadModelFromUri() throws EolModelLoadingException {
 
         super.determinePackagesFrom(resourceSet);
 

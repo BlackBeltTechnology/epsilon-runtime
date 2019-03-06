@@ -13,17 +13,17 @@ import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
 import java.util.HashMap;
 
 @Slf4j
-public class OptimizedXmiResourceImpl extends XMIResourceImpl {
+public class DefaultRuntimeXmiResourceImpl extends XMIResourceImpl {
 
 
     protected boolean useXmiIds = super.useUUIDs();
 
-    public OptimizedXmiResourceImpl() {
+    public DefaultRuntimeXmiResourceImpl() {
         super();
         setOptimizedOptions();
     }
 
-    public OptimizedXmiResourceImpl(URI uri) {
+    public DefaultRuntimeXmiResourceImpl(URI uri) {
         super(uri);
         log.debug("Load optimized model - " + uri);
         setOptimizedOptions();
@@ -60,7 +60,7 @@ public class OptimizedXmiResourceImpl extends XMIResourceImpl {
 
         @Override
         public Resource createResource(URI uri) {
-            return new OptimizedXmiResourceImpl(uri);
+            return new DefaultRuntimeXmiResourceImpl(uri);
         }
 
     }

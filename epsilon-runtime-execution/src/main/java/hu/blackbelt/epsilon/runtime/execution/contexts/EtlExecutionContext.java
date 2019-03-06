@@ -11,7 +11,6 @@ import org.eclipse.epsilon.etl.EtlModule;
 import java.util.List;
 import java.util.Map;
 
-@NoArgsConstructor
 @AllArgsConstructor
 public class EtlExecutionContext extends EolExecutionContext {
 
@@ -19,13 +18,15 @@ public class EtlExecutionContext extends EolExecutionContext {
     @NonNull
     private String exportTransformationTrace;
 
-    @Builder.Default
     EtlModule etlModule = new EtlModule();
 
     @Builder(builderMethodName = "etlExecutionContextBuilder")
-    public EtlExecutionContext(String source, List<ProgramParameter> parameters, String exportTransformationTrace) {
+    public EtlExecutionContext(String source, List<ProgramParameter> parameters, String exportTransformationTrace, EtlModule etlModule) {
         super(source, parameters);
         this.exportTransformationTrace = exportTransformationTrace;
+        if (etlModule != null) {
+        	this.etlModule =  etlModule;
+        }
     }
 
     @Override

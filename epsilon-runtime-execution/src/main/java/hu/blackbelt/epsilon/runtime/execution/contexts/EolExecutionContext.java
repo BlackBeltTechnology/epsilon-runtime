@@ -14,6 +14,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class EolExecutionContext {
     @Getter
     @NonNull

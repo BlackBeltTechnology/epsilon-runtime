@@ -16,12 +16,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
 public class EvlExecutionContext extends EolExecutionContext {
 
-    @Builder.Default
     private EvlModule module = new EvlModule();
 
     private Collection<String> expectedErrors;
@@ -34,13 +32,16 @@ public class EvlExecutionContext extends EolExecutionContext {
 
     @Builder(builderMethodName = "evlExecutionContextBuilder")
     public EvlExecutionContext(String source, List<ProgramParameter> parameters,
-                               Collection<String> expectedErrors, Collection<String> expectedWarnings) {
+                               Collection<String> expectedErrors, Collection<String> expectedWarnings, EvlModule module) {
         super(source, parameters);
         if (expectedErrors != null) {
             this.expectedErrors = Collections.unmodifiableCollection(expectedErrors);
         }
         if (expectedWarnings != null) {
             this.expectedWarnings = Collections.unmodifiableCollection(expectedWarnings);
+        }
+        if (module != null) {
+            this.module = module;
         }
     }
 

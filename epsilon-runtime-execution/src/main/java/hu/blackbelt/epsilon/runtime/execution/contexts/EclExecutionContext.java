@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
-@NoArgsConstructor
 public class EclExecutionContext extends EolExecutionContext {
 
     @Getter
@@ -29,10 +28,13 @@ public class EclExecutionContext extends EolExecutionContext {
     private EclModule eclModule = new EclModule();
 
     @Builder(builderMethodName = "eclExecutionContextBuilder")
-    public EclExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace) {
+    public EclExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace, EclModule eclModule) {
         super(source, parameters);
         this.useMatchTrace = useMatchTrace;
         this.exportMatchTrace = exportMatchTrace;
+        if (eclModule != null) {
+            this.eclModule = eclModule;
+        }
     }
 
     @Override

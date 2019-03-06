@@ -1,7 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution;
 
-import hu.blackbelt.epsilon.runtime.execution.model.emf.OptimizedEmfModel;
-import hu.blackbelt.epsilon.runtime.execution.model.emf.OptimizedXmiResourceImpl;
+import hu.blackbelt.epsilon.runtime.execution.model.emf.DefaultRuntimeXmiResourceImpl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
@@ -14,8 +13,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
-import org.eclipse.epsilon.emc.emf.DefaultXMIResource;
-import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.IReflectiveModel;
@@ -57,14 +54,14 @@ public final class EmfUtils {
         return ePackages;
     } */
 
-    public static ResourceSet initResourceSet() {
+    public static ResourceSet initDefaultCachedResourceSet() {
         ResourceSet rs = new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
         rs.setResourceFactoryRegistry(Resource.Factory.Registry.INSTANCE);
         // rs.setPackageRegistry(EPackage.Registry.INSTANCE);
         /*rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("library", new XMIResourceFactoryImpl());
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("model", new XMIResourceFactoryImpl());
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xml", new XMLResourceFactoryImpl()); */
-        rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new OptimizedXmiResourceImpl.Factory());
+        rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new DefaultRuntimeXmiResourceImpl.Factory());
         //rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new DefaultXMIResource.Factory());
 
 
@@ -134,7 +131,7 @@ public final class EmfUtils {
                     p.setNsPrefix(p.getName());
                 }
 
-                EPackage.Registry.INSTANCE.put(p.getNsURI(), p);
+                // EPackage.Registry.INSTANCE.put(p.getNsURI(), p);
                 resourceSet.getPackageRegistry().put(p.getNsURI(), p);
 
                 if (useUriForResource) {

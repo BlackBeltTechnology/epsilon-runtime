@@ -12,21 +12,21 @@ import org.eclipse.epsilon.eol.IEolModule;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class EmlExecutionContext extends EtlExecutionContext {
 
     @Getter
     @NonNull
     private String useMatchTrace;
 
-    @Builder.Default
     private EmlModule emlModule = new EmlModule();
 
     @Builder(builderMethodName = "emlExecutionContextBuilder")
-    public EmlExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace, String exportTransformationTrace) {
-        super(source, parameters, exportTransformationTrace);
+    public EmlExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace, String exportTransformationTrace, EmlModule emlModule) {
+        super(source, parameters, exportTransformationTrace, null);
         this.useMatchTrace = useMatchTrace;
+        if (emlModule != null) {
+        	this.emlModule = emlModule;
+        }
     }
 
     @Override

@@ -37,7 +37,7 @@ public class PlainXmlModelUtil {
         if (plainXmlModelContext.getPlatformAlias() != null && !plainXmlModelContext.getPlatformAlias().trim().equals("")) {
             properties.put(PlainXmlModel.PROPERTY_URI, plainXmlModelContext.getPlatformAlias());
             log.info(String.format("Registering MODEL_URI: %s Alias URI: %s" , uri.toString(), plainXmlModelContext.getPlatformAlias()));
-            URIConverter.INSTANCE.URI_MAP.put(URI.createURI(plainXmlModelContext.getPlatformAlias()), uri);
+            resourceSet.getURIConverter().getURIMap().put(URI.createURI(plainXmlModelContext.getPlatformAlias()), uri);
         } else {
             log.info(String.format("Registering MODEL_URI: %s", uri.toString()));
         }

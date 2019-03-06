@@ -17,26 +17,28 @@ import static java.util.stream.Collectors.joining;
 
 public final class EmfModelUtils {
 
-    public static EmfModel loadEmf(Log log, ResourceSet resourceSet, ModelRepository repository, EmfModelContext emfModel, URI uri) throws EolModelLoadingException {
+    public static EmfModel loadEmf(Log log, EmfModelFactory emfModelFactory, ResourceSet resourceSet, ModelRepository repository, EmfModelContext emfModel, URI uri) throws EolModelLoadingException {
 
-        final EmfModel model = createEmfModel(resourceSet);
+        final EmfModel model = emfModelFactory.create(resourceSet);
 
         final StringProperties properties = new StringProperties();
         properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
-        if (emfModel.getAliases() != null) {
+        if (emfModel.getAliases() != null && emfModel.getAliases().size() > 0)  {
             properties.put(EmfModel.PROPERTY_ALIASES, emfModel.getAliases().stream().collect(joining(",")) + "");
         } else {
             properties.put(EmfModel.PROPERTY_ALIASES, "");
         }
-        properties.put(EmfModel.PROPERTY_READONLOAD, emfModel.isReadOnLoad()+ "");
-        properties.put(EmfModel.PROPERTY_STOREONDISPOSAL, emfModel.isStoreOnDisposal() + "");
-        properties.put(EmfModel.PROPERTY_EXPAND, emfModel.isExpand() + "");
-        properties.put(EmfModel.PROPERTY_CACHED, emfModel.isCached() + "");
-        properties.put(EmfModel.PROPERTY_REUSE_UNMODIFIED_FILE_BASED_METAMODELS, emfModel.isReuseUnmodifiedFileBasedMetamodels() + "");
+        properties.put(EmfModel.PROPERTY_READONLOAD, emfModel.getReadOnLoad()+ "");
+        properties.put(EmfModel.PROPERTY_STOREONDISPOSAL, emfModel.getStoreOnDisposal() + "");
+        properties.put(EmfModel.PROPERTY_EXPAND, emfModel.getExpand() + "");
+        properties.put(EmfModel.PROPERTY_CACHED, emfModel.getCached() + "");
 
-        String metamodelUri = emfModel.getMetaModelUris().stream().collect(joining(","));
+        String metamodelUri = null;
+        if (emfModel.getMetaModelUris() !=  null && emfModel.getMetaModelUris().size() > 0) {
+            emfModel.getMetaModelUris().stream().collect(joining(","));
+        }
         //File modelFile = emfModel.getModelFile();
-        String modelUri = emfModel.getMetaModelUris().stream().collect(joining(","));
+        // String modelUri = emfModel.getMetaModelUris().stream().collect(joining(","));
         File metamodelFile = emfModel.getMetaModelFile();
 
         if (metamodelUri != null) {
@@ -65,7 +67,7 @@ public final class EmfModelUtils {
         if (emfModel.getPlatformAlias() != null && !emfModel.getPlatformAlias().trim().equals("")) {
             properties.put(EmfModel.PROPERTY_MODEL_URI, emfModel.getPlatformAlias());
             log.info(String.format("Registering MODEL_URI: %s Alias URI: %s" , uri.toString(), emfModel.getPlatformAlias()));
-            URIConverter.INSTANCE.URI_MAP.put(URI.createURI(emfModel.getPlatformAlias()), uri);
+            resourceSet.getURIConverter().getURIMap().put(URI.createURI(emfModel.getPlatformAlias()), uri);
         } else {
             log.info(String.format("Registering MODEL_URI: %s", uri.toString()));        	
         }
@@ -93,7 +95,7 @@ public final class EmfModelUtils {
     }
 
     public static EmfModel createEmfModel(ResourceSet resourceSet) {
-        return new OptimizedEmfModel();
+        return new DefaultRuntimeEmfModel();
         //return new EmfModel();
     }
 }

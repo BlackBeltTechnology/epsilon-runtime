@@ -1,9 +1,12 @@
 package hu.blackbelt.epsilon.runtime.execution.model.plainxml;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import hu.blackbelt.epsilon.runtime.execution.Log;
 import hu.blackbelt.epsilon.runtime.execution.ModelContext;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
@@ -18,13 +21,14 @@ import java.util.Map;
 @Builder
 public class PlainXmlModelContext implements ModelContext {
 
-    Map<String, String> artifacts;
-
+    @NonNull
     String name;
 
-    String xsd;
+    @NonNull
+    String xml;
 
-    List<String> aliases;
+    @Builder.Default
+    List<String> aliases = ImmutableList.of();
 
     String platformAlias;
 
@@ -41,8 +45,7 @@ public class PlainXmlModelContext implements ModelContext {
     @Override
     public String toString() {
         return "PlainXmlModelContext{" +
-                "artifact='" + artifacts + '\'' +
-                ", xsd='" + xsd + '\'' +
+                "artifact='" + getArtifacts() + '\'' +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
                 ", readOnLoad=" + readOnLoad +
@@ -61,6 +64,11 @@ public class PlainXmlModelContext implements ModelContext {
             }
         }
         repository.addModel(ref);
+    }
+
+    @Override
+    public Map<String, String> getArtifacts() {
+        return ImmutableMap.of("xml", xml);
     }
 
     @Override
