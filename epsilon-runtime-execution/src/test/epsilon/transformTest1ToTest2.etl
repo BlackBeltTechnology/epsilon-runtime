@@ -1,0 +1,33 @@
+rule DataModel2DataModelTransformed 
+	transform s : TEST1!DataModel
+	to t : TEST2!DataModelTransformed {
+	   s.name.println("DataModel2DataModelTransformed: ");
+	   t.name = s.name;
+	   t.entity = s.entity.equivalent();	   
+}
+
+rule Entity2EntityTransformed
+	transform s : TEST1!Entity
+	to t : TEST2!EntityTransformed {
+	   s.name.println("Entity2EntityTransformed: ");
+       t.name = s.name;
+       t.attribute = s.attribute.equivalent();
+       t.reference = s.reference.collect(r | r.equivalent());
+}
+
+rule Attribute2AttributeTransformed
+	transform s : TEST1!Attribute
+	to t : TEST2!AttributeTransformed {
+	   s.name.println("Attribute2AttributeTransformed: ");
+	   t.name = s.name;
+	   t.type = s.type;
+}
+
+rule EntityReference2EntityReferenceTransformed
+	transform s : TEST1!EntityReference
+	to t : TEST2!EntityReferenceTransformed {
+	   s.name.println("EntityReference2EntityReferenceTransformed: ");
+	   t.name = s.name;
+	   t.toMany = s.toMany;
+	   t.target = s.target.equivalent();	
+}

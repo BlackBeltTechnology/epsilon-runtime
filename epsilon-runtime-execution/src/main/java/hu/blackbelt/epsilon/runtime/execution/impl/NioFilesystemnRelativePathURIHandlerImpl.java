@@ -16,14 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class NioFilesystemnURIHandlerImpl extends URIHandlerImpl {
+public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
   /**
    * Creates an instance.
    */
   FileSystem fileSystem;
   String rootPath;
 
-  public NioFilesystemnURIHandlerImpl(FileSystem fileSystem, String rootPath) {
+  public NioFilesystemnRelativePathURIHandlerImpl(FileSystem fileSystem, String rootPath) {
     super();
     this.fileSystem = fileSystem;
     this.rootPath = rootPath;
@@ -32,7 +32,7 @@ public class NioFilesystemnURIHandlerImpl extends URIHandlerImpl {
   @Override
   public boolean canHandle(URI uri)
   {
-    return uri.scheme().equals("urn") && exists(uri, null);
+    return uri.scheme().equals("urn"); // && exists(uri, null);
   }
 
   /**
@@ -54,7 +54,7 @@ public class NioFilesystemnURIHandlerImpl extends URIHandlerImpl {
     }
     final Map<Object, Object> response = getResponse(options);
     OutputStream outputStream =
-            new BufferedOutputStream(Files.newOutputStream(fileSystem.getPath(parent)))  {
+            new BufferedOutputStream(Files.newOutputStream(fileSystem.getPath(filePath)))  {
               @Override
               public void close() throws IOException {
                 try {

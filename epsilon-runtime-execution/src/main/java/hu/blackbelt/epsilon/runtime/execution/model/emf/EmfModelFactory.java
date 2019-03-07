@@ -22,7 +22,7 @@ public interface EmfModelFactory {
                      EmfModelFactory emfModelFactory, ResourceSet resourceSet,
                      ModelRepository repository, EmfModelContext emfModel, URI uri) throws EolModelLoadingException {
 
-        final EmfModel model = emfModelFactory.create(resourceSet);
+        EmfModel model = emfModelFactory.create(resourceSet);
 
         final StringProperties properties = new StringProperties();
         properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");

@@ -10,6 +10,7 @@ import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EolExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.ProgramParameter;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
+import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import hu.blackbelt.epsilon.runtime.utils.AbbreviateUtils;
 import hu.blackbelt.epsilon.runtime.utils.MD5Utils;
 import hu.blackbelt.epsilon.runtime.utils.UUIDUtils;
@@ -58,18 +59,22 @@ public class ExecutionContext implements AutoCloseable {
     @Builder.Default
     private Boolean rollback = true;
 
-    private Log log;
+    @Builder.Default
+    private Log log = new Slf4jLog();
+
     private List<String> metaModels;
 
     private List<ModelContext> modelContexts;
 
     private ArtifactResolver artifactResolver;
     private File sourceDirectory;
-    private Boolean profile;
+
+    @Builder.Default
+    private Boolean profile = false;
 
 
     @SneakyThrows
-    public void init() {
+    public void load() {
 
         CachedResourceSet.getCache().clear();
 
@@ -107,16 +112,6 @@ public class ExecutionContext implements AutoCloseable {
 
     @SneakyThrows(Exception.class)
     public void executeProgram(EolExecutionContext eolProgram) {
-        /*
-        URI source = null;
-        if (eolProgram.getArtifact() != null) {
-            source = new URI("jar:" + getArtifact(eolProgram.getArtifact()).toURI().toString() + "!/"
-                    + eolProgram.getSource());
-        } else {
-            source = new File(sourceDirectory, eolProgram.source).toURI();
-        }
-        */
-        // URI source = null;
         File sourceFile = new File(eolProgram.getSource());
         URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
         context.put(EglExecutionContext.ARTIFACT_ROOT, source);

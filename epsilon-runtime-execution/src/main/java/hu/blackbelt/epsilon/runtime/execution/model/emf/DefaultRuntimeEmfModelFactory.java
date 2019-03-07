@@ -1,10 +1,7 @@
 package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.SneakyThrows;
+import lombok.*;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIHandler;
@@ -43,5 +40,4 @@ public class DefaultRuntimeEmfModelFactory implements EmfModelFactory {
                 return emfReourceSet;
             }
         };
-    }
-}
+    }}

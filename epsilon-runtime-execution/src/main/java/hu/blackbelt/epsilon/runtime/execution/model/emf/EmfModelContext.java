@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-@Builder
+@Builder(builderMethodName = "emfModelContextBuilder")
 public class EmfModelContext implements ModelContext {
 
     @Builder.Default
@@ -142,7 +142,9 @@ public class EmfModelContext implements ModelContext {
 
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap) throws EolModelLoadingException {
-        return EmfModelFactory.loadEmf(log, emfModelFactory, resourceSet, repository, this, uriMap.get("model"));
+        URI uri =  uriMap.get("model");
+        IModel model = EmfModelFactory.loadEmf(log, emfModelFactory, resourceSet, repository, this, uri);
+        return model;
     }
 
 
