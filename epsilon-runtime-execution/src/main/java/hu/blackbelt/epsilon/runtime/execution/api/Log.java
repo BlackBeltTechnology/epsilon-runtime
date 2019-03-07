@@ -1,4 +1,4 @@
-package hu.blackbelt.epsilon.runtime.execution;
+package hu.blackbelt.epsilon.runtime.execution.api;
 
 public interface Log {
 	

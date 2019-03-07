@@ -1,7 +1,7 @@
 package hu.blackbelt.epsilon.runtime.execution.model.excel;
 
 import com.google.common.base.Strings;
-import hu.blackbelt.epsilon.runtime.execution.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.epsilon.emc.spreadsheets.excel.ExcelModel;

@@ -1,10 +1,9 @@
 package hu.blackbelt.epsilon.runtime.execution.model.excel;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import hu.blackbelt.epsilon.runtime.execution.Log;
-import hu.blackbelt.epsilon.runtime.execution.ModelContext;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;

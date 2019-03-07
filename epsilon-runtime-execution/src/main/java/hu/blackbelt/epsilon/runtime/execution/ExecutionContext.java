@@ -3,6 +3,9 @@ package hu.blackbelt.epsilon.runtime.execution;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import hu.blackbelt.epsilon.runtime.execution.api.ArtifactResolver;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EolExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.ProgramParameter;
@@ -79,9 +82,10 @@ public class ExecutionContext implements AutoCloseable {
         addMetaModels();
         addModels();
 
+        /*
         log.info("URL converters: \n\t" + resourceSet.getURIConverter().getURIMap().entrySet().stream()
                 .map(e -> e.getKey() + "->" + e.getValue()).collect(Collectors.joining("\n\t")));
-
+        */
     }
 
 

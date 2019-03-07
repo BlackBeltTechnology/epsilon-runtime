@@ -2,8 +2,8 @@ package hu.blackbelt.epsilon.runtime.execution.model.plainxml;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import hu.blackbelt.epsilon.runtime.execution.Log;
-import hu.blackbelt.epsilon.runtime.execution.ModelContext;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -51,7 +51,7 @@ public class PlainXmlModelContext implements ModelContext {
                 ", readOnLoad=" + readOnLoad +
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
-                ", platformAlias='" + platformAlias + '\'' +
+                ", referenceUri='" + platformAlias + '\'' +
                 '}';
     }
 

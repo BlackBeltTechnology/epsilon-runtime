@@ -1,7 +1,7 @@
 package hu.blackbelt.epsilon.runtime.execution.model;
 
 import com.google.common.base.Strings;
-import hu.blackbelt.epsilon.runtime.execution.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.epsilon.emc.emf.EmfModel;

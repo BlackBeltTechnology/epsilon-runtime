@@ -1,11 +1,9 @@
 package hu.blackbelt.epsilon.runtime.execution.model.xml;
 
 import com.google.common.collect.ImmutableMap;
-import hu.blackbelt.epsilon.runtime.execution.Log;
-import hu.blackbelt.epsilon.runtime.execution.ModelContext;
-import hu.blackbelt.epsilon.runtime.execution.model.emf.DefaultRuntimeEmfModelFactory;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelContext;
-import hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelFactory;
 import lombok.Builder;
 import lombok.Data;
 import org.eclipse.emf.common.util.URI;
@@ -25,23 +23,23 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     private String xsd;
 
-    private XmlModelFactory xmlModelFactory = new DefaultRuntimeXmlModelFactory();
-
-    public XmlModelContext() {
-    }
+    private XmlModelFactory xmlModelFactory;
 
     @Builder(builderMethodName = "buildXmlModelContext")
-    public XmlModelContext(String xml, String xsd, String name, List<String> aliases, File metaModelFile,
+    public XmlModelContext(Log log, String xml, String xsd, String name, List<String> aliases, File metaModelFile,
                            String platformAlias, boolean readOnLoad, boolean storeOnDisposal, boolean cached,
-                           boolean expand, List<String> metaModelUris, List<String> fileBasedMetamodelUris,
-                           String modelUri, boolean reuseUnmodifiedFileBasedMetamodels, boolean validateModel, XmlModelFactory xmlModelFactory) {
-        super(null, name, aliases, metaModelFile, platformAlias, readOnLoad, storeOnDisposal, cached, expand,
+                           boolean expand, List<String> metaModelUris, boolean validateModel, XmlModelFactory xmlModelFactory) {
+        super(log, null, name, aliases, metaModelFile, platformAlias, readOnLoad, storeOnDisposal, cached, expand,
                 metaModelUris, validateModel, null);
-        if (xmlModelFactory != null) {
-            this.xmlModelFactory = xmlModelFactory;
-        }
         this.xml = xml;
         this.xsd = xsd;
+
+        if (xmlModelFactory != null) {
+            this.xmlModelFactory = xmlModelFactory;
+        } else {
+            this.xmlModelFactory = new DefaultRuntimeXmlModelFactory(log);
+        }
+
     }
 
 
@@ -55,11 +53,12 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
                 ", storeOnDisposal=" + getStoreOnDisposal() +
                 ", cached=" + getCached() +
                 ", metaModelFile=" + getMetaModelFile() +
-                ", platformAlias='" + getPlatformAlias() + '\'' +
+                ", referenceUri='" + getReferenceUri() + '\'' +
                 ", expand=" + getExpand() +
                 ", metaModelUris=" + getMetaModelUris() +
                 ", validateModel='" + getValidateModel() + '\'' +
                 ", xmlModelFactory='" + xmlModelFactory + '\'' +
+                ", log='" + getLog().getClass().getName() + '\'' +
                 '}';
     }
 
@@ -71,7 +70,7 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap) throws EolModelLoadingException {
-        return XmlModelUtils.loadXml(log, resourceSet, repository, this, uriMap.get("xml"), uriMap.get("xsd"));
+        return XmlModelFactory.loadXml(log, xmlModelFactory, resourceSet, repository, this, uriMap.get("xml"), uriMap.get("xsd"));
     }
 
 }

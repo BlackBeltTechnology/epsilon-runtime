@@ -2,8 +2,9 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import hu.blackbelt.epsilon.runtime.execution.Log;
-import hu.blackbelt.epsilon.runtime.execution.ModelContext;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
+import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -23,6 +24,10 @@ import java.util.Map;
 @Builder
 public class EmfModelContext implements ModelContext {
 
+    @Builder.Default
+    Log log = new Slf4jLog();
+
+
     @NonNull
     String model;
 
@@ -34,7 +39,7 @@ public class EmfModelContext implements ModelContext {
 
     File metaModelFile;
 
-    String platformAlias;
+    String referenceUri;
 
     @Builder.Default
     Boolean readOnLoad = true;
@@ -71,23 +76,29 @@ public class EmfModelContext implements ModelContext {
     @Builder.Default
     Boolean validateModel = true;
 
-    @Builder.Default
-    EmfModelFactory emfModelFactory = new DefaultRuntimeEmfModelFactory();
 
-    @java.beans.ConstructorProperties({"model", "name", "aliases", "metaModelFile", "platformAlias", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "validateModel", "emfModelFactory"})
-    public EmfModelContext(String model, String name, List<String> aliases, File metaModelFile, String platformAlias, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, List<String> metaModelUris, boolean validateModel, EmfModelFactory emfModelFactory) {
+    EmfModelFactory emfModelFactory;
+
+    @java.beans.ConstructorProperties({"log", "model", "name", "aliases", "metaModelFile", "referenceUri", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "validateModel", "emfModelFactory"})
+    public EmfModelContext(Log log, String model, String name, List<String> aliases, File metaModelFile, String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, List<String> metaModelUris, boolean validateModel, EmfModelFactory emfModelFactory) {
+        this.log = log;
         this.model = model;
         this.name = name;
         this.aliases = aliases;
         this.metaModelFile = metaModelFile;
-        this.platformAlias = platformAlias;
+        this.referenceUri = referenceUri;
         this.readOnLoad = readOnLoad;
         this.storeOnDisposal = storeOnDisposal;
         this.cached = cached;
         this.expand = expand;
         this.metaModelUris = metaModelUris;
         this.validateModel = validateModel;
-        this.emfModelFactory = emfModelFactory;
+        if (emfModelFactory != null) {
+            this.emfModelFactory = emfModelFactory;
+        } else {
+            this.emfModelFactory = new DefaultRuntimeEmfModelFactory(log);
+        }
+
     }
 
     public EmfModelContext() {
@@ -109,11 +120,12 @@ public class EmfModelContext implements ModelContext {
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
                 ", metaModelFile=" + metaModelFile +
-                ", platformAlias='" + platformAlias + '\'' +
+                ", referenceUri='" + referenceUri + '\'' +
                 ", expand=" + expand +
                 ", metaModelUris=" + metaModelUris +
                 ", validateModel='" + validateModel + '\'' +
-                ", emfModelFactory='" + emfModelFactory.toString() + '\'' +
+                ", emfModelFactory='" + emfModelFactory.getClass().getName() + '\'' +
+                ", log='" + log.getClass().getName() + '\'' +
                 '}';
     }
 
@@ -130,7 +142,7 @@ public class EmfModelContext implements ModelContext {
 
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap) throws EolModelLoadingException {
-        return EmfModelUtils.loadEmf(log, emfModelFactory, resourceSet, repository, this, uriMap.get("model"));
+        return EmfModelFactory.loadEmf(log, emfModelFactory, resourceSet, repository, this, uriMap.get("model"));
     }
 
 

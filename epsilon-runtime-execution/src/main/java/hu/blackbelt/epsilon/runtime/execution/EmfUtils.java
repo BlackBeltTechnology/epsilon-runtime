@@ -12,7 +12,10 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
+import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.IReflectiveModel;
@@ -56,14 +59,15 @@ public final class EmfUtils {
 
     public static ResourceSet initDefaultCachedResourceSet() {
         ResourceSet rs = new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
+
         rs.setResourceFactoryRegistry(Resource.Factory.Registry.INSTANCE);
         // rs.setPackageRegistry(EPackage.Registry.INSTANCE);
         /*rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("library", new XMIResourceFactoryImpl());
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("model", new XMIResourceFactoryImpl());
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xml", new XMLResourceFactoryImpl()); */
-        rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new DefaultRuntimeXmiResourceImpl.Factory());
+        //rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new DefaultRuntimeXmiResourceImpl.Factory());
         //rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new DefaultXMIResource.Factory());
-
+        rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 
         if (rs.getPackageRegistry().getEPackage(EcorePackage.eNS_URI) == null) {
             rs.getPackageRegistry().put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
@@ -171,6 +175,18 @@ public final class EmfUtils {
         }
     }
 
+    /*
+    public static Resource registerPackages(ResourceSet resourceSet, List<EPackage> packages) {
+        for (EPackage ep : packages) {
+            String nsUri = ep.getNsURI();
+            if (nsUri == null || nsUri.trim().length() == 0) {
+                nsUri = ep.getName();
+            }
+            resourceSet.getPackageRegistry().put(nsUri, ep);
+        }
+    } */
+
+
     public static Resource loadResourceToResourceSet(IModel model, ResourceSet resourceSet, List<EPackage> packages, URI modelUri, boolean expand, boolean readOnLoad) throws EolModelLoadingException {
         // Note that AbstractEmfModel#getPackageRegistry() is not usable yet, as modelImpl is not set
         for (EPackage ep : packages) {
@@ -198,6 +214,7 @@ public final class EmfUtils {
             }
         }
         return resource;
+
     }
 
 }

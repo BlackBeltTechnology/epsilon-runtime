@@ -2,6 +2,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
@@ -20,6 +21,12 @@ public class DefaultRuntimeEmfModel extends EmfModel {
     public DefaultRuntimeEmfModel(ResourceSet resourceSet) {
         this.resourceSet = resourceSet;
     }
+
+    public DefaultRuntimeEmfModel(Resource resource) throws EolModelLoadingException {
+        super.determinePackagesFrom(resource.getResourceSet());
+        modelImpl = resource;
+    }
+
 
     public DefaultRuntimeEmfModel() {
         this.resourceSet = createResourceSet();

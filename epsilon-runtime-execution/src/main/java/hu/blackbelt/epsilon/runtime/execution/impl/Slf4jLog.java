@@ -1,5 +1,6 @@
-package hu.blackbelt.epsilon.runtime.execution;
+package hu.blackbelt.epsilon.runtime.execution.impl;
 
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
