@@ -7,6 +7,7 @@ import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;

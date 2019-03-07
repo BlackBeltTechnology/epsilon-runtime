@@ -26,6 +26,7 @@ import static java.util.stream.Collectors.joining;
 @Data
 @Builder(builderMethodName = "wrappedEmfModelContextBuilder")
 @AllArgsConstructor
+@EqualsAndHashCode
 public class WrappedEmfModelContext implements ModelContext {
 
     @Builder.Default

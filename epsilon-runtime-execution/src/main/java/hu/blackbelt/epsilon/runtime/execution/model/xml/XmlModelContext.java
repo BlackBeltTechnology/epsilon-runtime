@@ -6,6 +6,7 @@ import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelContext;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     private String xml;

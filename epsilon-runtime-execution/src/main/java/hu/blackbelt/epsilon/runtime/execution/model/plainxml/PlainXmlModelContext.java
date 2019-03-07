@@ -6,6 +6,7 @@ import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @Data
 @Builder
+@EqualsAndHashCode
 public class PlainXmlModelContext implements ModelContext {
 
     @NonNull

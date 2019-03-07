@@ -25,6 +25,7 @@ import java.util.Map;
 import static hu.blackbelt.epsilon.runtime.execution.contexts.EtlExecutionContext.etlExecutionContextBuilder;
 import static hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelContext.emfModelContextBuilder;
 import static hu.blackbelt.epsilon.runtime.execution.model.emf.WrappedEmfModelContext.wrappedEmfModelContextBuilder;
+import static hu.blackbelt.epsilon.runtime.model.test1.data.util.builder.DataBuilders.*;
 
 class ExecutionContextTest {
 
@@ -127,32 +128,27 @@ class ExecutionContextTest {
         executionResourceSet.getPackageRegistry().put(DataPackage.eNS_URI, DataPackage.eINSTANCE);
 
         // Creating our sample model
-        DataModel dataModel = DataFactory.eINSTANCE.createDataModel();
-        dataModel.setName("TEST1");
+        // To generate it from genmodel: https://github.com/BlackBeltTechnology/emfbuildergenerator
+        Entity entity1 = newEntityBuilder()
+                .withName("TestEntity1")
+                .withAttribute(newAttributeBuilder()
+                        .withName("attr1")
+                        .withType("String"))
+                .build();
+
+        Entity entity2 = newEntityBuilder()
+                .withName("TestEntity2")
+                .withAttribute(newAttributeBuilder()
+                        .withName("attr2")
+                        .withType("String"))
+                .withReference(newEntityReferenceBuilder()
+                        .withName("entity1ref")
+                        .withTarget(entity1))
+                .build();
+
+
+        DataModel dataModel = newDataModelBuilder().withEntity(entity1).withEntity(entity2).build();
         createdSourceResource.getContents().add(dataModel);
-
-        Entity entity1 = DataFactory.eINSTANCE.createEntity();
-        entity1.setName("TestEntity1");
-
-        Entity entity2 = DataFactory.eINSTANCE.createEntity();
-        entity2.setName("TestEntity2");
-
-        dataModel.getEntity().add(entity1);
-        dataModel.getEntity().add(entity2);
-
-        Attribute entity1Attr1 = DataFactory.eINSTANCE.createAttribute();
-        entity1Attr1.setName("attr1");
-        entity1Attr1.setName("String");
-        entity1.getAttribute().add(entity1Attr1);
-
-        Attribute entity2Attr2 = DataFactory.eINSTANCE.createAttribute();
-        entity2Attr2.setName("attr2");
-        entity2Attr2.setName("String");
-        entity2.getAttribute().add(entity2Attr2);
-
-        EntityReference entity2Reference = DataFactory.eINSTANCE.createEntityReference();
-        entity2Reference.setTarget(entity1);
-        entity2.getReference().add(entity2Reference);
 
 
         // Creating target resource from execution resource set.
