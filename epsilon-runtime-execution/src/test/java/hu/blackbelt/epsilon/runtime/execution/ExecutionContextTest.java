@@ -1,7 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution;
 
 import com.google.common.collect.ImmutableList;
-import hu.blackbelt.epsilon.runtime.execution.api.ArtifactResolver;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
@@ -34,7 +33,6 @@ class ExecutionContextTest {
 
     URIHandler uriHandler;
     ResourceSet executionResourceSet;
-    ArtifactResolver passthroughArtifactResolver;
     Log log;
 
     @org.junit.jupiter.api.BeforeEach
@@ -46,14 +44,6 @@ class ExecutionContextTest {
         // Setup resourcehandler used to load metamodels
         executionResourceSet = new CachedResourceSet();
         executionResourceSet.getURIConverter().getURIHandlers().add(0, uriHandler);
-
-        // Artifact resolver - @Deprecated
-        passthroughArtifactResolver = new ArtifactResolver() {
-            @Override
-            public URI getArtifactAsEclipseURI(String url) {
-                return URI.createURI(url);
-            }
-        };
 
         // Default logger
         log = new Slf4jLog();
@@ -70,7 +60,6 @@ class ExecutionContextTest {
 
         // Executrion context
         ExecutionContext executionContext = executionContextBuilder()
-                .artifactResolver(passthroughArtifactResolver)
                 .log(log)
                 .resourceSet(executionResourceSet)
                 .metaModels(ImmutableList.of(
@@ -117,7 +106,6 @@ class ExecutionContextTest {
 
         // Executrion context
         ExecutionContext executionContext = executionContextBuilder()
-                .artifactResolver(passthroughArtifactResolver)
                 .log(log)
                 .resourceSet(executionResourceSet)
                 .metaModels(ImmutableList.of(
@@ -207,7 +195,6 @@ class ExecutionContextTest {
 
         // Executrion context
         ExecutionContext executionContext = executionContextBuilder()
-                .artifactResolver(passthroughArtifactResolver)
                 .log(log)
                 .resourceSet(executionResourceSet)
                 .metaModels(ImmutableList.of(
@@ -256,7 +243,6 @@ class ExecutionContextTest {
 
         // Executrion context
         ExecutionContext executionContext = executionContextBuilder()
-                .artifactResolver(passthroughArtifactResolver)
                 .log(log)
                 .resourceSet(executionResourceSet)
                 .metaModels(ImmutableList.of(

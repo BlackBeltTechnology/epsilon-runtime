@@ -50,16 +50,14 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
    */
   @Override
   public OutputStream createOutputStream(URI uri, Map<?, ?> options) throws IOException {
-    String filePath = rootPath + File.separator + uri.opaquePart();
-    final File file = new File(filePath);
 
-    String parent = file.getParent();
+    String parent = new File(getFullPath(uri)).getParent();
     if (parent != null) {
       Files.createDirectories(fileSystem.getPath(parent));
     }
     final Map<Object, Object> response = getResponse(options);
     OutputStream outputStream =
-            new BufferedOutputStream(Files.newOutputStream(fileSystem.getPath(filePath)))  {
+            new BufferedOutputStream(Files.newOutputStream(getFSPath(uri)))  {
               @Override
               public void close() throws IOException {
                 try {
@@ -67,7 +65,7 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
                 }
                 finally {
                   if (response != null) {
-                    response.put(URIConverter.RESPONSE_TIME_STAMP_PROPERTY, file.lastModified());
+                    response.put(URIConverter.RESPONSE_TIME_STAMP_PROPERTY, Files.getLastModifiedTime(getFSPath(uri)).toMillis());
                   }
                 }
               }
@@ -85,49 +83,45 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
    */
   @Override
   public InputStream createInputStream(URI uri, Map<?, ?> options) throws IOException {
-    String filePath = rootPath + File.separator + uri.opaquePart();
-    InputStream inputStream = Files.newInputStream(fileSystem.getPath(filePath));
+    InputStream inputStream = Files.newInputStream(getFSPath(uri));
 
     Map<Object, Object> response = getResponse(options);
     if (response != null) {
-      response.put(URIConverter.RESPONSE_TIME_STAMP_PROPERTY, Files.getLastModifiedTime(fileSystem.getPath(filePath)).toMillis());
+      response.put(URIConverter.RESPONSE_TIME_STAMP_PROPERTY, Files.getLastModifiedTime(getFSPath(uri)).toMillis());
     }
     return inputStream;
   }
 
   @Override
   public void delete(URI uri, Map<?, ?> options) throws IOException {
-    String filePath = rootPath + File.separator + uri.opaquePart();
-    Files.delete(fileSystem.getPath(filePath));
+    Files.delete(getFSPath(uri));
   }
 
   @Override
   public boolean exists(URI uri, Map<?, ?> options) {
-    String filePath = rootPath + File.separator + uri.opaquePart();
-    return Files.exists(fileSystem.getPath(filePath));
+    return Files.exists(getFSPath(uri));
   }
 
   @Override
   @lombok.SneakyThrows(IOException.class)
   public Map<String, ?> getAttributes(URI uri, Map<?, ?> options) {
     Map<String, Object> result = new HashMap<String, Object>();
-    String filePath = rootPath + File.separator + uri.opaquePart();
     if (exists(uri, options)) {
         Set<String> requestedAttributes = getRequestedAttributes(options);
         if (requestedAttributes == null || requestedAttributes.contains(URIConverter.ATTRIBUTE_TIME_STAMP)) {
-          result.put(URIConverter.ATTRIBUTE_TIME_STAMP, Files.getLastModifiedTime(fileSystem.getPath(filePath)).toMillis());
+          result.put(URIConverter.ATTRIBUTE_TIME_STAMP, Files.getLastModifiedTime(getFSPath(uri)).toMillis());
         }
         if (requestedAttributes == null || requestedAttributes.contains(URIConverter.ATTRIBUTE_LENGTH)) {
-          result.put(URIConverter.ATTRIBUTE_LENGTH, Files.size(fileSystem.getPath(filePath)));
+          result.put(URIConverter.ATTRIBUTE_LENGTH, Files.size(getFSPath(uri)));
         }
         if (requestedAttributes == null || requestedAttributes.contains(URIConverter.ATTRIBUTE_READ_ONLY)) {
-          result.put(URIConverter.ATTRIBUTE_READ_ONLY, !Files.isWritable(fileSystem.getPath(filePath)));
+          result.put(URIConverter.ATTRIBUTE_READ_ONLY, !Files.isWritable(getFSPath(uri)));
         }
         if (requestedAttributes == null || requestedAttributes.contains(URIConverter.ATTRIBUTE_HIDDEN)) {
-          result.put(URIConverter.ATTRIBUTE_HIDDEN, Files.isHidden(fileSystem.getPath(filePath)));
+          result.put(URIConverter.ATTRIBUTE_HIDDEN, Files.isHidden(getFSPath(uri)));
         }
         if (requestedAttributes == null || requestedAttributes.contains(URIConverter.ATTRIBUTE_DIRECTORY)) {
-          result.put(URIConverter.ATTRIBUTE_DIRECTORY, Files.isDirectory(fileSystem.getPath(filePath)));
+          result.put(URIConverter.ATTRIBUTE_DIRECTORY, Files.isDirectory(getFSPath(uri)));
         }
     }
     return result;
@@ -135,8 +129,7 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
 
   @Override
   public void setAttributes(URI uri, Map<String, ?> attributes, Map<?, ?> options) throws IOException {
-    String filePath = rootPath + File.separator + uri.opaquePart();
-    Path file = fileSystem.getPath(filePath);
+    Path file = getFSPath(uri);
     if (exists(uri, options)) {
       Long timeStamp = (Long) attributes.get(URIConverter.ATTRIBUTE_TIME_STAMP);
       if (timeStamp != null) {
@@ -161,5 +154,17 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
     else {
       throw new FileNotFoundException("The file '" + file + "' does not exist");
     }
+  }
+
+  private String getFullPath(URI uri) {
+    if (rootPath == null || rootPath.equals("")) {
+      return uri.opaquePart();
+    } else {
+      return rootPath + File.separator + uri.opaquePart();
+    }
+  }
+
+  private Path getFSPath(URI uri) {
+    return fileSystem.getPath(getFullPath(uri));
   }
 }

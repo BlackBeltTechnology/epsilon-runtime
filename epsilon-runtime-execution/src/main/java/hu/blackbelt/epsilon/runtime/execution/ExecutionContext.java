@@ -3,7 +3,6 @@ package hu.blackbelt.epsilon.runtime.execution;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import hu.blackbelt.epsilon.runtime.execution.api.ArtifactResolver;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
@@ -71,7 +70,6 @@ public class ExecutionContext implements AutoCloseable {
 
     private List<ModelContext> modelContexts;
 
-    private ArtifactResolver artifactResolver;
     private File sourceDirectory;
 
     @Builder.Default
@@ -222,7 +220,7 @@ public class ExecutionContext implements AutoCloseable {
     @SneakyThrows
     public void addMetaModel(String metaModel) {
         log.info("Registering ecore: " + metaModel);
-        org.eclipse.emf.common.util.URI uri = artifactResolver.getArtifactAsEclipseURI(metaModel);
+        org.eclipse.emf.common.util.URI uri = org.eclipse.emf.common.util.URI.createURI(metaModel);
         log.info("    Meta model: " + uri);
         List<EPackage> ePackages = EmfUtils.register(resourceSet, uri, true);
         log.info("    EPackages: " + ePackages.stream().map(e -> e.getNsURI()).collect(Collectors.joining(", ")));
@@ -243,7 +241,7 @@ public class ExecutionContext implements AutoCloseable {
                 .filter(e -> !Strings.isNullOrEmpty(e.getValue()))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey(),
-                        entry -> artifactResolver.getArtifactAsEclipseURI(entry.getValue())));
+                        entry -> org.eclipse.emf.common.util.URI.createURI(entry.getValue())));
         uris.forEach((k,v) -> log.info("    Artifact " + k + " file: " + v.toString()));
         modelContextMap.put(modelContext, modelContext.load(log, resourceSet, projectModelRepository, uris));
     }
