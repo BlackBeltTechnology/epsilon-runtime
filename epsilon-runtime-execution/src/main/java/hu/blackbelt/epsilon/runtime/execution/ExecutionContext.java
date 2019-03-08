@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.addUmlPackagesToResourceSet;
 
 @Getter
-@Builder
+@Builder(builderMethodName = "executionContextBuilder")
 @AllArgsConstructor
 public class ExecutionContext implements AutoCloseable {
 

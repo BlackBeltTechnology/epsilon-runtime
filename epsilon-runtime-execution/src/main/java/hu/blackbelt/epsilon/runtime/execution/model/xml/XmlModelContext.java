@@ -29,9 +29,9 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     @Builder(builderMethodName = "xmlModelContextBuilder")
     public XmlModelContext(Log log, String xml, String xsd, String name, List<String> aliases,
-                           String platformAlias, boolean readOnLoad, boolean storeOnDisposal, boolean cached,
+                           String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached,
                            boolean expand, boolean validateModel, XmlModelFactory xmlModelFactory) {
-        super(log, null, name, aliases, platformAlias, readOnLoad, storeOnDisposal, cached, expand,
+        super(log, null, name, aliases, referenceUri, readOnLoad, storeOnDisposal, cached, expand,
                 validateModel, null);
         this.xml = xml;
         this.xsd = xsd;

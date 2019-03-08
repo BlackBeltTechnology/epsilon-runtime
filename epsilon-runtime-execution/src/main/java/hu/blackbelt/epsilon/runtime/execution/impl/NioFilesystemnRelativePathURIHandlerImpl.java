@@ -24,18 +24,20 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
    */
   FileSystem fileSystem;
   String rootPath;
+  String urlSchema;
 
-  public NioFilesystemnRelativePathURIHandlerImpl(FileSystem fileSystem, String rootPath) {
+  public NioFilesystemnRelativePathURIHandlerImpl(String urlSchema, FileSystem fileSystem, String rootPath) {
     super();
     this.fileSystem = fileSystem;
     this.rootPath = rootPath;
+    this.urlSchema = urlSchema;
     log.info("Creating NIO filesystem URI handler on {}", rootPath);
   }
 
   @Override
   public boolean canHandle(URI uri)
   {
-    return uri.scheme().equals("urn"); // && exists(uri, null);
+    return uri.scheme().equals(urlSchema); // && exists(uri, null);
   }
 
   /**

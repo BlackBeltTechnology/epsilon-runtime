@@ -5,7 +5,6 @@ import hu.blackbelt.epsilon.runtime.execution.api.ArtifactResolver;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
-import hu.blackbelt.epsilon.runtime.execution.model.excel.ExcelModelContext;
 import hu.blackbelt.epsilon.runtime.model.test1.data.*;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -23,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static hu.blackbelt.epsilon.runtime.execution.ExecutionContext.executionContextBuilder;
 import static hu.blackbelt.epsilon.runtime.execution.contexts.EtlExecutionContext.etlExecutionContextBuilder;
 import static hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelContext.emfModelContextBuilder;
 import static hu.blackbelt.epsilon.runtime.execution.model.emf.WrappedEmfModelContext.wrappedEmfModelContextBuilder;
@@ -40,7 +40,7 @@ class ExecutionContextTest {
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
         // Set our custom handler
-        uriHandler = new NioFilesystemnRelativePathURIHandlerImpl(FileSystems.getDefault(),
+        uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
                 new File(targetDir(), "test-classes").getAbsolutePath());
 
         // Setup resourcehandler used to load metamodels
@@ -69,7 +69,7 @@ class ExecutionContextTest {
     void testSimpleEolRunWithFileSystemURL() throws Exception {
 
         // Executrion context
-        ExecutionContext executionContext = ExecutionContext.builder()
+        ExecutionContext executionContext = executionContextBuilder()
                 .artifactResolver(passthroughArtifactResolver)
                 .log(log)
                 .resourceSet(executionResourceSet)
@@ -116,7 +116,7 @@ class ExecutionContextTest {
     void testSimpleEolRunWithCustomURN() throws Exception {
 
         // Executrion context
-        ExecutionContext executionContext = ExecutionContext.builder()
+        ExecutionContext executionContext = executionContextBuilder()
                 .artifactResolver(passthroughArtifactResolver)
                 .log(log)
                 .resourceSet(executionResourceSet)
@@ -206,7 +206,7 @@ class ExecutionContextTest {
                 "urn:epsilon-transformed-reflective.model"));
 
         // Executrion context
-        ExecutionContext executionContext = ExecutionContext.builder()
+        ExecutionContext executionContext = executionContextBuilder()
                 .artifactResolver(passthroughArtifactResolver)
                 .log(log)
                 .resourceSet(executionResourceSet)
@@ -255,7 +255,7 @@ class ExecutionContextTest {
     void testSimpleXmlRunWithCustomURN() throws Exception {
 
         // Executrion context
-        ExecutionContext executionContext = ExecutionContext.builder()
+        ExecutionContext executionContext = executionContextBuilder()
                 .artifactResolver(passthroughArtifactResolver)
                 .log(log)
                 .resourceSet(executionResourceSet)
