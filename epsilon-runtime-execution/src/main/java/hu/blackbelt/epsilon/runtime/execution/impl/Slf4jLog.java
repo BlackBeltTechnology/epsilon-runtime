@@ -3,7 +3,7 @@ package hu.blackbelt.epsilon.runtime.execution.impl;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Slf4j(topic = "EPSILON")
 public class Slf4jLog implements Log {
     public void debug(CharSequence charSequence) {
         log.debug(charSequence.toString());
