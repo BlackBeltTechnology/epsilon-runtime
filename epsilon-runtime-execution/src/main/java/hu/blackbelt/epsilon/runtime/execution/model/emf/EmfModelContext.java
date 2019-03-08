@@ -17,17 +17,16 @@ import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.ModelReference;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 @Data
 @Builder(builderMethodName = "emfModelContextBuilder")
+@EqualsAndHashCode
 public class EmfModelContext implements ModelContext {
 
     @Builder.Default
     Log log = new Slf4jLog();
-
 
     @NonNull
     String model;
@@ -37,8 +36,6 @@ public class EmfModelContext implements ModelContext {
 
     @Builder.Default
     List<String> aliases = ImmutableList.of();
-
-    File metaModelFile;
 
     String referenceUri;
 
@@ -63,15 +60,6 @@ public class EmfModelContext implements ModelContext {
     Boolean expand = true;
 
     /**
-     * One of the keys used to construct the first argument to {@link org.eclipse.epsilon.emc.emf.EmfModel#load(StringProperties, String)}.
-     *
-     * This key is a comma-separated list of zero or more namespaces URI of some of the metamodels to which
-     * this model conforms. Users may combine this key with  to loadEmf "fileBasedMetamodelUris"
-     * both file-based and URI-based metamodels at the same time.
-     */
-    List<String> metaModelUris;
-
-    /**
      * Validate model against Ecore metamodel and fail on validation errors.
      */
     @Builder.Default
@@ -80,19 +68,17 @@ public class EmfModelContext implements ModelContext {
 
     EmfModelFactory emfModelFactory;
 
-    @java.beans.ConstructorProperties({"log", "model", "name", "aliases", "metaModelFile", "referenceUri", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "validateModel", "emfModelFactory"})
-    public EmfModelContext(Log log, String model, String name, List<String> aliases, File metaModelFile, String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, List<String> metaModelUris, boolean validateModel, EmfModelFactory emfModelFactory) {
+    @java.beans.ConstructorProperties({"log", "model", "name", "aliases", "referenceUri", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "validateModel", "emfModelFactory"})
+    public EmfModelContext(Log log, String model, String name, List<String> aliases, String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, boolean validateModel, EmfModelFactory emfModelFactory) {
         this.log = log;
         this.model = model;
         this.name = name;
         this.aliases = aliases;
-        this.metaModelFile = metaModelFile;
         this.referenceUri = referenceUri;
         this.readOnLoad = readOnLoad;
         this.storeOnDisposal = storeOnDisposal;
         this.cached = cached;
         this.expand = expand;
-        this.metaModelUris = metaModelUris;
         this.validateModel = validateModel;
         if (emfModelFactory != null) {
             this.emfModelFactory = emfModelFactory;
@@ -120,10 +106,8 @@ public class EmfModelContext implements ModelContext {
                 ", readOnLoad=" + readOnLoad +
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
-                ", metaModelFile=" + metaModelFile +
                 ", referenceUri='" + referenceUri + '\'' +
                 ", expand=" + expand +
-                ", metaModelUris=" + metaModelUris +
                 ", validateModel='" + validateModel + '\'' +
                 ", emfModelFactory='" + emfModelFactory.getClass().getName() + '\'' +
                 ", log='" + log.getClass().getName() + '\'' +

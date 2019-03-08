@@ -1,5 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
   /**
    * Creates an instance.
@@ -27,6 +29,7 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
     super();
     this.fileSystem = fileSystem;
     this.rootPath = rootPath;
+    log.info("Creating NIO filesystem URI handler on {}", rootPath);
   }
 
   @Override

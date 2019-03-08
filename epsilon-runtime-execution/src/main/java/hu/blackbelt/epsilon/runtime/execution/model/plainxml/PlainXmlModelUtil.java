@@ -28,30 +28,6 @@ public class PlainXmlModelUtil {
         properties.put(PlainXmlModel.PROPERTY_CACHED, plainXmlModelContext.isCached() + "");
 
         properties.put(PlainXmlModel.PROPERTY_URI, uri);
-        // model.setFile(new File(uri.toFileString()));
-        /*
-        log.info("Registering MODEL_URI:" + uri.toString());
-        */
-
-        if (plainXmlModelContext.getPlatformAlias() != null && !plainXmlModelContext.getPlatformAlias().trim().equals("")) {
-            properties.put(PlainXmlModel.PROPERTY_URI, plainXmlModelContext.getPlatformAlias());
-            log.info(String.format("Registering MODEL_URI: %s Alias URI: %s" , uri.toString(), plainXmlModelContext.getPlatformAlias()));
-            resourceSet.getURIConverter().getURIMap().put(URI.createURI(plainXmlModelContext.getPlatformAlias()), uri);
-        } else {
-            log.info(String.format("Registering MODEL_URI: %s", uri.toString()));
-        }
-
-        /* TODO: Find a way to handle relative pathes on ecoreModels */
-        /*
-        if (emfModel.getUrlAliases() != null) {
-            for (String urlAlias : emfModel.getUrlAliases()) {
-                if (!urlAlias.trim().equals("")) {
-                    log.info(String.format("Adding URL alias: %s", urlAlias));
-                    URIConverter.INSTANCE.URI_MAP.put(URI.createFileURI(urlAlias), uri);
-                }
-            }
-        } */
-
         model.load(properties);
         model.setName(plainXmlModelContext.getName());
         repository.addModel(model);

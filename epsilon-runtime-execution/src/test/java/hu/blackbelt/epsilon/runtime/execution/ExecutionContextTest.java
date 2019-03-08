@@ -5,6 +5,7 @@ import hu.blackbelt.epsilon.runtime.execution.api.ArtifactResolver;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
+import hu.blackbelt.epsilon.runtime.execution.model.excel.ExcelModelContext;
 import hu.blackbelt.epsilon.runtime.model.test1.data.*;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -25,6 +26,8 @@ import java.util.Map;
 import static hu.blackbelt.epsilon.runtime.execution.contexts.EtlExecutionContext.etlExecutionContextBuilder;
 import static hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelContext.emfModelContextBuilder;
 import static hu.blackbelt.epsilon.runtime.execution.model.emf.WrappedEmfModelContext.wrappedEmfModelContextBuilder;
+import static hu.blackbelt.epsilon.runtime.execution.model.excel.ExcelModelContext.excelModelContextBuilder;
+import static hu.blackbelt.epsilon.runtime.execution.model.xml.XmlModelContext.xmlModelContextBuilder;
 import static hu.blackbelt.epsilon.runtime.model.test1.data.util.builder.DataBuilders.*;
 
 class ExecutionContextTest {
@@ -61,8 +64,56 @@ class ExecutionContextTest {
     void tearDown() {
     }
 
+
     @Test
-    void testSimpleEolRun() throws Exception {
+    void testSimpleEolRunWithFileSystemURL() throws Exception {
+
+        // Executrion context
+        ExecutionContext executionContext = ExecutionContext.builder()
+                .artifactResolver(passthroughArtifactResolver)
+                .log(log)
+                .resourceSet(executionResourceSet)
+                .metaModels(ImmutableList.of(
+                        new File(targetDir(), "test-classes/epsilon-runtime-test.ecore").getAbsolutePath(),
+                        new File(targetDir(), "test-classes/epsilon-runtime-test2.ecore").getAbsolutePath()))
+                .modelContexts(ImmutableList.of(
+                        emfModelContextBuilder()
+                                .log(log)
+                                .name("TEST1")
+                                .model(new File(targetDir(), "test-classes/epsilon-runtime-test1.model").getAbsolutePath())
+                                .build(),
+
+                        emfModelContextBuilder()
+                                .log(log)
+                                .name("TEST2")
+                                .model(new File(targetDir(), "test-classes/epsilon-transformedfs.model").getAbsolutePath())
+                                .readOnLoad(false)
+                                .storeOnDisposal(true)
+                                .build(),
+
+                        excelModelContextBuilder()
+                                .name("NAMEMAPPING")
+                                .excelSheet(new File(targetDir(), "test-classes/namemapping.xlsx").getAbsolutePath())
+                                .excelConfiguration(new File(targetDir(), "test-classes/namemapping.xml").getAbsolutePath())
+                                .build()))
+                .sourceDirectory(scriptDir())
+                .build();
+
+        // run the loading
+        executionContext.load();
+
+        // Transformation script
+        executionContext.executeProgram(
+                etlExecutionContextBuilder()
+                        .source("transformTest1ToTest2WithNameMapping.etl")
+                        .build());
+
+        executionContext.commit();
+        executionContext.close();
+    }
+
+    @Test
+    void testSimpleEolRunWithCustomURN() throws Exception {
 
         // Executrion context
         ExecutionContext executionContext = ExecutionContext.builder()
@@ -82,7 +133,7 @@ class ExecutionContextTest {
                         emfModelContextBuilder()
                                 .log(log)
                                 .name("TEST2")
-                                .model("urn:epsilon-transformed.model")
+                                .model("urn:epsilon-transformednio.model")
                                 .readOnLoad(false)
                                 .storeOnDisposal(true)
                                 .build()))
@@ -109,8 +160,6 @@ class ExecutionContextTest {
 
         executionContext.commit();
         executionContext.close();
-
-
     }
 
     @Test
@@ -202,6 +251,49 @@ class ExecutionContextTest {
         }
     }
 
+    @Test
+    void testSimpleXmlRunWithCustomURN() throws Exception {
+
+        // Executrion context
+        ExecutionContext executionContext = ExecutionContext.builder()
+                .artifactResolver(passthroughArtifactResolver)
+                .log(log)
+                .resourceSet(executionResourceSet)
+                .metaModels(ImmutableList.of(
+                        "urn:epsilon-runtime-test.ecore"))
+                .modelContexts(ImmutableList.of(
+                        emfModelContextBuilder()
+                                .log(log)
+                                .name("TEST1")
+                                .model("urn:epsilon-runtime-test1.model")
+                                .build(),
+
+                        xmlModelContextBuilder()
+                                .log(log)
+                                .name("LIQUIBASE")
+                                // TODO: XSDEcoreBuilder creating separate ResourceSet, so URIHandlers are not
+                                // working. Have to find a way to inject
+                                // .xsd("urn:liquibase.xsd")
+                                .xsd(new File(targetDir(), "test-classes/liquibase.xsd").getAbsolutePath())
+                                .xml("urn:epsilon-transformedliquibase.xml")
+                                .readOnLoad(false)
+                                .storeOnDisposal(true)
+                                .build()))
+                .sourceDirectory(scriptDir())
+                .build();
+
+        // run the loading
+        executionContext.load();
+
+        // Transformation script
+        executionContext.executeProgram(
+                etlExecutionContextBuilder()
+                        .source("transformTest1ToLiquibase.etl")
+                        .build());
+
+        executionContext.commit();
+        executionContext.close();
+    }
 
     public File targetDir(){
         String relPath = getClass().getProtectionDomain().getCodeSource().getLocation().getFile();

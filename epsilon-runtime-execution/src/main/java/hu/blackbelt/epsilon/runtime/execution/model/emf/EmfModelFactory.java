@@ -9,9 +9,6 @@ import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
-import java.io.File;
-
-import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.convertFileToUri;
 import static java.util.stream.Collectors.joining;
 
 public interface EmfModelFactory {
@@ -36,23 +33,6 @@ public interface EmfModelFactory {
         properties.put(EmfModel.PROPERTY_EXPAND, emfModel.getExpand() + "");
         properties.put(EmfModel.PROPERTY_CACHED, emfModel.getCached() + "");
 
-        String metamodelUri = null;
-        if (emfModel.getMetaModelUris() != null && emfModel.getMetaModelUris().size() > 0) {
-            emfModel.getMetaModelUris().stream().collect(joining(","));
-        }
-        File metamodelFile = emfModel.getMetaModelFile();
-
-        if (metamodelUri != null) {
-            properties.put(EmfModel.PROPERTY_METAMODEL_URI, metamodelUri + "");
-        }
-
-        properties.put(EmfModel.PROPERTY_MODEL_URI, uri);
-
-        if (metamodelFile != null) {
-            log.info("Using file base metamodel: " + metamodelFile);
-            properties.put(EmfModel.PROPERTY_FILE_BASED_METAMODEL_URI, convertFileToUri(metamodelFile));
-        }
-
         if (emfModel.getReferenceUri() != null && !emfModel.getReferenceUri().trim().equals("")) {
             properties.put(EmfModel.PROPERTY_MODEL_URI, emfModel.getReferenceUri());
             log.info(String.format("Registering MODEL_URI: %s Alias URI: %s", uri.toString(), emfModel.getReferenceUri()));
@@ -60,7 +40,7 @@ public interface EmfModelFactory {
         } else {
             log.info(String.format("Registering MODEL_URI: %s", uri.toString()));
         }
-
+        properties.put(EmfModel.PROPERTY_MODEL_URI, uri);
         model.load(properties);
         model.setName(emfModel.getName());
         if (emfModel.validateModel && !ModelValidator.getValidationErrors(log, model).isEmpty()) {

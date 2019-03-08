@@ -35,24 +35,9 @@ public interface XmlModelFactory {
         properties.put(XmlModel.PROPERTY_STOREONDISPOSAL, xmlModelContext.getStoreOnDisposal() + "");
         properties.put(XmlModel.PROPERTY_EXPAND, xmlModelContext.getExpand() + "");
         properties.put(XmlModel.PROPERTY_CACHED, xmlModelContext.getCached() + "");
-        properties.put(XmlModel.PROPERTY_XSD_FILE, xsd.toFileString() + "");
-
-        File metamodelFile = xmlModelContext.getMetaModelFile();
+        properties.put(XmlModel.PROPERTY_XSD_FILE, xsd + "");
 
         properties.put(XmlModel.PROPERTY_MODEL_URI, uri);
-
-        if (metamodelFile != null) {
-            log.info("Using file base metamodel: " + metamodelFile);
-            properties.put(XmlModel.PROPERTY_FILE_BASED_METAMODEL_URI, convertFileToUri(metamodelFile));
-        }
-
-        if (xmlModelContext.getReferenceUri() != null && !xmlModelContext.getReferenceUri().trim().equals("")) {
-            properties.put(XmlModel.PROPERTY_MODEL_URI, xmlModelContext.getReferenceUri());
-            log.info(String.format("Registering MODEL_URI: %s Alias URI: %s", uri.toString(), xmlModelContext.getReferenceUri()));
-            resourceSet.getURIConverter().getURIMap().put(URI.createURI(xmlModelContext.getReferenceUri()), uri);
-        } else {
-            log.info(String.format("Registering MODEL_URI: %s", uri.toString()));
-        }
 
         model.load(properties);
         model.setName(xmlModelContext.getName());

@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.addUmlPackagesToResourceSet;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -60,6 +62,9 @@ public class ExecutionContext implements AutoCloseable {
     private Boolean rollback = true;
 
     @Builder.Default
+    private Boolean addUmlPackages = false;
+
+    @Builder.Default
     private Log log = new Slf4jLog();
 
     private List<String> metaModels;
@@ -75,22 +80,13 @@ public class ExecutionContext implements AutoCloseable {
 
     @SneakyThrows
     public void load() {
-
         CachedResourceSet.getCache().clear();
 
-        // Check if global package registry contains the EcorePackage
-        /*
-        if (EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI) == null) {
-            EPackage.Registry.INSTANCE.put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
-        } */
-
+        if (addUmlPackages) {
+            addUmlPackagesToResourceSet(resourceSet);
+        }
         addMetaModels();
         addModels();
-
-        /*
-        log.info("URL converters: \n\t" + resourceSet.getURIConverter().getURIMap().entrySet().stream()
-                .map(e -> e.getKey() + "->" + e.getValue()).collect(Collectors.joining("\n\t")));
-        */
     }
 
 

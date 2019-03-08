@@ -57,32 +57,28 @@ public final class EmfUtils {
         return ePackages;
     } */
 
+    public static void addUmlPackagesToResourceSet(ResourceSet resourceSet) {
+
+        resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
+        if (resourceSet.getPackageRegistry().getEPackage(UMLPackage.eNS_URI) == null) {
+            resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
+        }
+
+        UMLResourcesUtil.init(resourceSet);
+        UMLResourcesUtil.initLocalRegistries(resourceSet);
+        ((ResourceSetImpl) resourceSet).setURIResourceMap(new HashMap<>());
+
+    }
+
     public static ResourceSet initDefaultCachedResourceSet() {
         ResourceSet rs = new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
 
         rs.setResourceFactoryRegistry(Resource.Factory.Registry.INSTANCE);
-        // rs.setPackageRegistry(EPackage.Registry.INSTANCE);
-        /*rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("library", new XMIResourceFactoryImpl());
-        rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("model", new XMIResourceFactoryImpl());
-        rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xml", new XMLResourceFactoryImpl()); */
-        //rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new DefaultRuntimeXmiResourceImpl.Factory());
-        //rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new DefaultXMIResource.Factory());
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 
         if (rs.getPackageRegistry().getEPackage(EcorePackage.eNS_URI) == null) {
             rs.getPackageRegistry().put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
         }
-
-
-        rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
-        if (rs.getPackageRegistry().getEPackage(UMLPackage.eNS_URI) == null) {
-            rs.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
-        }
-
-        UMLResourcesUtil.init(rs);
-        UMLResourcesUtil.initLocalRegistries(rs);
-        ((ResourceSetImpl) rs).setURIResourceMap(new HashMap<>());
-
         return rs;
     }
     

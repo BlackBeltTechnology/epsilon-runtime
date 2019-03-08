@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-@Builder
+@Builder(builderMethodName = "plainXmlModelContextBuilder")
 @EqualsAndHashCode
 public class PlainXmlModelContext implements ModelContext {
 
@@ -31,8 +31,6 @@ public class PlainXmlModelContext implements ModelContext {
 
     @Builder.Default
     List<String> aliases = ImmutableList.of();
-
-    String platformAlias;
 
     @Builder.Default
     boolean readOnLoad = true;
@@ -53,7 +51,6 @@ public class PlainXmlModelContext implements ModelContext {
                 ", readOnLoad=" + readOnLoad +
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
-                ", referenceUri='" + platformAlias + '\'' +
                 '}';
     }
 

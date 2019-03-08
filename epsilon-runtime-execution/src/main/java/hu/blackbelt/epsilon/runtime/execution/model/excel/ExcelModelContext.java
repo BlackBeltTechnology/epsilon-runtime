@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-@Builder
+@Builder(builderMethodName = "excelModelContextBuilder")
 @EqualsAndHashCode
 public class ExcelModelContext implements ModelContext {
 

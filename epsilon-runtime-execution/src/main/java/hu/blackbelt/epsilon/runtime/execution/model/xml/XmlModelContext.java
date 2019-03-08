@@ -27,12 +27,12 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     private XmlModelFactory xmlModelFactory;
 
-    @Builder(builderMethodName = "buildXmlModelContext")
-    public XmlModelContext(Log log, String xml, String xsd, String name, List<String> aliases, File metaModelFile,
+    @Builder(builderMethodName = "xmlModelContextBuilder")
+    public XmlModelContext(Log log, String xml, String xsd, String name, List<String> aliases,
                            String platformAlias, boolean readOnLoad, boolean storeOnDisposal, boolean cached,
-                           boolean expand, List<String> metaModelUris, boolean validateModel, XmlModelFactory xmlModelFactory) {
-        super(log, null, name, aliases, metaModelFile, platformAlias, readOnLoad, storeOnDisposal, cached, expand,
-                metaModelUris, validateModel, null);
+                           boolean expand, boolean validateModel, XmlModelFactory xmlModelFactory) {
+        super(log, null, name, aliases, platformAlias, readOnLoad, storeOnDisposal, cached, expand,
+                validateModel, null);
         this.xml = xml;
         this.xsd = xsd;
 
@@ -54,10 +54,8 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
                 ", readOnLoad=" + getReadOnLoad() +
                 ", storeOnDisposal=" + getStoreOnDisposal() +
                 ", cached=" + getCached() +
-                ", metaModelFile=" + getMetaModelFile() +
                 ", referenceUri='" + getReferenceUri() + '\'' +
                 ", expand=" + getExpand() +
-                ", metaModelUris=" + getMetaModelUris() +
                 ", validateModel='" + getValidateModel() + '\'' +
                 ", xmlModelFactory='" + xmlModelFactory + '\'' +
                 ", log='" + getLog().getClass().getName() + '\'' +

@@ -30,8 +30,6 @@ public class DefaultRuntimeXmiResourceImpl extends XMIResourceImpl {
     }
 
     private void setOptimizedOptions() {
-
-
         super.setIntrinsicIDToEObjectMap(new HashMap<String, EObject>());
         this.getDefaultLoadOptions().put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
         this.getDefaultLoadOptions().put(XMIResource.OPTION_USE_DEPRECATED_METHODS, false);
