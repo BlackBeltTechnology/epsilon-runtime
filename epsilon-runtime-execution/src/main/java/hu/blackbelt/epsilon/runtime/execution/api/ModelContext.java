@@ -12,10 +12,10 @@ import java.util.Map;
 
 public interface ModelContext {
 
-    IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris) throws EolModelLoadingException;
+    IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException;
     void addAliases(ModelRepository repository, ModelReference ref);
     List<String> getAliases();
 
     Map<String, String> getArtifacts();
-
+    Map<String, String> getUriConverterMap();
 }

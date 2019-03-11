@@ -237,13 +237,23 @@ public class ExecutionContext implements AutoCloseable {
     @SneakyThrows
     public void addModel(ModelContext modelContext) {
         log.info("Model: " + modelContext.toString());
+
         Map<String, org.eclipse.emf.common.util.URI> uris = modelContext.getArtifacts().entrySet().stream()
                 .filter(e -> !Strings.isNullOrEmpty(e.getValue()))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey(),
                         entry -> org.eclipse.emf.common.util.URI.createURI(entry.getValue())));
+
+
+        Map<org.eclipse.emf.common.util.URI, org.eclipse.emf.common.util.URI> uriConverters =
+                modelContext.getUriConverterMap().entrySet().stream()
+                .filter(e -> !Strings.isNullOrEmpty(e.getValue()))
+                .collect(Collectors.toMap(
+                        entry -> org.eclipse.emf.common.util.URI.createURI(entry.getKey()),
+                        entry -> org.eclipse.emf.common.util.URI.createURI(entry.getValue())));
+
         uris.forEach((k,v) -> log.info("    Artifact " + k + " file: " + v.toString()));
-        modelContextMap.put(modelContext, modelContext.load(log, resourceSet, projectModelRepository, uris));
+        modelContextMap.put(modelContext, modelContext.load(log, resourceSet, projectModelRepository, uris, uriConverters));
     }
 
 

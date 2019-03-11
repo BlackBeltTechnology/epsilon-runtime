@@ -21,6 +21,8 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class XmlModelContext extends EmfModelContext implements ModelContext {
 
+    public static final String XML = "xml";
+    public static final String XSD = "xsd";
     private String xml;
 
     private String xsd;
@@ -30,9 +32,9 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
     @Builder(builderMethodName = "xmlModelContextBuilder")
     public XmlModelContext(Log log, String xml, String xsd, String name, List<String> aliases,
                            String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached,
-                           boolean expand, boolean validateModel, XmlModelFactory xmlModelFactory) {
+                           boolean expand, boolean validateModel, XmlModelFactory xmlModelFactory, Map<String, String> uriConverterMap) {
         super(log, null, name, aliases, referenceUri, readOnLoad, storeOnDisposal, cached, expand,
-                validateModel, null);
+                validateModel, null, uriConverterMap);
         this.xml = xml;
         this.xsd = xsd;
 
@@ -48,9 +50,10 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
     @Override
     public String toString() {
         return "XmlModel{" +
-                "artifact='" + getArtifacts() + '\'' +
+                "artifacts='" + getArtifacts() + '\'' +
                 ", name='" + getName() + '\'' +
                 ", aliases=" + getAliases() +
+                ", uriConverterMap='" + getUriConverterMap() + '\'' +
                 ", readOnLoad=" + getReadOnLoad() +
                 ", storeOnDisposal=" + getStoreOnDisposal() +
                 ", cached=" + getCached() +
@@ -65,12 +68,12 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     @Override
     public Map<String, String> getArtifacts() {
-        return ImmutableMap.of("xml", xml, "xsd", xsd);
+        return ImmutableMap.of(XML, xml, XSD, xsd);
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap) throws EolModelLoadingException {
-        return XmlModelFactory.loadXml(log, xmlModelFactory, resourceSet, repository, this, uriMap.get("xml"), uriMap.get("xsd"));
+    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
+        return XmlModelFactory.loadXml(log, xmlModelFactory, resourceSet, repository, this, uriMap.get(XML), uriMap.get(XSD));
     }
 
 }

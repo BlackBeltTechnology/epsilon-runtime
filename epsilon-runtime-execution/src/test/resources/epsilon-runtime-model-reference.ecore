@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="reference" nsURI="http://www.blackbelt.hu/epsilon-runtime/reference"
+    nsPrefix="reference">
+  <eClassifiers xsi:type="ecore:EClass" name="EntityMap">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entity" eType="ecore:EClass http://www.blackbelt.hu/epsilon-runtime/test#//Entity"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="transformedEntity" eType="ecore:EClass http://www.blackbelt.hu/epsilon-runtime/test2#//EntityTransformed"/>
+  </eClassifiers>
+</ecore:EPackage>

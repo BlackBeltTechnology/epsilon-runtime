@@ -1,10 +1,8 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.eol.EolModule;
 import org.eclipse.epsilon.eol.IEolModule;
@@ -12,9 +10,6 @@ import org.eclipse.epsilon.eol.IEolModule;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class EolExecutionContext {
     @Getter
     @NonNull

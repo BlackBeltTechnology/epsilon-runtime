@@ -1,10 +1,8 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.egl.EglFileGeneratingTemplateFactory;
 import org.eclipse.epsilon.egl.EglTemplateFactory;
@@ -17,7 +15,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
 public class EglExecutionContext extends EolExecutionContext {
 
     public static final String ARTIFACT_ROOT = "ARTIFACT_ROOT";

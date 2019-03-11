@@ -24,6 +24,8 @@ import java.util.Map;
 public class ExcelModelContext implements ModelContext {
 
 
+    public static final String EXCEL_CONFIGURATION = "excelConfiguration";
+    public static final String EXCEL = "excel";
     String spreadSheetPassword;
 
 
@@ -43,7 +45,7 @@ public class ExcelModelContext implements ModelContext {
     boolean cached = true;
 
     @NonNull
-    String excelSheet;
+    String excel;
 
     String excelConfiguration;
 
@@ -53,6 +55,7 @@ public class ExcelModelContext implements ModelContext {
                 "artifacts='" + getArtifacts() + '\'' +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
+                ", uriConverterMap='" + getUriConverterMap() + '\'' +
                 ", readOnLoad=" + readOnLoad +
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
@@ -73,12 +76,17 @@ public class ExcelModelContext implements ModelContext {
 
     @Override
     public Map<String, String> getArtifacts() {
-        return ImmutableMap.of("excelSheet", excelSheet, "excelConfiguration",  excelConfiguration);
+        return ImmutableMap.of(EXCEL, excel, EXCEL_CONFIGURATION,  excelConfiguration);
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uri) throws EolModelLoadingException {
-        return ExcelModelUtil.loadExcel(log, repository, this, uri.get("excelSheet"), uri.get("excelConfiguration"));
+    public Map<String, String> getUriConverterMap() {
+        return ImmutableMap.of();
+    }
+
+    @Override
+    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uri, Map<URI, URI> uriMap) throws EolModelLoadingException {
+        return ExcelModelUtil.loadExcel(log, repository, this, uri.get(EXCEL), uri.get(EXCEL_CONFIGURATION));
     }
 
 }

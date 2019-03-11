@@ -69,20 +69,20 @@ class ExecutionContextTest {
                         emfModelContextBuilder()
                                 .log(log)
                                 .name("TEST1")
-                                .model(new File(targetDir(), "test-classes/epsilon-runtime-test1.model").getAbsolutePath())
+                                .emf(new File(targetDir(), "test-classes/epsilon-runtime-test1.model").getAbsolutePath())
                                 .build(),
 
                         emfModelContextBuilder()
                                 .log(log)
                                 .name("TEST2")
-                                .model(new File(targetDir(), "test-classes/epsilon-transformedfs.model").getAbsolutePath())
+                                .emf(new File(targetDir(), "test-classes/epsilon-transformedfs.model").getAbsolutePath())
                                 .readOnLoad(false)
                                 .storeOnDisposal(true)
                                 .build(),
 
                         excelModelContextBuilder()
                                 .name("NAMEMAPPING")
-                                .excelSheet(new File(targetDir(), "test-classes/namemapping.xlsx").getAbsolutePath())
+                                .excel(new File(targetDir(), "test-classes/namemapping.xlsx").getAbsolutePath())
                                 .excelConfiguration(new File(targetDir(), "test-classes/namemapping.xml").getAbsolutePath())
                                 .build()))
                 .sourceDirectory(scriptDir())
@@ -115,13 +115,13 @@ class ExecutionContextTest {
                         emfModelContextBuilder()
                                 .log(log)
                                 .name("TEST1")
-                                .model("urn:epsilon-runtime-test1.model")
+                                .emf("urn:epsilon-runtime-test1.model")
                                 .build(),
 
                         emfModelContextBuilder()
                                 .log(log)
                                 .name("TEST2")
-                                .model("urn:epsilon-transformednio.model")
+                                .emf("urn:epsilon-transformednio.model")
                                 .readOnLoad(false)
                                 .storeOnDisposal(true)
                                 .build()))
@@ -251,7 +251,7 @@ class ExecutionContextTest {
                         emfModelContextBuilder()
                                 .log(log)
                                 .name("TEST1")
-                                .model("urn:epsilon-runtime-test1.model")
+                                .emf("urn:epsilon-runtime-test1.model")
                                 .build(),
 
                         xmlModelContextBuilder()

@@ -1,9 +1,7 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.ecl.trace.MatchTrace;
 import org.eclipse.epsilon.eml.EmlModule;

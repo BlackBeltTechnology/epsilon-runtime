@@ -43,8 +43,11 @@ public class WrappedEmfModelContext implements ModelContext {
 
     String referenceUri;
 
+    @Builder.Default
+    Map<String, String> uriConverterMap = ImmutableMap.of();
+
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris) throws EolModelLoadingException {
+    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
         IModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource);
 
         final StringProperties properties = new StringProperties();
@@ -93,6 +96,7 @@ public class WrappedEmfModelContext implements ModelContext {
                 ", resource=" + resource +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
+                ", uriConverterMap='" + getUriConverterMap() + '\'' +
                 ", referenceUri='" + referenceUri + '\'' +
                 '}';
     }

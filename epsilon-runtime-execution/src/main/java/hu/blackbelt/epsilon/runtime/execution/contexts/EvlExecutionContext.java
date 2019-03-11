@@ -1,8 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.evl.EvlModule;
@@ -16,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Slf4j
 public class EvlExecutionContext extends EolExecutionContext {
 

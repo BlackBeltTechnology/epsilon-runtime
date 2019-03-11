@@ -1,9 +1,7 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.etl.EtlModule;
@@ -11,7 +9,6 @@ import org.eclipse.epsilon.etl.EtlModule;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
 public class EtlExecutionContext extends EolExecutionContext {
 
     @Getter

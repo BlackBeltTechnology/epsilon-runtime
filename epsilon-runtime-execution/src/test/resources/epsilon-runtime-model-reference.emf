@@ -1,0 +1,11 @@
+@namespace(uri="http://www.blackbelt.hu/epsilon-runtime/reference", prefix="reference")
+package reference;
+
+import "http://www.blackbelt.hu/epsilon-runtime/test";
+import "http://www.blackbelt.hu/epsilon-runtime/test2";
+
+class EntityMap {
+  ref data.Entity entity;
+  ref data.EntityTransformed transformedEntity;
+}
+

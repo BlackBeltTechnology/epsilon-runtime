@@ -25,11 +25,12 @@ import java.util.Map;
 @EqualsAndHashCode
 public class EmfModelContext implements ModelContext {
 
+    public static final String MODEL = "model";
     @Builder.Default
     Log log = new Slf4jLog();
 
     @NonNull
-    String model;
+    String emf;
 
     @NonNull
     String name;
@@ -65,13 +66,15 @@ public class EmfModelContext implements ModelContext {
     @Builder.Default
     Boolean validateModel = true;
 
-
     EmfModelFactory emfModelFactory;
 
-    @java.beans.ConstructorProperties({"log", "model", "name", "aliases", "referenceUri", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "validateModel", "emfModelFactory"})
-    public EmfModelContext(Log log, String model, String name, List<String> aliases, String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, boolean validateModel, EmfModelFactory emfModelFactory) {
+    @Builder.Default
+    Map<String, String> uriConverterMap = ImmutableMap.of();
+
+    @java.beans.ConstructorProperties({"log", "emf", "name", "aliases", "referenceUri", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "validateModel", "emfModelFactory", "uriConverterMap"})
+    public EmfModelContext(Log log, String emf, String name, List<String> aliases, String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, boolean validateModel, EmfModelFactory emfModelFactory, Map<String, String> uriConverterMap) {
         this.log = log;
-        this.model = model;
+        this.emf = emf;
         this.name = name;
         this.aliases = aliases;
         this.referenceUri = referenceUri;
@@ -85,6 +88,11 @@ public class EmfModelContext implements ModelContext {
         } else {
             this.emfModelFactory = new DefaultRuntimeEmfModelFactory(log);
         }
+        if (uriConverterMap != null) {
+            this.uriConverterMap = uriConverterMap;
+        } else {
+            this.uriConverterMap = ImmutableMap.of();
+        }
 
     }
 
@@ -94,7 +102,7 @@ public class EmfModelContext implements ModelContext {
 
     @Override
     public Map<String, String> getArtifacts() {
-        return ImmutableMap.of("model", model);
+        return ImmutableMap.of(MODEL, emf);
     }
 
     @Override
@@ -103,6 +111,7 @@ public class EmfModelContext implements ModelContext {
                 "artifacts='" + getArtifacts() + '\'' +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
+                ", uriConverterMap='" + getUriConverterMap() + '\'' +
                 ", readOnLoad=" + readOnLoad +
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
@@ -126,9 +135,9 @@ public class EmfModelContext implements ModelContext {
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap) throws EolModelLoadingException {
+    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
         URI uri =  uriMap.get("model");
-        IModel model = EmfModelFactory.loadEmf(log, emfModelFactory, resourceSet, repository, this, uri);
+        IModel model = EmfModelUtils.loadEmf(log, emfModelFactory, resourceSet, repository, this, uriMap.get(MODEL), uriConverterMap);
         return model;
     }
 

@@ -23,6 +23,7 @@ import java.util.Map;
 @EqualsAndHashCode
 public class PlainXmlModelContext implements ModelContext {
 
+    public static final String XML = "xml";
     @NonNull
     String name;
 
@@ -45,9 +46,10 @@ public class PlainXmlModelContext implements ModelContext {
     @Override
     public String toString() {
         return "PlainXmlModelContext{" +
-                "artifact='" + getArtifacts() + '\'' +
+                "artifacts='" + getArtifacts() + '\'' +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
+                ", uriConverterMap='" + getUriConverterMap() + '\'' +
                 ", readOnLoad=" + readOnLoad +
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
@@ -67,12 +69,17 @@ public class PlainXmlModelContext implements ModelContext {
 
     @Override
     public Map<String, String> getArtifacts() {
-        return ImmutableMap.of("xml", xml);
+        return ImmutableMap.of(XML, xml);
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uri) throws EolModelLoadingException {
-        return PlainXmlModelUtil.loadPlainXml(log, resourceSet, repository, this, uri.get("xml"));
+    public Map<String, String> getUriConverterMap() {
+        return ImmutableMap.of();
+    }
+
+    @Override
+    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
+        return PlainXmlModelUtil.loadPlainXml(log, resourceSet, repository, this, uriMap.get(XML));
     }
 
 }

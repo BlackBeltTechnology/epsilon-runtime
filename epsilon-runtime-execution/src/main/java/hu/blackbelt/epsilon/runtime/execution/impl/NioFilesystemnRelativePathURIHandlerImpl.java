@@ -1,15 +1,14 @@
 package hu.blackbelt.epsilon.runtime.execution.impl;
 
+import lombok.Builder;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
 
 import java.io.*;
-import java.nio.file.FileStore;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributeView;
@@ -18,26 +17,37 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
+@Builder
+@ToString
 public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
-  /**
-   * Creates an instance.
-   */
-  FileSystem fileSystem;
-  String rootPath;
-  String urlSchema;
+  @Builder.Default
+  String urlSchema = "";
+
+  @Builder.Default
+  FileSystem fileSystem = FileSystems.getDefault();
+
+  @Builder.Default
+  String rootPath = "";
 
   public NioFilesystemnRelativePathURIHandlerImpl(String urlSchema, FileSystem fileSystem, String rootPath) {
     super();
     this.fileSystem = fileSystem;
     this.rootPath = rootPath;
     this.urlSchema = urlSchema;
-    log.info("Creating NIO filesystem URI handler on {}", rootPath);
+    // log.info("Creating NIO filesystem URI handler on {}", rootPath);
   }
 
   @Override
-  public boolean canHandle(URI uri)
-  {
-    return uri.scheme().equals(urlSchema); // && exists(uri, null);
+  public boolean canHandle(URI uri) {
+    if (urlSchema == null || urlSchema.equals("")) {
+      return true;
+    } else if (uri == null) {
+      return false;
+    } else if (uri.scheme() == null || uri.scheme().equals("")) {
+      return false;
+    } else {
+      return uri.scheme().equals(urlSchema);
+    }
   }
 
   /**
@@ -99,7 +109,11 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
 
   @Override
   public boolean exists(URI uri, Map<?, ?> options) {
-    return Files.exists(getFSPath(uri));
+    try {
+      return Files.exists(getFSPath(uri));
+    } catch (NullPointerException | InvalidPathException e) {
+      return false;
+    }
   }
 
   @Override
@@ -157,10 +171,17 @@ public class NioFilesystemnRelativePathURIHandlerImpl extends URIHandlerImpl {
   }
 
   private String getFullPath(URI uri) {
+    String uriPath = "";
+    if (uri.isFile()) {
+      uriPath = uri.path();
+    } else if (uri.hasOpaquePart()) {
+      uriPath = uri.opaquePart();
+    }
+
     if (rootPath == null || rootPath.equals("")) {
-      return uri.opaquePart();
+      return uriPath;
     } else {
-      return rootPath + File.separator + uri.opaquePart();
+      return rootPath + File.separator + uriPath;
     }
   }
 
