@@ -9,9 +9,6 @@ import org.eclipse.epsilon.emc.emf.xml.XmlModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
-import java.io.File;
-
-import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.convertFileToUri;
 import static java.util.stream.Collectors.joining;
 
 public interface XmlModelFactory {
