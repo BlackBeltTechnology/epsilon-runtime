@@ -33,11 +33,13 @@ import org.eclipse.epsilon.profiling.ProfilingExecutionListener;
 import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.addEmfPackagesToResourceSet;
 import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.addUmlPackagesToResourceSet;
 
 @Getter
@@ -64,6 +66,9 @@ public class ExecutionContext implements AutoCloseable {
     private Boolean addUmlPackages = false;
 
     @Builder.Default
+    private Boolean addEcorePackages = false;
+
+    @Builder.Default
     private Log log = new Slf4jLog();
 
     private List<String> metaModels;
@@ -83,7 +88,19 @@ public class ExecutionContext implements AutoCloseable {
         if (addUmlPackages) {
             addUmlPackagesToResourceSet(resourceSet);
         }
+
+        if (addEcorePackages) {
+            addEmfPackagesToResourceSet(resourceSet);
+        }
+
         addMetaModels();
+
+        log.info("Registered packages: ");
+        for (String key : new HashSet<String>(resourceSet.getPackageRegistry().keySet())) {
+            EPackage ePackage = resourceSet.getPackageRegistry().getEPackage(key);
+            log.info("      Name: " +  ePackage.getName() + " nsURI: " + ePackage.getNsURI() + " nsPrefix: " + ePackage.getNsPrefix());
+        }
+
         addModels();
     }
 
@@ -124,7 +141,7 @@ public class ExecutionContext implements AutoCloseable {
             ModelRepository repository = eolModule.getContext().getModelRepository();
 
             for (ModelContext model : modelContextMap.keySet()) {
-                model.addAliases(repository, EmfUtils.createModelReference(modelContextMap.get(model)));
+                model.addAliases(repository, EpsilonUtils.createModelReference(modelContextMap.get(model)));
             }
 
         } else {

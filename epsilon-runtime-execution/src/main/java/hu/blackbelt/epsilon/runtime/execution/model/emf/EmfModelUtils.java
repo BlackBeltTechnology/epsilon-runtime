@@ -1,5 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
+import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import org.eclipse.emf.common.util.URI;
@@ -19,7 +20,11 @@ public class EmfModelUtils {
                                    EmfModelFactory emfModelFactory, ResourceSet resourceSet,
                                    ModelRepository repository, EmfModelContext emfModel, URI uri, Map<URI, URI> uriMap) throws EolModelLoadingException {
 
-        EmfModel model = emfModelFactory.create(resourceSet, uriMap);
+        // Hack: to able to resolve supertypes
+        Map<URI, URI> uriMapExtended = Maps.newHashMap(uriMap);
+        uriMapExtended.put(URI.createURI(""), uri);
+
+        EmfModel model = emfModelFactory.create(resourceSet, uriMapExtended);
 
         final StringProperties properties = new StringProperties();
         properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");

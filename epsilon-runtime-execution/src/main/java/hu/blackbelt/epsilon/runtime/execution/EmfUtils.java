@@ -1,6 +1,5 @@
 package hu.blackbelt.epsilon.runtime.execution;
 
-import hu.blackbelt.epsilon.runtime.execution.model.emf.DefaultRuntimeXmiResourceImpl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
@@ -12,15 +11,11 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
-import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.IModel;
-import org.eclipse.epsilon.eol.models.IReflectiveModel;
-import org.eclipse.epsilon.eol.models.ModelReference;
-import org.eclipse.epsilon.eol.models.ReflectiveModelReference;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
@@ -36,27 +31,6 @@ import java.util.List;
 public final class EmfUtils {
 
 
-    public static ModelReference createModelReference(IModel model) {
-        if (model instanceof IReflectiveModel) {
-            return new ReflectiveModelReference((IReflectiveModel)model);
-
-        } else {
-            return new ModelReference(model);
-        }
-    }
-
-    public static URI convertFileToUri(File file) {
-        return file == null ? null : URI.createFileURI(file.getAbsolutePath());
-    }
-
-    /*
-    public static List<EPackage> registerMetamodel(ResourceSet resourceSet, String fileName) throws Exception {
-        // List<EPackage> ePackages = EmfUtil.register(URI.createPlatformResourceURI(fileName, true), EPackage.Registry.INSTANCE);
-        EmfUtil.register(URI.createFileURI(fileName), EPackage.Registry.INSTANCE);
-        List<EPackage> ePackages = EmfUtil.register(URI.createFileURI(fileName), resourceSet.getPackageRegistry());
-        return ePackages;
-    } */
-
     public static void addUmlPackagesToResourceSet(ResourceSet resourceSet) {
 
         resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
@@ -70,15 +44,18 @@ public final class EmfUtils {
 
     }
 
+    public static void addEmfPackagesToResourceSet(ResourceSet resourceSet) {
+        // resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
+        resourceSet.getPackageRegistry().put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
+        // EmfUtils.register(resourceSet, uri, true);
+    }
+
     public static ResourceSet initDefaultCachedResourceSet() {
         ResourceSet rs = new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
 
         rs.setResourceFactoryRegistry(Resource.Factory.Registry.INSTANCE);
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 
-        if (rs.getPackageRegistry().getEPackage(EcorePackage.eNS_URI) == null) {
-            rs.getPackageRegistry().put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
-        }
         return rs;
     }
     
