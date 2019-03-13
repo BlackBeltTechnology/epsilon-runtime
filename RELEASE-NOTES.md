@@ -13,12 +13,17 @@ This release contains major changes which is compromise the compatibility with t
 * Artifact's map are removed, insted of fields are used.
 * platformAlias renamed to referenceUri
 * metamodelFile, metaModelUris, fileBasedMetamodelUris, reuseUnmodifiedFileBasedMetamodels removed, the meta namespaces have to be registered in metamodels on ExecutionContext
-* EmfodelFactory can be replaced.
+* EmfodelFactory can be replaced on execution
 * excelSheet renamed to excel
+* model renamed to emf
+* UUID, Abbreviate etc. removed by default
+* InjectContext added, any class with default constructor can be injected
 
 * Tests added
 PLUGIN: models renamed to emfModels
-Uri converters can be added by model. (to be able to handle model references)
+Uri converters can be added by model. (to be able to handle model references) logical - physical URI
+logger added to scripts
+Exception handling fixed
 
 ### ChangeLog
 

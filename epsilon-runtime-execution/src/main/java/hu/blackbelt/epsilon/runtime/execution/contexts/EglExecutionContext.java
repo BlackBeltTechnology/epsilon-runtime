@@ -35,7 +35,7 @@ public class EglExecutionContext extends EolExecutionContext {
             templateFactory = EglFileGeneratingTemplateFactory.class.newInstance();
         } catch (InstantiationException | IllegalAccessException e1) {
             // TODO Auto-generated catch block
-            throw new ScriptExecutionException("Could not isntattiate tempalte factory", e1);
+            throw new ScriptExecutionException("Could not instantiate templalte factory", e1);
         }
 
         File outputRootDir = new File(outputRoot);

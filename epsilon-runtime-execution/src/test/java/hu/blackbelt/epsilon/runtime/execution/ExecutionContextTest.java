@@ -2,6 +2,7 @@ package hu.blackbelt.epsilon.runtime.execution;
 
 import com.google.common.collect.ImmutableList;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import hu.blackbelt.epsilon.runtime.model.test1.data.*;
@@ -151,7 +152,7 @@ class ExecutionContextTest {
     }
 
     @Test
-    void testReflectiveCreated() throws EolModelNotFoundException, IOException {
+    void testReflectiveCreated() throws EolModelNotFoundException, IOException, ScriptExecutionException {
 
 
         // Creatring resource from execution resource set

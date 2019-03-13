@@ -23,9 +23,11 @@ import org.eclipse.epsilon.common.parse.problem.ParseProblem;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
 import org.eclipse.epsilon.emc.emf.tools.EmfTool;
 import org.eclipse.epsilon.eol.IEolModule;
+import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
 import org.eclipse.epsilon.eol.execute.context.Variable;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.ModelRepository;
+import org.eclipse.epsilon.eol.types.EolAnyType;
 import org.eclipse.epsilon.profiling.Profiler;
 import org.eclipse.epsilon.profiling.ProfilerTargetSummary;
 import org.eclipse.epsilon.profiling.ProfilingExecutionListener;
@@ -80,6 +82,8 @@ public class ExecutionContext implements AutoCloseable {
     @Builder.Default
     private Boolean profile = false;
 
+    @Builder.Default
+    private Map<String, Object> injectContexts = new HashMap();
 
     @SneakyThrows
     public void load() {
@@ -121,8 +125,7 @@ public class ExecutionContext implements AutoCloseable {
         }
     }
 
-    @SneakyThrows(Exception.class)
-    public void executeProgram(EolExecutionContext eolProgram) {
+    public void executeProgram(EolExecutionContext eolProgram) throws ScriptExecutionException {
         File sourceFile = new File(eolProgram.getSource());
         URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
         context.put(EglExecutionContext.ARTIFACT_ROOT, source);
@@ -171,12 +174,16 @@ public class ExecutionContext implements AutoCloseable {
         }
     }
 
-    @SneakyThrows
-    private void executeModule(IEolModule eolModule, URI source, List<Variable> parameters) {
+    private void executeModule(IEolModule eolModule, URI source, List<Variable> parameters) throws ScriptExecutionException {
         for (IModel m : projectModelRepository.getModels()) {
             log.info("  Model: " + m.getName() + " Aliases: " + String.join(", ", m.getAliases()));
         }
-        eolModule.parse(source);
+
+        try {
+            eolModule.parse(source);
+        } catch (Exception e) {
+            throw new ScriptExecutionException("Error on parsing: " + source.toString(), e);
+        }
         if (profile) {
             Profiler.INSTANCE.reset();
         }
@@ -185,34 +192,33 @@ public class ExecutionContext implements AutoCloseable {
                 Profiler.INSTANCE.start(source.toString(), "", eolModule);
             }
 
-            if (eolModule.getParseProblems().size() > 0) {
-                log.error("Parse errors occured...");
-                for (ParseProblem problem : eolModule.getParseProblems()) {
-                    log.error(problem.toString());
-                }
-                throw new ScriptExecutionException("Parse error");
-            }
-            // Adding static utils
-            eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable("UUIDUtils", new UUIDUtils()));
-            eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable("MD5Utils", new MD5Utils()));
-            eolModule.getContext().getFrameStack()
-                    .put(Variable.createReadOnlyVariable("AbbreviateUtils", new AbbreviateUtils()));
-            eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable("EMFTool", new EmfTool()));
-
-            for (Variable parameter : parameters) {
-                eolModule.getContext().getFrameStack().put(parameter);
-            }
+            eolModule.getContext().getFrameStack().put(new org.eclipse.epsilon.eol.execute.context.Variable("log", log, new EolAnyType()));
+            injectContexts.forEach((n, v) -> eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable(n, v)));
+            parameters.forEach(p -> eolModule.getContext().getFrameStack().put(p));
             eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable("executionContext", this));
 
             if (profile) {
                 eolModule.getContext().getExecutorFactory().addExecutionListener(new ProfilingExecutionListener());
             }
 
+            if (eolModule.getParseProblems().size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (ParseProblem problem : eolModule.getParseProblems()) {
+                    sb.append("\t" + problem.toString() + "\n");
+                }
+                throw new ScriptExecutionException("Parse error: " + sb.toString());
+            }
+
             StringBuffer sb = new StringBuffer();
             parameters.forEach(p -> sb.append("\t" + p.getName() + " - " + p.toString() + "\n"));
             log.info("Parameters: \n" + sb.toString());
 
-            Object result = eolModule.execute();
+            try {
+                Object result = eolModule.execute();
+            } catch (EolRuntimeException e) {
+                throw new ScriptExecutionException("Program execute", e);
+
+            }
             // getLog().info("EolExecutionContext executeAll result: " + result.toString());
         } finally {
             if (profile) {

@@ -1,5 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
+import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -27,7 +28,7 @@ public class EtlExecutionContext extends EolExecutionContext {
     }
 
     @Override
-    public IEolModule getModule(Map<Object, Object> context) {
+    public IEolModule getModule(Map<Object, Object> context) throws ScriptExecutionException {
         return etlModule;
     };
 

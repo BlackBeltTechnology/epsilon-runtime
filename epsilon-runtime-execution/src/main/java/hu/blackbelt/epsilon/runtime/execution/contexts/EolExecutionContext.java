@@ -40,6 +40,6 @@ public class EolExecutionContext {
         return "";
     }
     
-    public void post(Map<Object, Object> context) {}
+    public void post(Map<Object, Object> context) throws ScriptExecutionException {}
 
 }
