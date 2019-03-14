@@ -2,9 +2,20 @@ package hu.blackbelt.epsilon.runtime.execution.impl;
 
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j(topic = "EPSILON")
 public class Slf4jLog implements Log {
+    Logger log;
+
+    public Slf4jLog() {
+        this.log = LoggerFactory.getLogger("Epsilon");
+    }
+
+    public Slf4jLog(Logger logger) {
+        this.log = logger;
+    }
+
     public void debug(CharSequence charSequence) {
         log.debug(charSequence.toString());
     }
