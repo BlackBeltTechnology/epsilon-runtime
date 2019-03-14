@@ -13,6 +13,7 @@
         <module>epsilon-runtime-parent</module>
         <module>epsilon-runtime-utils</module>
         <module>epsilon-runtime-execution</module>
+        <module>epsilon-runtime-osgi</module>
     </modules>
     <profiles>
         <profile>
