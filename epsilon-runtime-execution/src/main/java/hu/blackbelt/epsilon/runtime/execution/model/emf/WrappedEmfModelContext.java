@@ -2,6 +2,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
@@ -10,6 +11,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
@@ -48,7 +50,11 @@ public class WrappedEmfModelContext implements ModelContext {
 
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
-        IModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource);
+        // Hack: to able to resolve supertypes
+        Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
+        uriMapExtended.put(URI.createURI(""), resource.getURI());
+
+        IModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource, uriMapExtended);
 
         final StringProperties properties = new StringProperties();
         properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
@@ -105,10 +111,12 @@ public class WrappedEmfModelContext implements ModelContext {
 
         Resource wrappedResource;
         ResourceSet wrappedResourceSet;
+        Map<URI, URI> uriConverterMap;
 
-        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource) {
+        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource, Map<URI, URI> uriConverterMap) {
             this.wrappedResource = resource;
             this.wrappedResourceSet = resourceSet;
+            this.uriConverterMap = uriConverterMap;
             readOnLoad = false;
             storeOnDisposal =  false;
             cachingEnabled = true;
@@ -118,6 +126,31 @@ public class WrappedEmfModelContext implements ModelContext {
         @SneakyThrows
         protected ResourceSet createResourceSet() {
             ResourceSet resourceSet =  super.createResourceSet();
+
+            for (URIHandler uriHandler : resourceSet.getURIConverter().getURIHandlers()) {
+                int idx = resourceSet.getURIConverter().getURIHandlers().indexOf(uriHandler);
+                if (!wrappedResourceSet.getURIConverter().getURIHandlers().contains(uriHandler)) {
+                    log.info("    Adding uri handler: " + uriHandler.toString());
+                    wrappedResourceSet.getURIConverter().getURIHandlers().add(idx, uriHandler);
+                }
+            }
+
+            for (URI key : resourceSet.getURIConverter().getURIMap().keySet()) {
+                if (!wrappedResourceSet.getURIConverter().getURIMap().containsKey(key)) {
+                    URI value = resourceSet.getURIConverter().getURIMap().get(key);
+                    log.info("    Adding reference URI converter: " + key + " -> " + value);
+                    wrappedResourceSet.getURIConverter().getURIMap().put(key, value);
+                }
+            }
+
+            if (uriConverterMap != null) {
+                for (URI from : uriConverterMap.keySet()) {
+                    URI to = uriConverterMap.get(from);
+                    log.info(String.format("    Registering URI converter: %s -> %s", from.toString(), to.toString()));
+                    wrappedResourceSet.getURIConverter().getURIMap().put(from, to);
+                }
+            }
+
             for (String key : new HashSet<String>(wrappedResourceSet.getPackageRegistry().keySet())) {
                 EPackage ePackage = wrappedResourceSet.getPackageRegistry().getEPackage(key);
                 resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
