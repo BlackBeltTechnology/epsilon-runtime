@@ -2,14 +2,12 @@ package hu.blackbelt.epsilon.runtime.execution.contexts;
 
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.eclipse.epsilon.egl.EgxModule;
 import org.eclipse.epsilon.eol.IEolModule;
 
 import java.util.List;
 import java.util.Map;
 
-@NoArgsConstructor
 public class EgxExecutionContext extends EglExecutionContext {
 
     @Builder(builderMethodName = "egxExecutionContextBuilder")

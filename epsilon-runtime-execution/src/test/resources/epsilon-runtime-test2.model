@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<data:DataModelTransformed xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:data="http://www.blackbelt.hu/epsilon-runtime/test2" xmi:id="_zn1ZAENAEemjq6tP6H_kVQ" name="test2">
+  <entity xmi:id="_2AhHoENAEemjq6tP6H_kVQ" name="Entity1Transformed">
+    <attribute xmi:id="_5N1_QENAEemjq6tP6H_kVQ" name="attr1" type="String"/>
+  </entity>
+</data:DataModelTransformed>

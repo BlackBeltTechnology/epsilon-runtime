@@ -1,9 +1,13 @@
 package hu.blackbelt.epsilon.runtime.execution.model.plainxml;
 
-import hu.blackbelt.epsilon.runtime.execution.Log;
-import hu.blackbelt.epsilon.runtime.execution.ModelContext;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
@@ -15,18 +19,19 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-@Builder
+@Builder(builderMethodName = "plainXmlModelContextBuilder")
+@EqualsAndHashCode
 public class PlainXmlModelContext implements ModelContext {
 
-    Map<String, String> artifacts;
-
+    public static final String XML = "xml";
+    @NonNull
     String name;
 
-    String xsd;
+    @NonNull
+    String xml;
 
-    List<String> aliases;
-
-    String platformAlias;
+    @Builder.Default
+    List<String> aliases = ImmutableList.of();
 
     @Builder.Default
     boolean readOnLoad = true;
@@ -41,14 +46,13 @@ public class PlainXmlModelContext implements ModelContext {
     @Override
     public String toString() {
         return "PlainXmlModelContext{" +
-                "artifact='" + artifacts + '\'' +
-                ", xsd='" + xsd + '\'' +
+                "artifacts='" + getArtifacts() + '\'' +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
+                ", uriConverterMap='" + getUriConverterMap() + '\'' +
                 ", readOnLoad=" + readOnLoad +
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
-                ", platformAlias='" + platformAlias + '\'' +
                 '}';
     }
 
@@ -64,8 +68,18 @@ public class PlainXmlModelContext implements ModelContext {
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uri) throws EolModelLoadingException {
-        return PlainXmlModelUtil.loadPlainXml(log, resourceSet, repository, this, uri.get("xml"));
+    public Map<String, String> getArtifacts() {
+        return ImmutableMap.of(XML, xml);
+    }
+
+    @Override
+    public Map<String, String> getUriConverterMap() {
+        return ImmutableMap.of();
+    }
+
+    @Override
+    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
+        return PlainXmlModelUtil.loadPlainXml(log, resourceSet, repository, this, uriMap.get(XML));
     }
 
 }

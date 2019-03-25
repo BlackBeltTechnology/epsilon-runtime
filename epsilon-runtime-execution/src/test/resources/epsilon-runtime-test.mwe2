@@ -1,0 +1,8 @@
+module TestBuilder
+
+Workflow {
+ component = hu.blackbelt.emfbuildergenerator.EMFBuilderGenerator {
+  ecoreURI = "platform:/resource/epsilon-runtime-execution/src/test/resources/epsilon-runtime-test.ecore"
+  genModelUri = "platform:/resource/epsilon-runtime-execution/src/test/resources/epsilon-runtime-test.genmodel"  
+ }
+}

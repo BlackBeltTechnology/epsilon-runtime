@@ -1,0 +1,20 @@
+@Spec {
+	metamodel "http://www.blackbelt.hu/epsilon-runtime/test2" {
+		nsUri: "http://www.blackbelt.hu/epsilon-runtime/test2"
+	}
+}
+
+package  {
+	DataModelTransformed "test2" {
+		name: "test2"
+		entity: 
+			EntityTransformed "Entity1Transformed" {
+				name: "Entity1Transformed"
+				attribute: 
+					AttributeTransformed "attr1" {
+						name: "attr1"
+						type: "String"
+					}
+			}
+	}
+}

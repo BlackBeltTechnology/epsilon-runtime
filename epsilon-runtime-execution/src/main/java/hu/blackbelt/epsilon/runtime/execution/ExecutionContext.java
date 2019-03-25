@@ -1,12 +1,16 @@
 package hu.blackbelt.epsilon.runtime.execution;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EolExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.ProgramParameter;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
+import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import hu.blackbelt.epsilon.runtime.utils.AbbreviateUtils;
 import hu.blackbelt.epsilon.runtime.utils.MD5Utils;
 import hu.blackbelt.epsilon.runtime.utils.UUIDUtils;
@@ -15,16 +19,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.epsilon.common.parse.problem.ParseProblem;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
 import org.eclipse.epsilon.emc.emf.tools.EmfTool;
 import org.eclipse.epsilon.eol.IEolModule;
+import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
 import org.eclipse.epsilon.eol.execute.context.Variable;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.ModelRepository;
+import org.eclipse.epsilon.eol.types.EolAnyType;
 import org.eclipse.epsilon.profiling.Profiler;
 import org.eclipse.epsilon.profiling.ProfilerTargetSummary;
 import org.eclipse.epsilon.profiling.ProfilingExecutionListener;
@@ -32,13 +36,17 @@ import org.eclipse.epsilon.profiling.ProfilingExecutionListener;
 import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.addEmfPackagesToResourceSet;
+import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.addUmlPackagesToResourceSet;
+
 @Getter
-@Builder
+@Builder(builderMethodName = "executionContextBuilder")
 @AllArgsConstructor
 public class ExecutionContext implements AutoCloseable {
 
@@ -49,7 +57,7 @@ public class ExecutionContext implements AutoCloseable {
     private Map<Object, Object> context = new HashMap();
 
     @Builder.Default
-    private ResourceSet resourceSet = EmfUtils.initResourceSet();
+    private ResourceSet resourceSet = EmfUtils.initDefaultCachedResourceSet();
 
     @Builder.Default
     private ModelRepository projectModelRepository = new ModelRepository();
@@ -57,32 +65,49 @@ public class ExecutionContext implements AutoCloseable {
     @Builder.Default
     private Boolean rollback = true;
 
-    private Log log;
-    private List<String> metaModels;
+    @Builder.Default
+    private Boolean addUmlPackages = false;
+
+    @Builder.Default
+    private Boolean addEcorePackages = false;
+
+    @Builder.Default
+    private Log log = new Slf4jLog();
+
+    @Builder.Default
+    private List<String> metaModels = ImmutableList.of();
 
     private List<ModelContext> modelContexts;
 
-    private ArtifactResolver artifactResolver;
     private File sourceDirectory;
-    private Boolean profile;
 
+    @Builder.Default
+    private Boolean profile = false;
+
+    @Builder.Default
+    private Map<String, Object> injectContexts = new HashMap();
 
     @SneakyThrows
-    public void init() {
-
+    public void load() {
         CachedResourceSet.getCache().clear();
 
-        // Check if global package registry contains the EcorePackage
-        if (EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI) == null) {
-            EPackage.Registry.INSTANCE.put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
+        if (addUmlPackages) {
+            addUmlPackagesToResourceSet(resourceSet);
+        }
+
+        if (addEcorePackages) {
+            addEmfPackagesToResourceSet(resourceSet);
         }
 
         addMetaModels();
+
+        log.info("Registered packages: ");
+        for (String key : new HashSet<String>(resourceSet.getPackageRegistry().keySet())) {
+            EPackage ePackage = resourceSet.getPackageRegistry().getEPackage(key);
+            log.info("      Name: " +  ePackage.getName() + " nsURI: " + ePackage.getNsURI() + " nsPrefix: " + ePackage.getNsPrefix());
+        }
+
         addModels();
-
-        log.info("URL converters: \n\t" + URIConverter.URI_MAP.entrySet().stream()
-                .map(e -> e.getKey() + "->" + e.getValue()).collect(Collectors.joining("\n\t")));
-
     }
 
 
@@ -102,18 +127,7 @@ public class ExecutionContext implements AutoCloseable {
         }
     }
 
-    @SneakyThrows(Exception.class)
-    public void executeProgram(EolExecutionContext eolProgram) {
-        /*
-        URI source = null;
-        if (eolProgram.getArtifact() != null) {
-            source = new URI("jar:" + getArtifact(eolProgram.getArtifact()).toURI().toString() + "!/"
-                    + eolProgram.getSource());
-        } else {
-            source = new File(sourceDirectory, eolProgram.source).toURI();
-        }
-        */
-        // URI source = null;
+    public void executeProgram(EolExecutionContext eolProgram) throws ScriptExecutionException {
         File sourceFile = new File(eolProgram.getSource());
         URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
         context.put(EglExecutionContext.ARTIFACT_ROOT, source);
@@ -132,7 +146,7 @@ public class ExecutionContext implements AutoCloseable {
             ModelRepository repository = eolModule.getContext().getModelRepository();
 
             for (ModelContext model : modelContextMap.keySet()) {
-                model.addAliases(repository, EmfUtils.createModelReference(modelContextMap.get(model)));
+                model.addAliases(repository, EpsilonUtils.createModelReference(modelContextMap.get(model)));
             }
 
         } else {
@@ -162,12 +176,16 @@ public class ExecutionContext implements AutoCloseable {
         }
     }
 
-    @SneakyThrows
-    private void executeModule(IEolModule eolModule, URI source, List<Variable> parameters) {
+    private void executeModule(IEolModule eolModule, URI source, List<Variable> parameters) throws ScriptExecutionException {
         for (IModel m : projectModelRepository.getModels()) {
             log.info("  Model: " + m.getName() + " Aliases: " + String.join(", ", m.getAliases()));
         }
-        eolModule.parse(source);
+
+        try {
+            eolModule.parse(source);
+        } catch (Exception e) {
+            throw new ScriptExecutionException("Error on parsing: " + source.toString(), e);
+        }
         if (profile) {
             Profiler.INSTANCE.reset();
         }
@@ -176,34 +194,33 @@ public class ExecutionContext implements AutoCloseable {
                 Profiler.INSTANCE.start(source.toString(), "", eolModule);
             }
 
-            if (eolModule.getParseProblems().size() > 0) {
-                log.error("Parse errors occured...");
-                for (ParseProblem problem : eolModule.getParseProblems()) {
-                    log.error(problem.toString());
-                }
-                throw new ScriptExecutionException("Parse error");
-            }
-            // Adding static utils
-            eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable("UUIDUtils", new UUIDUtils()));
-            eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable("MD5Utils", new MD5Utils()));
-            eolModule.getContext().getFrameStack()
-                    .put(Variable.createReadOnlyVariable("AbbreviateUtils", new AbbreviateUtils()));
-            eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable("EMFTool", new EmfTool()));
-
-            for (Variable parameter : parameters) {
-                eolModule.getContext().getFrameStack().put(parameter);
-            }
+            eolModule.getContext().getFrameStack().put(new org.eclipse.epsilon.eol.execute.context.Variable("log", log, new EolAnyType()));
+            injectContexts.forEach((n, v) -> eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable(n, v)));
+            parameters.forEach(p -> eolModule.getContext().getFrameStack().put(p));
             eolModule.getContext().getFrameStack().put(Variable.createReadOnlyVariable("executionContext", this));
 
             if (profile) {
                 eolModule.getContext().getExecutorFactory().addExecutionListener(new ProfilingExecutionListener());
             }
 
+            if (eolModule.getParseProblems().size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (ParseProblem problem : eolModule.getParseProblems()) {
+                    sb.append("\t" + problem.toString() + "\n");
+                }
+                throw new ScriptExecutionException("Parse error: " + sb.toString());
+            }
+
             StringBuffer sb = new StringBuffer();
             parameters.forEach(p -> sb.append("\t" + p.getName() + " - " + p.toString() + "\n"));
             log.info("Parameters: \n" + sb.toString());
 
-            Object result = eolModule.execute();
+            try {
+                Object result = eolModule.execute();
+            } catch (EolRuntimeException e) {
+                throw new ScriptExecutionException("Program execute", e);
+
+            }
             // getLog().info("EolExecutionContext executeAll result: " + result.toString());
         } finally {
             if (profile) {
@@ -228,7 +245,7 @@ public class ExecutionContext implements AutoCloseable {
     @SneakyThrows
     public void addMetaModel(String metaModel) {
         log.info("Registering ecore: " + metaModel);
-        org.eclipse.emf.common.util.URI uri = artifactResolver.getArtifactAsEclipseURI(metaModel);
+        org.eclipse.emf.common.util.URI uri = org.eclipse.emf.common.util.URI.createURI(metaModel);
         log.info("    Meta model: " + uri);
         List<EPackage> ePackages = EmfUtils.register(resourceSet, uri, true);
         log.info("    EPackages: " + ePackages.stream().map(e -> e.getNsURI()).collect(Collectors.joining(", ")));
@@ -245,13 +262,23 @@ public class ExecutionContext implements AutoCloseable {
     @SneakyThrows
     public void addModel(ModelContext modelContext) {
         log.info("Model: " + modelContext.toString());
+
         Map<String, org.eclipse.emf.common.util.URI> uris = modelContext.getArtifacts().entrySet().stream()
                 .filter(e -> !Strings.isNullOrEmpty(e.getValue()))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey(),
-                        entry -> artifactResolver.getArtifactAsEclipseURI(entry.getValue())));
+                        entry -> org.eclipse.emf.common.util.URI.createURI(entry.getValue())));
+
+
+        Map<org.eclipse.emf.common.util.URI, org.eclipse.emf.common.util.URI> uriConverters =
+                modelContext.getUriConverterMap().entrySet().stream()
+                .filter(e -> !Strings.isNullOrEmpty(e.getValue()))
+                .collect(Collectors.toMap(
+                        entry -> org.eclipse.emf.common.util.URI.createURI(entry.getKey()),
+                        entry -> org.eclipse.emf.common.util.URI.createURI(entry.getValue())));
+
         uris.forEach((k,v) -> log.info("    Artifact " + k + " file: " + v.toString()));
-        modelContextMap.put(modelContext, modelContext.load(log, resourceSet, projectModelRepository, uris));
+        modelContextMap.put(modelContext, modelContext.load(log, resourceSet, projectModelRepository, uris, uriConverters));
     }
 
 
