@@ -67,6 +67,7 @@ In EMF (Emfatic fomat) - You can convert between .ecore and .emf within eclipse.
 The epsilon-runtime will support emfatic format directly soon.
 ====
 
+[source]
 ----
 @namespace(uri="http://www.blackbelt.hu/epsilon-runtime/test", prefix="data")
 package data;
@@ -97,11 +98,10 @@ class EntityReference { // <3>
 <2> Attribute - Represents an attribute of class
 <3> Reference - Represents a reference to a class
 
-
 ### 2. Define the model based on meta-model
 
 [source, xml]
----
+----
 <?xml version="1.0" encoding="ASCII"?>
 <data:DataModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:data="http://www.blackbelt.hu/epsilon-runtime/test" xmi:id="_CeiO8EAJEemOdvXw1zCXyw">
   <entity xmi:id="_Ds1OEEAJEemOdvXw1zCXyw" name="Test1">
@@ -112,7 +112,7 @@ class EntityReference { // <3>
     <reference xmi:id="_LwhXsEAJEemOdvXw1zCXyw" name="test1" target="_Ds1OEEAJEemOdvXw1zCXyw"/>
   </entity>
 </data:DataModel>
----
+----
 
 [NOTE]
 ====
@@ -120,7 +120,8 @@ In HUTN (Emfatic fomat) - You can convert between .model and .hutn within eclips
 The epsilon-runtime will support hutn format directly soon.
 ====
 
----
+[source]
+----
 @Spec {
 	metamodel "http://www.blackbelt.hu/epsilon-runtime/test" {
 		nsUri: "http://www.blackbelt.hu/epsilon-runtime/test"
@@ -153,18 +154,18 @@ package  {
 			}
 	}
 }
----
+----
 
 ### 3. Define the transformation rules
 
 The rules can be defined in ETL language (Epsilon Transformation Language).
 
----
+[source]
+----
 rule DataModelToChangeLog
 	transform s : TEST1!DataModel
 	to t : LIQUIBASE!databaseChangeLog {
 }
-
 
 rule DataModelToChangeSet
 	transform s : TEST1!DataModel
@@ -213,7 +214,6 @@ rule EntityReferenceToColumn
 		TEST1!Entity.all.selectOne(e | e.reference.contains(s)).equivalent("EntityToCreateTable").column.add(t);
 }
 
-
 rule EntityReferenceToAddForeignKeyConstraint
 	transform s : TEST1!EntityReference
 	to t : LIQUIBASE!AddForeignKeyConstraint {
@@ -228,12 +228,12 @@ rule EntityReferenceToAddForeignKeyConstraint
 
 		TEST1!DataModel.all.selectOne(e | e.entity.contains(entity)).equivalent("DataModelToChangeSet").addForeignKeyConstraint.add(t);
 }
----
+----
 
 ### 4. Run the transformation
 
 [source, java]
----
+----
         // Preparing URI handler
         uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
                 new File(targetDir(), "test-classes").getAbsolutePath());
@@ -280,12 +280,12 @@ rule EntityReferenceToAddForeignKeyConstraint
 
         executionContext.commit();
         executionContext.close();
----
+----
 
 The output liquibase model is:
 
 [source, xml]
----
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog">
   <changeSet author="test1toliquibase">
@@ -304,5 +304,5 @@ The output liquibase model is:
     <addPrimaryKey columnNames="ID" tableName="Test2"/>
   </changeSet>
 </databaseChangeLog>
----
+----
 
