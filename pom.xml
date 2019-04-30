@@ -1,21 +1,589 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>hu.blackbelt.epsilon</groupId>
-        <artifactId>epsilon-runtime-parent</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
-        <relativePath>epsilon-runtime-parent</relativePath>
-    </parent>
-    <artifactId>epsilon-runtime-reactor</artifactId>
+    <groupId>hu.blackbelt.epsilon</groupId>
+    <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>epsilon-runtime-parent</module>
-        <module>epsilon-runtime-utils</module>
-        <module>epsilon-runtime-execution</module>
-        <module>epsilon-runtime-osgi</module>
-    </modules>
+    <version>1.2.0-SNAPSHOT</version>
+    
+    <name>epsilon-runtime</name>
+    <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
+    <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
+    <issueManagement>
+        <url>https://github.com/BlackBeltTechnology/epsilon-runtime/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+    <properties>
+        <epsilon-version>1.5.1</epsilon-version>
+        <karaf-version>4.2.1</karaf-version>
+        <cxf-version>3.3.1</cxf-version>
+        <osgi-utils-version>1.0.7</osgi-utils-version>
+        <google-karaf-features-version>1.0.1</google-karaf-features-version>
+        <javax-karaf-features-version>1.0.1</javax-karaf-features-version>
+        <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
+        <eclipse-emf-karaf-features-version>2.12.1</eclipse-emf-karaf-features-version>
+        <eclipse-epsilon-karaf-features-version>1.5.1_1</eclipse-epsilon-karaf-features-version>
+        <antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
+        <apache-commons-karaf-features-version>1.0.2</apache-commons-karaf-features-version>
+        <apache-poi-karaf-features-version>1.0.0</apache-poi-karaf-features-version>
+        <apache-httpclient-karaf-features-version>4.5.3_2</apache-httpclient-karaf-features-version>
+    </properties>
+    
+    <scm>
+        <connection>scm:git:git://github.com/BlackBeltTechnology/epsilon-runtime.git</connection>
+        <developerConnection>
+            scm:git:ssh://${git.username}@github.com:BlackBeltTechnology/epsilon-runtime.git
+        </developerConnection>
+        <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
+    </scm>
+    
+    <developers>
+        <developer>
+            <id>robson</id>
+            <name>Robert Csakany</name>
+            <email>robert.csakany@blackbelt.hu</email>
+            <url>https://github.com/robertcsakany</url>
+            <organization>BlackBelt Technology</organization>
+            <organizationUrl>http://www.blackbelt.hu</organizationUrl>
+        </developer>
+    </developers>
+    
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <build>
+        
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>${karaf-version}</version>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.7.0</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                    <executions>
+                        <execution>
+                            <id>default-install</id>
+                            <configuration>
+                                <skip>${deployOnly}</skip>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>default-test</id>
+                            <configuration>
+                                <skip>${deployOnly}</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+                
+                
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                    <configuration>
+                        <argLine>-Dfile.encoding=UTF-8</argLine>
+                    </configuration>
+                </plugin>
+                
+
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.3.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            hu.blackbelt.epsilon.runtime.*;version=${project.version}
+                        </Export-Package>
+                        <Import-Package>
+                            !lombok,
+                            com.google.common.base;version="[14.0,30)",
+                            com.google.common.cache;version="[14.0,30)",
+                            com.google.common.collect;version="[14.0,30)",
+                            com.google.common.io;version="[14.0,30)",
+                            com.google.common.primitives;version="[14.0,30)",
+                            com.google.common.hash;version="[14.0,30)",
+                            com.google.common.util.concurrent;version="[14.0,30)",
+                            javax.annotation;version="[1.0,2)",
+                            *
+                        </Import-Package>
+                        <Include-Resource>{maven-resources}</Include-Resource>
+                    </instructions>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-workflow</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-emf</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-hutn</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-workflow-emf</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-spreadsheets</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
+            <version>2.9.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.uml2.uml</groupId>
+            <artifactId>resources</artifactId>
+            <version>5.0.0-v20140602-0749</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.emf</groupId>
+                    <artifactId>ecore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.emf.ecore</groupId>
+                    <artifactId>xmi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.emf.mapping</groupId>
+                    <artifactId>ecore2xml</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
+            <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>hu.blackbelt.epsilon</groupId>
+                <artifactId>epsilon-runtime-utils</artifactId>
+                <version>1.2.0-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
     <profiles>
+        <profile>
+            <activation>
+                <property>
+                    <name>github_release</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>epsilon-runtime-utils</module>
+                <module>epsilon-runtime-execution</module>
+                <module>epsilon-runtime-osgi</module>
+                <module>features</module>
+                <module>kar</module>
+            </modules>
+        </profile>
+        
+        <profile>
+            <id>qa</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <configuration>
+                            <skip>${checkstyle.skip}</skip>
+                            <!--configLocation>${checkstyle.configLocation}</configLocation-->
+                            <failOnViolation>${qa.failOnError}</failOnViolation>
+                            <includeTestSourceDirectory>false</includeTestSourceDirectory>
+                            <includeTestResources>false</includeTestResources>
+                            <consoleOutput>true</consoleOutput>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <configuration>
+                            <rulesets>
+                                <ruleset>/rulesets/java/basic.xml</ruleset>
+                                <ruleset>/rulesets/java/braces.xml</ruleset>
+                                <ruleset>/rulesets/java/clone.xml</ruleset>
+                                <ruleset>/rulesets/java/codesize.xml</ruleset>
+                                <ruleset>/rulesets/java/empty.xml</ruleset>
+                                <ruleset>/rulesets/java/finalizers.xml</ruleset>
+                                <ruleset>/rulesets/java/imports.xml</ruleset>
+                                <ruleset>/rulesets/java/migrating.xml</ruleset>
+                                <ruleset>/rulesets/java/optimizations.xml</ruleset>
+                                <ruleset>/rulesets/java/strictexception.xml</ruleset>
+                                <ruleset>/rulesets/java/strings.xml</ruleset>
+                                <ruleset>/rulesets/java/sunsecure.xml</ruleset>
+                                <ruleset>/rulesets/java/unnecessary.xml</ruleset>
+                                <ruleset>/rulesets/java/unusedcode.xml</ruleset>
+                            </rulesets>
+                            <skip>${pmd.skip}</skip>
+                            <skipEmptyReport>false</skipEmptyReport>
+                            <failOnViolation>${qa.failOnError}</failOnViolation>
+                            <minimumPriority>0</minimumPriority>
+                            <targetJdk>${java.version}</targetJdk>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>${findbugs.skip}</skip>
+                            <effort>Max</effort>
+                            <failOnError>${qa.failOnError}</failOnError>
+                            <threshold>Low</threshold>
+                            <xmlOutput>true</xmlOutput>
+                            <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>local-karaf-deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-artifacts</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${local-deploy.skip}</skip>
+                                    <outputDirectory>${deploy.dir}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>*.jar</include>
+                                                <include>*.cfg</include>
+                                            </includes>
+                                            <excludes>
+                                                <exclude>*-javadoc.jar</exclude>
+                                                <exclude>*-sources.jar</exclude>
+                                            </excludes>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>release-blackbelt</id>
+            <!-- Community edition does not support staging
+             <build>
+             <plugins>
+             <plugin>
+             <groupId>org.sonatype.plugins</groupId>
+             <artifactId>nexus-staging-maven-plugin</artifactId>
+             <version>1.6.8</version>
+             <extensions>true</extensions>
+             <configuration>
+             <serverId>blackbelt-nexus-distribution</serverId>
+             <nexusUrl>https://nexus.blackbelt.cloud/repository/maven-judo-snapshot/</nexusUrl>
+             <autoReleaseAfterClose>true</autoReleaseAfterClose>
+             </configuration>
+             </plugin>
+             </plugins>
+             </build>
+             -->
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>blackbelt-nexus-distribution</id>
+                    <url>https://nexus.blackbelt.cloud/repository/maven-judo-snapshot/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>blackbelt-nexus-distribution</id>
+                    <url>https://nexus.blackbelt.cloud/repository/maven-judo-snapshot/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        
+        
+        <profile>
+            <id>release-central</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--
+                     <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-javadoc-plugin</artifactId>
+                     <version>2.9.1</version>
+                     <executions>
+                     <execution>
+                     <id>attach-javadocs</id>
+                     <goals>
+                     <goal>jar</goal>
+                     </goals>
+                     </execution>
+                     </executions>
+                     </plugin>
+                     -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        
+        
+        <profile>
+            <id>release-dummy</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>dummy-distribution</id>
+                    <url>file:///tmp/maven-snapshot/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>dummy-distribution</id>
+                    <url>file:///tmp/maven-release/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        
+        <profile>
+            <id>sign-artifacts</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
         <profile>
             <id>release-github</id>
             <build>
@@ -23,35 +591,54 @@
                     <plugin>
                         <groupId>de.jutzig</groupId>
                         <artifactId>github-release-plugin</artifactId>
-                        <version>1.2.0</version>
-                        <configuration>
-                            <repositoryId>https://github.com/BlackBeltTechnology/epsilon-runtime.git</repositoryId>
-                            <description>Branch: ${env.WERCKER_GIT_BRANCH} Wercker: ${env.WERCKER_RUN_URL}</description>
-                            <releaseName>${project.version}</releaseName>
-                            <prerelease>true</prerelease>
-                            <tag>${project.version}</tag>
-                            <fileSets>
-                                <fileSet>
-                                    <directory>epsilon-runtime-utils/target</directory>
-                                    <includes>
-                                        <include>*.jar</include>
-                                    </includes>
-                                </fileSet>
-                                <fileSet>
-                                    <directory>epsilon-runtime-execution/target</directory>
-                                    <includes>
-                                        <include>*.jar</include>
-                                    </includes>
-                                </fileSet>
-                            </fileSets>
-                        </configuration>
+                        <version>1.3.0</version>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
                                 <id>release-to-github</id>
-                                <phase>install</phase>
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>release</goal>
                                 </goals>
+                                <configuration>
+                                    <repositoryId>https://github.com/BlackBeltTechnology/epsilon-runtime.git</repositoryId>
+                                    <description>Branch: ${env.WERCKER_GIT_BRANCH} Wercker: ${env.WERCKER_RUN_URL}</description>
+                                    <releaseName>${project.version}</releaseName>
+                                    <deleteRelease>true</deleteRelease>
+                                    <tag>${project.version}</tag>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>osgi-runtime-execution/target</directory>
+                                            <includes>
+                                                <include>*.jar</include>
+                                            </includes>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>osgi-runtime-utils/target</directory>
+                                            <includes>
+                                                <include>*.jar</include>
+                                            </includes>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>osgi-runtime-osgi/target</directory>
+                                            <includes>
+                                                <include>*.jar</include>
+                                            </includes>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>features/target/feature/</directory>
+                                            <includes>
+                                                <include>feature.xml</include>
+                                            </includes>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>kar/target</directory>
+                                            <includes>
+                                                <include>*.kar</include>
+                                            </includes>
+                                        </fileSet>
+                                    </fileSets>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
