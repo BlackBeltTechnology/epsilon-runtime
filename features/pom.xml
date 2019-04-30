@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>hu.blackbelt.epsilon</groupId>
+        <artifactId>epsilon-runtime-parent</artifactId>
+        <version>1.2.0-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+    <artifactId>features</artifactId>
+    <packaging>feature</packaging>
+    <name>Epsilon runtime karaf features</name>
+    
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/feature</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/feature</targetPath>
+            </resource>
+        </resources>
+        
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <enableGeneration>true</enableGeneration>
+                    <aggregateFeatures>true</aggregateFeatures>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <enableGeneration>true</enableGeneration>
+                    <aggregateFeatures>true</aggregateFeatures>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>feature-verify</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>mvn:org.apache.karaf.features/framework/${karaf-version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/standard/${karaf-version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.cxf.karaf/apache-cxf/${cxf-version}/xml/features</descriptor>s
+                                <descriptor>mvn:hu.blackbelt.karaf.features/google-features/${google-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/javax-features/${javax-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/antlr-features/${antlr-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/bouncycastle-features/${bouncycastle-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/apache-commons-features/${apache-commons-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/apache-httpclient-features/${apache-httpclient-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/apache-poi-features/${apache-poi-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/eclipse-emf-features/${eclipse-emf-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/eclipse-epsilon-features/${eclipse-epsilon-karaf-features-version}/xml/features</descriptor>
+                                <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
+                            </descriptors>
+                            <distribution>org.apache.karaf.features:framework</distribution>
+                            <javase>1.8</javase>
+                            <framework>
+                                <feature>framework</feature>
+                                <feature>shell-compat</feature>
+                            </framework>
+                            <features>
+                                <feature>epsilon-runtime</feature>
+                            </features>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>framework</artifactId>
+            <type>kar</type>
+            <scope>runtime</scope>
+            <version>${karaf-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>standard</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+            <version>${karaf-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>hu.blackbelt.karaf.features</groupId>
+            <artifactId>google-features</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+            <version>${google-karaf-features-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>hu.blackbelt.osgi.utils</groupId>
+            <artifactId>features</artifactId>
+            <version>${osgi-utils-version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.cxf.karaf</groupId>
+            <artifactId>apache-cxf</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+            <version>${cxf-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>hu.blackbelt.karaf.features</groupId>
+            <artifactId>google-features</artifactId>
+            <version>${google-karaf-features-version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>hu.blackbelt.karaf.features</groupId>
+            <artifactId>bouncycastle-features</artifactId>
+            <version>${bouncycastle-karaf-features-version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>hu.blackbelt.karaf.features</groupId>
+            <artifactId>apache-commons-features</artifactId>
+            <version>${apache-commons-karaf-features-version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>hu.blackbelt.karaf.features</groupId>
+            <artifactId>apache-poi-features</artifactId>
+            <version>${apache-poi-karaf-features-version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>hu.blackbelt.karaf.features</groupId>
+            <artifactId>javax-features</artifactId>
+            <version>${javax-karaf-features-version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>hu.blackbelt.karaf.features</groupId>
+            <artifactId>eclipse-emf-features</artifactId>
+            <version>${eclipse-emf-karaf-features-version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>hu.blackbelt.karaf.features</groupId>
+            <artifactId>antlr-features</artifactId>
+            <version>${antlr-karaf-features-version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        
+
+    </dependencies>
+</project>

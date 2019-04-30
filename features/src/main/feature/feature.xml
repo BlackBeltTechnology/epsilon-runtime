@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="epsilon-runtime-${project.version}"
+    xmlns="http://karaf.apache.org/xmlns/features/v1.5.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.5.0 http://karaf.apache.org/xmlns/features/v1.5.0">
+    
+    <feature name="epsilon-runtime" version="${project.version}" description="Blackbelt Eclipse Epsilon Runtime" install="false">
+        <feature dependency="true">scr</feature>
+        <feature dependency="true">eclipse-epsilon</feature>
+        <feature dependency="true">apache-commons-io</feature>
+        <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-utils/${project.version}</bundle>
+        <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-execution/${project.version}</bundle>
+        <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-osgi/${project.version}</bundle>
+    </feature>
+</features>
