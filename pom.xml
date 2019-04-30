@@ -608,19 +608,19 @@
                                     <tag>${project.version}</tag>
                                     <fileSets>
                                         <fileSet>
-                                            <directory>osgi-runtime-execution/target</directory>
+                                            <directory>epsilon-runtime-execution/target</directory>
                                             <includes>
                                                 <include>*.jar</include>
                                             </includes>
                                         </fileSet>
                                         <fileSet>
-                                            <directory>osgi-runtime-utils/target</directory>
+                                            <directory>epsilon-runtime-utils/target</directory>
                                             <includes>
                                                 <include>*.jar</include>
                                             </includes>
                                         </fileSet>
                                         <fileSet>
-                                            <directory>osgi-runtime-osgi/target</directory>
+                                            <directory>epsilon-runtime-osgi/target</directory>
                                             <includes>
                                                 <include>*.jar</include>
                                             </includes>

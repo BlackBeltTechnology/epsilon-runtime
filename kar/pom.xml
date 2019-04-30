@@ -10,7 +10,7 @@
     </parent>
     <artifactId>kar</artifactId>
     <packaging>kar</packaging>
-    <name>OSGi utils karaf KAR assembly</name>
+    <name>Epsilon runtime Karaf KAR assembly</name>
 
     <build>
         <plugins>

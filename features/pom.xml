@@ -10,7 +10,7 @@
     </parent>
     <artifactId>features</artifactId>
     <packaging>feature</packaging>
-    <name>OSGi utils karaf features</name>
+    <name>Epsilon runtime karaf features</name>
     
     <build>
         <resources>
