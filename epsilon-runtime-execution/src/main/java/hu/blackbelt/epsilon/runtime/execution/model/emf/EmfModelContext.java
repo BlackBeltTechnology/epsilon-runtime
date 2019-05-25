@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
-import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
+import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,7 +27,7 @@ public class EmfModelContext implements ModelContext {
 
     public static final String MODEL = "model";
     @Builder.Default
-    Log log = new Slf4jLog();
+    Log log = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
 
     @NonNull
     String emf;

@@ -107,5 +107,9 @@ public interface Log {
      */
     void error( Throwable error );
 
+    /**
+     * Get the current log buffer when it matter. Not all implementation retirn  others than an empty string.
+     */
+    String getBuffer();
 
 }

@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
-import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
+import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import lombok.*;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.joining;
 public class WrappedEmfModelContext implements ModelContext {
 
     @Builder.Default
-    Log log = new Slf4jLog();
+    Log log = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
 
     @NonNull
     Resource resource;

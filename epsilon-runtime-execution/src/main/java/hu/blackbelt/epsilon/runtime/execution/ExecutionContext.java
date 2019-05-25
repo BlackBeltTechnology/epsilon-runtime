@@ -10,10 +10,7 @@ import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EolExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.ProgramParameter;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
-import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
-import hu.blackbelt.epsilon.runtime.utils.AbbreviateUtils;
-import hu.blackbelt.epsilon.runtime.utils.MD5Utils;
-import hu.blackbelt.epsilon.runtime.utils.UUIDUtils;
+import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +19,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.common.parse.problem.ParseProblem;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
-import org.eclipse.epsilon.emc.emf.tools.EmfTool;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
 import org.eclipse.epsilon.eol.execute.context.Variable;
@@ -72,7 +68,7 @@ public class ExecutionContext implements AutoCloseable {
     private Boolean addEcorePackages = false;
 
     @Builder.Default
-    private Log log = new Slf4jLog();
+    private Log log = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
 
     @Builder.Default
     private List<String> metaModels = ImmutableList.of();
