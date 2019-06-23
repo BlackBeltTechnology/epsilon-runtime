@@ -12,6 +12,14 @@
     <artifactId>epsilon-runtime-execution</artifactId>
     <packaging>bundle</packaging>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>hu.blackbelt.epsilon</groupId>
