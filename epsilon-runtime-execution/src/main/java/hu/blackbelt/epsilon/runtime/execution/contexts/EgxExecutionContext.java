@@ -5,13 +5,14 @@ import lombok.Builder;
 import org.eclipse.epsilon.egl.EgxModule;
 import org.eclipse.epsilon.eol.IEolModule;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
 public class EgxExecutionContext extends EglExecutionContext {
 
     @Builder(builderMethodName = "egxExecutionContextBuilder")
-    public EgxExecutionContext(String source, List<ProgramParameter> parameters, String outputRoot) {
+    public EgxExecutionContext(URI source, List<ProgramParameter> parameters, String outputRoot) {
         super(source, parameters, outputRoot);
     }
 

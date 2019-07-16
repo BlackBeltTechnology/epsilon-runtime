@@ -7,13 +7,14 @@ import lombok.NonNull;
 import org.eclipse.epsilon.eol.EolModule;
 import org.eclipse.epsilon.eol.IEolModule;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
 public class EolExecutionContext {
     @Getter
     @NonNull
-    private String source;
+    private URI source;
 
     @Getter
     @NonNull
@@ -23,7 +24,7 @@ public class EolExecutionContext {
     private EolModule module = new EolModule();
 
     @Builder(builderMethodName = "eolExecutionContextBuilder")
-    public EolExecutionContext(String source, List<ProgramParameter> parameters) {
+    public EolExecutionContext(URI source, List<ProgramParameter> parameters) {
         this.source = source;
         this.parameters = parameters;
     }

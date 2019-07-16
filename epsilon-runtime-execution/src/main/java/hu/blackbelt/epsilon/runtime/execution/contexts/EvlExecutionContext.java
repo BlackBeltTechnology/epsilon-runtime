@@ -7,6 +7,7 @@ import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.evl.EvlModule;
 import org.eclipse.epsilon.evl.execute.UnsatisfiedConstraint;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,7 +30,7 @@ public class EvlExecutionContext extends EolExecutionContext {
     private static final String MODULE_NAME_SEPARATOR = "|";
 
     @Builder(builderMethodName = "evlExecutionContextBuilder")
-    public EvlExecutionContext(String source, List<ProgramParameter> parameters,
+    public EvlExecutionContext(URI source, List<ProgramParameter> parameters,
                                Collection<String> expectedErrors, Collection<String> expectedWarnings, EvlModule module) {
         super(source, parameters);
         if (expectedErrors != null) {
@@ -83,7 +84,7 @@ public class EvlExecutionContext extends EolExecutionContext {
 
             if (failed) {
                 throw EvlScriptExecutionException.evlScriptExecutionExceptionBuilder()
-                        .message(getSource())
+                        .message(getSource().toString())
                         .errorsNotFound(errorsNotFound)
                         .warningsNotFound(warningsNotFound)
                         .unexpectedErrors(unexpectedErrors)
@@ -96,7 +97,7 @@ public class EvlExecutionContext extends EolExecutionContext {
             failed = !unsatisfiedErrors().isEmpty();
             if (failed) {
                 throw EvlScriptExecutionException.evlScriptExecutionExceptionBuilder()
-                        .message(getSource())
+                        .message(getSource().toString())
                         .unsatisfiedErrors(unsatisfiedErrors())
                         .unsatisfiedWarnings(unsatisfiedWarnings())
                         .build();

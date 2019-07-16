@@ -8,6 +8,7 @@ import org.eclipse.epsilon.ecl.EclModule;
 import org.eclipse.epsilon.ecl.trace.MatchTrace;
 import org.eclipse.epsilon.eol.IEolModule;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class EclExecutionContext extends EolExecutionContext {
     private EclModule eclModule = new EclModule();
 
     @Builder(builderMethodName = "eclExecutionContextBuilder")
-    public EclExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace, EclModule eclModule) {
+    public EclExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace, EclModule eclModule) {
         super(source, parameters);
         this.useMatchTrace = useMatchTrace;
         this.exportMatchTrace = exportMatchTrace;

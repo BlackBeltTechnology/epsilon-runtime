@@ -88,7 +88,7 @@ class ExecutionContextTest {
                                 .excel(new File(targetDir(), "test-classes/namemapping.xlsx").getAbsolutePath())
                                 .excelConfiguration(new File(targetDir(), "test-classes/namemapping.xml").getAbsolutePath())
                                 .build()))
-                .sourceDirectory(scriptDir())
+                //.sourceDirectory(scriptDir())
                 .build();
 
         // run the loading
@@ -97,7 +97,7 @@ class ExecutionContextTest {
         // Transformation script
         executionContext.executeProgram(
                 etlExecutionContextBuilder()
-                        .source("transformTest1ToTest2WithNameMapping.etl")
+                        .source(new File(scriptDir(), "transformTest1ToTest2WithNameMapping.etl").toURI())
                         .build());
 
         executionContext.commit();
@@ -128,7 +128,6 @@ class ExecutionContextTest {
                                 .readOnLoad(false)
                                 .storeOnDisposal(true)
                                 .build()))
-                .sourceDirectory(scriptDir())
                 .build();
 
         // run the loading
@@ -137,7 +136,7 @@ class ExecutionContextTest {
         // Transformation script
         executionContext.executeProgram(
                 etlExecutionContextBuilder()
-                        .source("transformTest1ToTest2.etl")
+                        .source(new File(scriptDir(), "transformTest1ToTest2.etl").toURI())
                         .build());
 
         // The converted model resource
@@ -213,7 +212,6 @@ class ExecutionContextTest {
                                 .name("TEST2")
                                 .resource(createdTargetResource)
                                 .build()))
-                .sourceDirectory(scriptDir())
                 .build();
 
         // run the model / metadata loading
@@ -222,7 +220,7 @@ class ExecutionContextTest {
         // Transformation script
         executionContext.executeProgram(
                 etlExecutionContextBuilder()
-                        .source("transformTest1ToTest2.etl")
+                        .source(new File(scriptDir(), "transformTest1ToTest2.etl").toURI())
                         .build());
 
 
@@ -268,7 +266,6 @@ class ExecutionContextTest {
                                 .readOnLoad(false)
                                 .storeOnDisposal(true)
                                 .build()))
-                .sourceDirectory(scriptDir())
                 .build();
 
         // run the loading
@@ -277,7 +274,7 @@ class ExecutionContextTest {
         // Transformation script
         executionContext.executeProgram(
                 etlExecutionContextBuilder()
-                        .source("transformTest1ToLiquibase.etl")
+                        .source(new File(scriptDir(), "transformTest1ToLiquibase.etl").toURI())
                         .build());
 
         executionContext.commit();

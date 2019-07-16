@@ -75,7 +75,7 @@ public class ExecutionContext implements AutoCloseable {
 
     private List<ModelContext> modelContexts;
 
-    private File sourceDirectory;
+    //private File sourceDirectory;
 
     @Builder.Default
     private Boolean profile = false;
@@ -124,9 +124,9 @@ public class ExecutionContext implements AutoCloseable {
     }
 
     public void executeProgram(EolExecutionContext eolProgram) throws ScriptExecutionException {
-        File sourceFile = new File(eolProgram.getSource());
-        URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
-        context.put(EglExecutionContext.ARTIFACT_ROOT, source);
+        //File sourceFile = new File(eolProgram.getSource());
+        //URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
+        context.put(EglExecutionContext.ARTIFACT_ROOT, eolProgram.getSource());
 
         IEolModule eolModule = eolProgram.getModule(context);
 
@@ -154,9 +154,9 @@ public class ExecutionContext implements AutoCloseable {
             params = Lists.newArrayList();
         }
 
-        log.info("Running program: " + source);
+        log.info("Running program: " + eolProgram.getSource().toString());
 
-        executeModule(eolModule, source,
+        executeModule(eolModule, eolProgram.getSource(),
                 Stream.concat(
                         params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
                         context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))

@@ -15,6 +15,7 @@ import org.eclipse.epsilon.hutn.HutnModule;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +26,11 @@ import java.util.Map;
 public class HutnExecutionContext {
     @Getter
     @NonNull
-    private File source;
+    private URI source;
 
     @Getter
     @NonNull
-    private File target;
+    private URI target;
 
     @Builder.Default
     HutnModule module = new HutnModule() {
@@ -40,7 +41,7 @@ public class HutnExecutionContext {
     };
 
     @Builder(builderMethodName = "hutnExecutionContextBuilder")
-    public HutnExecutionContext(File source, File target, ModelRepository  modelRepository) {
+    public HutnExecutionContext(URI source, URI target, ModelRepository  modelRepository) {
         this.source = source;
         this.target = target;
         setHutnContext(module, modelRepository);

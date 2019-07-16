@@ -7,6 +7,7 @@ import lombok.NonNull;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.etl.EtlModule;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class EtlExecutionContext extends EolExecutionContext {
     EtlModule etlModule = new EtlModule();
 
     @Builder(builderMethodName = "etlExecutionContextBuilder")
-    public EtlExecutionContext(String source, List<ProgramParameter> parameters, String exportTransformationTrace, EtlModule etlModule) {
+    public EtlExecutionContext(URI source, List<ProgramParameter> parameters, String exportTransformationTrace, EtlModule etlModule) {
         super(source, parameters);
         this.exportTransformationTrace = exportTransformationTrace;
         if (etlModule != null) {

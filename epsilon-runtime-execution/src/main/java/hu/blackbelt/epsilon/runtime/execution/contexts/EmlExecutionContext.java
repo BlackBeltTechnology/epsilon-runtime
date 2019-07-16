@@ -8,6 +8,7 @@ import org.eclipse.epsilon.ecl.trace.MatchTrace;
 import org.eclipse.epsilon.eml.EmlModule;
 import org.eclipse.epsilon.eol.IEolModule;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class EmlExecutionContext extends EtlExecutionContext {
     private EmlModule emlModule = new EmlModule();
 
     @Builder(builderMethodName = "emlExecutionContextBuilder")
-    public EmlExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace, String exportTransformationTrace, EmlModule emlModule) {
+    public EmlExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportTransformationTrace, EmlModule emlModule) {
         super(source, parameters, exportTransformationTrace, null);
         this.useMatchTrace = useMatchTrace;
         if (emlModule != null) {
