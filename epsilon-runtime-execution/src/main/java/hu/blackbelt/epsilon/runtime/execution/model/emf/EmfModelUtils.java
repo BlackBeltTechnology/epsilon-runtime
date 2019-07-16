@@ -1,17 +1,19 @@
 package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -63,8 +65,14 @@ public class EmfModelUtils {
 
         model.load(properties);
         model.setName(emfModel.getName());
-        if (emfModel.validateModel && !ModelValidator.getValidationErrors(log, model).isEmpty()) {
-            throw new IllegalStateException("Invalid model: " + model.getName());
+        List<String> validationErrors = ImmutableList.of();
+        if (emfModel.validateModel) {
+            validationErrors = ModelValidator.getValidationErrors(log, model);
+        }
+        if (!validationErrors.isEmpty()) {
+            throw new IllegalStateException("Invalid model: " + emfModel.getName() + "\n" +
+                    ModelValidator.getValidationErrors(log, model).stream()
+                            .collect(Collectors.joining("\n")));
         }
 
         repository.addModel(model);

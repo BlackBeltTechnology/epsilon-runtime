@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
+import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import lombok.*;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
@@ -22,6 +23,7 @@ import org.eclipse.epsilon.eol.models.ModelRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -48,13 +50,19 @@ public class WrappedEmfModelContext implements ModelContext {
     @Builder.Default
     Map<String, String> uriConverterMap = ImmutableMap.of();
 
+    /**
+     * Validate model against Ecore metamodel and fail on validation errors.
+     */
+    @Builder.Default
+    Boolean validateModel = true;
+
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
         // Hack: to able to resolve supertypes
         Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
         uriMapExtended.put(URI.createURI(""), resource.getURI());
 
-        IModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource, uriMapExtended);
+        ResourceWrappedEMFModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource, uriMapExtended);
 
         final StringProperties properties = new StringProperties();
         properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
@@ -75,7 +83,19 @@ public class WrappedEmfModelContext implements ModelContext {
 
         emfModel.load(properties);
         emfModel.setName(getName());
+
+        List<String> validationErrors = ImmutableList.of();
+        if (validateModel) {
+            validationErrors = ModelValidator.getValidationErrors(log, emfModel);
+        }
+        if (!validationErrors.isEmpty()) {
+            throw new IllegalStateException("Invalid model: " + getName() + "\n" +
+                    ModelValidator.getValidationErrors(log, emfModel).stream()
+                            .collect(Collectors.joining("\n")));
+        }
+
         repository.addModel(emfModel);
+
         return emfModel;
     }
 
