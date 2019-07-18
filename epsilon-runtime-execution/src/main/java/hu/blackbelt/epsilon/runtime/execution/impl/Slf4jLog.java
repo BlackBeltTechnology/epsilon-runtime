@@ -16,6 +16,21 @@ public class Slf4jLog extends StringBuilderLogger implements Log {
         this.log = logger;
     }
 
+    public void trace(CharSequence charSequence) {
+        super.trace(charSequence);
+        log.trace(charSequence.toString());
+    }
+
+    public void trace(CharSequence charSequence, Throwable throwable) {
+        super.trace(charSequence, throwable);
+        log.trace(charSequence.toString(), throwable);
+    }
+
+    public void trace(Throwable throwable) {
+        super.trace(throwable);
+        log.trace("", throwable);
+    }
+
     public void debug(CharSequence charSequence) {
         super.debug(charSequence);
         log.debug(charSequence.toString());

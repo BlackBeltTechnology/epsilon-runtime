@@ -31,6 +31,25 @@ public class StringBuilderLogger implements Log {
         }
     }
 
+    public void trace(CharSequence charSequence) {
+        if (currentLevels.contains(LogLevel.TRACE)) {
+            buffer.append(LF + charSequence.toString());
+        }
+    }
+
+    public void trace(CharSequence charSequence, Throwable throwable) {
+        if (currentLevels.contains(LogLevel.TRACE)) {
+            buffer.append(LF + charSequence.toString());
+            buffer.append(LF + exceptionToString(throwable));
+        }
+    }
+
+    public void trace(Throwable throwable) {
+        if (currentLevels.contains(LogLevel.TRACE)) {
+            buffer.append(LF + exceptionToString(throwable));
+        }
+    }
+
     public void debug(CharSequence charSequence) {
         if (currentLevels.contains(LogLevel.DEBUG)) {
             buffer.append(LF + charSequence.toString());
