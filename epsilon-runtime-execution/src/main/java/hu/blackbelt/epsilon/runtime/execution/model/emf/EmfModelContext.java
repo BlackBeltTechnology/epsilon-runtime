@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
+import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import lombok.Builder;
 import lombok.Data;
@@ -135,7 +136,7 @@ public class EmfModelContext implements ModelContext {
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
+    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         URI uri =  uriMap.get("model");
         IModel model = EmfModelUtils.loadEmf(log, emfModelFactory, resourceSet, repository, this, uriMap.get(MODEL), uriConverterMap);
         return model;

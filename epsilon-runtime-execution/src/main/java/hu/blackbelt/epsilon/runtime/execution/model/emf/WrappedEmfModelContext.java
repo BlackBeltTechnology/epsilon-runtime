@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
+import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import lombok.*;
@@ -57,7 +58,7 @@ public class WrappedEmfModelContext implements ModelContext {
     Boolean validateModel = true;
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
+    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         // Hack: to able to resolve supertypes
         Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
         uriMapExtended.put(URI.createURI(""), resource.getURI());
@@ -84,16 +85,9 @@ public class WrappedEmfModelContext implements ModelContext {
         emfModel.load(properties);
         emfModel.setName(getName());
 
-        List<String> validationErrors = ImmutableList.of();
         if (validateModel) {
-            validationErrors = ModelValidator.getValidationErrors(log, emfModel);
+            ModelValidator.validate(emfModel);
         }
-        if (!validationErrors.isEmpty()) {
-            throw new IllegalStateException("Invalid model: " + getName() + "\n" +
-                    ModelValidator.getValidationErrors(log, emfModel).stream()
-                            .collect(Collectors.joining("\n")));
-        }
-
         repository.addModel(emfModel);
 
         return emfModel;

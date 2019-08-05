@@ -1,5 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution.api;
 
+import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 public interface ModelContext {
 
-    IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException;
+    IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException;
     void addAliases(ModelRepository repository, ModelReference ref);
     List<String> getAliases();
 

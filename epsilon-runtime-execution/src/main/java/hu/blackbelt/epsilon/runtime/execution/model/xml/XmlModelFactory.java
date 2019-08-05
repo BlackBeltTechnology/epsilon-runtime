@@ -9,6 +9,8 @@ import org.eclipse.epsilon.emc.emf.xml.XmlModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
+import java.util.Optional;
+
 import static java.util.stream.Collectors.joining;
 
 public interface XmlModelFactory {
@@ -38,7 +40,7 @@ public interface XmlModelFactory {
 
         model.load(properties);
         model.setName(xmlModelContext.getName());
-        if (xmlModelContext.getValidateModel() && !ModelValidator.getValidationErrors(log, model).isEmpty()) {
+        if (xmlModelContext.getValidateModel() && !ModelValidator.getValidationErrors(Optional.of(log), model).isEmpty()) {
             throw new IllegalStateException("Invalid model: " + model.getName());
         }
 

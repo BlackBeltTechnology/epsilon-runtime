@@ -3,6 +3,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -20,7 +21,7 @@ import static java.util.stream.Collectors.joining;
 public class EmfModelUtils {
     public static EmfModel loadEmf(Log log,
                                    EmfModelFactory emfModelFactory, ResourceSet resourceSet,
-                                   ModelRepository repository, EmfModelContext emfModel, URI uri, Map<URI, URI> uriMap) throws EolModelLoadingException {
+                                   ModelRepository repository, EmfModelContext emfModel, URI uri, Map<URI, URI> uriMap) throws EolModelLoadingException, ModelValidationException {
 
         // Hack: to able to resolve supertypes
         Map<URI, URI> uriMapExtended = Maps.newHashMap(uriMap);
@@ -65,16 +66,9 @@ public class EmfModelUtils {
 
         model.load(properties);
         model.setName(emfModel.getName());
-        List<String> validationErrors = ImmutableList.of();
         if (emfModel.validateModel) {
-            validationErrors = ModelValidator.getValidationErrors(log, model);
+            ModelValidator.validate(model);
         }
-        if (!validationErrors.isEmpty()) {
-            throw new IllegalStateException("Invalid model: " + emfModel.getName() + "\n" +
-                    ModelValidator.getValidationErrors(log, model).stream()
-                            .collect(Collectors.joining("\n")));
-        }
-
         repository.addModel(model);
 
         return model;
