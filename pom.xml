@@ -506,32 +506,15 @@
         </profile>
         
         <profile>
-            <id>release-blackbelt</id>
-            <!-- Community edition does not support staging
-             <build>
-             <plugins>
-             <plugin>
-             <groupId>org.sonatype.plugins</groupId>
-             <artifactId>nexus-staging-maven-plugin</artifactId>
-             <version>1.6.8</version>
-             <extensions>true</extensions>
-             <configuration>
-             <serverId>blackbelt-nexus-distribution</serverId>
-             <nexusUrl>https://nexus.blackbelt.cloud/repository/maven-judo-snapshot/</nexusUrl>
-             <autoReleaseAfterClose>true</autoReleaseAfterClose>
-             </configuration>
-             </plugin>
-             </plugins>
-             </build>
-             -->
+            <id>release-judong</id>
             <distributionManagement>
                 <snapshotRepository>
-                    <id>blackbelt-nexus-distribution</id>
-                    <url>https://nexus.blackbelt.cloud/repository/maven-judo-snapshot/</url>
+                    <id>judong-nexus-distribution</id>
+                    <url>${env.JUDONG_MAVEN_UPSTREAM_SNAPSHOT}</url>
                 </snapshotRepository>
                 <repository>
-                    <id>blackbelt-nexus-distribution</id>
-                    <url>https://nexus.blackbelt.cloud/repository/maven-judo-snapshot/</url>
+                    <id>judong-nexus-distribution</id>
+                    <url>${env.JUDONG_MAVEN_UPSTREAM_RELEASE}</url>
                 </repository>
             </distributionManagement>
         </profile>
