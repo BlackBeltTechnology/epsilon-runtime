@@ -66,12 +66,14 @@ public class EvlExecutionContext extends EolExecutionContext {
             final List<UnsatisfiedConstraint> unsatisfiedWarnings = unsatisfiedWarnings();
             final List<UnsatisfiedConstraint> unsatisfiedErrors = unsatisfiedErrors();
 
-            unsatisfiedWarnings.forEach(e -> {
-                final String key = e.getConstraint().getName() + MODULE_NAME_SEPARATOR + e.getMessage();
-                if (!warningsNotFound.remove(key) && (expectedWarnings == null || !expectedWarnings.contains(key))) {
-                    unexpectedWarnings.add(key);
-                }
-            });
+            if (expectedWarnings != null) {
+                unsatisfiedWarnings.forEach(e -> {
+                    final String key = e.getConstraint().getName() + MODULE_NAME_SEPARATOR + e.getMessage();
+                    if (!warningsNotFound.remove(key) && (expectedWarnings == null || !expectedWarnings.contains(key))) {
+                        unexpectedWarnings.add(key);
+                    }
+                });
+            }
 
             unsatisfiedErrors.forEach(e -> {
                 final String key = e.getConstraint().getName() + MODULE_NAME_SEPARATOR + e.getMessage();
