@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
@@ -35,16 +33,16 @@
         <epsilon-version>1.5.1</epsilon-version>
         <karaf-version>4.2.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
-        <osgi-utils-version>1.0.7</osgi-utils-version>
-        <google-karaf-features-version>1.0.1</google-karaf-features-version>
-        <javax-karaf-features-version>1.0.1</javax-karaf-features-version>
-        <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
-        <eclipse-emf-karaf-features-version>2.12.1</eclipse-emf-karaf-features-version>
-        <eclipse-epsilon-karaf-features-version>1.5.1_1</eclipse-epsilon-karaf-features-version>
-        <antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
-        <apache-commons-karaf-features-version>1.0.2</apache-commons-karaf-features-version>
-        <apache-poi-karaf-features-version>1.0.0</apache-poi-karaf-features-version>
-        <apache-httpclient-karaf-features-version>4.5.3_2</apache-httpclient-karaf-features-version>
+        <osgi-utils-version>1.0.8.20200112_012807_d70d730_develop</osgi-utils-version>
+        <google-karaf-features-version>1.0.4.20200111_234307_71d7237_develop</google-karaf-features-version>
+        <javax-karaf-features-version>1.0.3.20191112_144806_b87b261_develop</javax-karaf-features-version>
+        <bouncycastle-karaf-features-version>1.61.3.20191112_145528_65f6ec3_develop</bouncycastle-karaf-features-version>
+        <eclipse-emf-karaf-features-version>1.0.0.20191112_145407_36a50ba_develop</eclipse-emf-karaf-features-version>
+        <eclipse-epsilon-karaf-features-version>1.0.0.20200111_234924_66a3503_develop</eclipse-epsilon-karaf-features-version>
+        <antlr-karaf-features-version>1.0.2.20191112_150321_54f0b2e_develop</antlr-karaf-features-version>
+        <apache-commons-karaf-features-version>1.0.6.20191112_150120_8396e08_develop</apache-commons-karaf-features-version>
+        <apache-poi-karaf-features-version>1.0.3.20200111_213125_a8284fb_develop</apache-poi-karaf-features-version>
+        <apache-httpclient-karaf-features-version>1.0.1.20200111_213046_71bd9f7_develop</apache-httpclient-karaf-features-version>
     </properties>
     
     <scm>
@@ -197,7 +195,7 @@
                 						</goals>
                 					</pluginExecutionFilter>
                 					<action>
-                						<ignore></ignore>
+                						<ignore />
                 					</action>
                 				</pluginExecution>
                 			</pluginExecutions>
