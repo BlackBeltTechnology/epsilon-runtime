@@ -1,0 +1,12 @@
+@Spec {
+	metamodel "http://www.blackbelt.hu/epsilon-runtime/reference" {
+		nsUri: "http://www.blackbelt.hu/epsilon-runtime/reference"
+	}
+}
+
+package  {
+	EntityMap "EntityMap1" {
+		entity: UnknownType "epsilon-runtime-test1.model#_Ds1OEEAJEemOdvXw1zCXyw"
+		transformedEntity: UnknownType "epsilon-runtime-test2.model#_2AhHoENAEemjq6tP6H_kVQ"
+	}
+}

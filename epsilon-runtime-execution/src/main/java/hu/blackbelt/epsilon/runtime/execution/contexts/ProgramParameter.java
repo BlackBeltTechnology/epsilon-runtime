@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@Builder
+@Builder(builderMethodName = "programParameterBuilder")
 public class ProgramParameter {
 
     String name;

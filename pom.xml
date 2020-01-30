@@ -1,20 +1,487 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>hu.blackbelt.epsilon</groupId>
-        <artifactId>epsilon-runtime-parent</artifactId>
-        <version>1.1.5</version>
-        <relativePath>epsilon-runtime-parent</relativePath>
-    </parent>
-    <artifactId>epsilon-runtime-reactor</artifactId>
+    <groupId>hu.blackbelt.epsilon</groupId>
+    <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <modules>
-        <module>epsilon-runtime-parent</module>
-        <module>epsilon-runtime-utils</module>
-        <module>epsilon-runtime-execution</module>
-    </modules>
+    <version>1.2.0</version>
+    
+    <name>epsilon-runtime</name>
+    <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
+    <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
+    <issueManagement>
+        <url>https://github.com/BlackBeltTechnology/epsilon-runtime/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+    <properties>
+        <!-- Xtend / Xcore -->
+        <emf-version>2.18.0</emf-version>
+        <emf-common-version>2.16.0</emf-common-version>
+        <core-resources-version>3.12.0</core-resources-version>
+        <eclipse-text-version>3.5.101</eclipse-text-version>
+        <emf-codegen-version>2.16.0</emf-codegen-version>
+        <emf-codegen-ecore-version>2.18.0</emf-codegen-ecore-version>
+        <emf-ecore-xmi-version>2.16.0</emf-ecore-xmi-version>
+        <xtext-version>2.17.0</xtext-version>
+        <ecore-xtext-version>1.2.0</ecore-xtext-version>
+        <ecore-xcore-version>1.3.1</ecore-xcore-version>
+        <ecore-xcore-lib-version>1.3.0</ecore-xcore-lib-version>
+        <emf-mwe2-launch-version>2.10.0</emf-mwe2-launch-version>
+        <emf-mwe-utils-version>1.4.0</emf-mwe-utils-version>
+        <xpand-version>2.0.0</xpand-version>
+        <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
+
+        <epsilon-version>1.5.1</epsilon-version>
+        <karaf-version>4.2.1</karaf-version>
+        <cxf-version>3.3.1</cxf-version>
+        <osgi-utils-version>1.0.8</osgi-utils-version>
+        <google-karaf-features-version>1.0.3</google-karaf-features-version>
+        <javax-karaf-features-version>1.0.2</javax-karaf-features-version>
+        <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
+        <eclipse-emf-karaf-features-version>2.18.0</eclipse-emf-karaf-features-version>
+        <eclipse-epsilon-karaf-features-version>1.0.0</eclipse-epsilon-karaf-features-version>
+        <antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
+        <apache-commons-karaf-features-version>1.0.5</apache-commons-karaf-features-version>
+        <apache-poi-karaf-features-version>1.0.2</apache-poi-karaf-features-version>
+        <apache-httpclient-karaf-features-version>1.0.0</apache-httpclient-karaf-features-version>
+    </properties>
+    
+    <scm>
+        <connection>scm:git:git://github.com/BlackBeltTechnology/epsilon-runtime.git</connection>
+        <developerConnection>
+            scm:git:ssh://${git.username}@github.com:BlackBeltTechnology/epsilon-runtime.git
+        </developerConnection>
+        <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
+    </scm>
+    
+    <developers>
+        <developer>
+            <id>robson</id>
+            <name>Robert Csakany</name>
+            <email>robert.csakany@blackbelt.hu</email>
+            <url>https://github.com/robertcsakany</url>
+            <organization>BlackBelt Technology</organization>
+            <organizationUrl>http://www.blackbelt.hu</organizationUrl>
+        </developer>
+    </developers>
+    
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <build>
+        
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>3.3.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <instructions>
+                            <Export-Package>
+                                hu.blackbelt.epsilon.runtime.*;version=${project.version}
+                            </Export-Package>
+                            <Import-Package>
+                                !lombok,
+                                com.google.common.base;version="[14.0,30)",
+                                com.google.common.cache;version="[14.0,30)",
+                                com.google.common.collect;version="[14.0,30)",
+                                com.google.common.io;version="[14.0,30)",
+                                com.google.common.primitives;version="[14.0,30)",
+                                com.google.common.hash;version="[14.0,30)",
+                                com.google.common.util.concurrent;version="[14.0,30)",
+                                javax.annotation;version="[1.0,2)",
+                                *
+                            </Import-Package>
+                            <Include-Resource>{maven-resources}</Include-Resource>
+                        </instructions>
+                    </configuration>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>${karaf-version}</version>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.7.0</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                    <executions>
+                        <execution>
+                            <id>default-install</id>
+                            <configuration>
+                                <skip>${deployOnly}</skip>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>default-test</id>
+                            <configuration>
+                                <skip>${deployOnly}</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+                
+                
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+
+                <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                    <configuration>
+                        <argLine>-Dfile.encoding=UTF-8</argLine>
+                    </configuration>
+                </plugin>
+
+
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                	<groupId>org.eclipse.m2e</groupId>
+                	<artifactId>lifecycle-mapping</artifactId>
+                	<version>1.0.0</version>
+                	<configuration>
+                		<lifecycleMappingMetadata>
+                			<pluginExecutions>
+                				<pluginExecution>
+                					<pluginExecutionFilter>
+                						<groupId>
+                							org.apache.karaf.tooling
+                						</groupId>
+                						<artifactId>
+                							karaf-maven-plugin
+                						</artifactId>
+                						<versionRange>
+                							[4.2.1,)
+                						</versionRange>
+                						<goals>
+                							<goal>verify</goal>
+                							<goal>
+                								features-generate-descriptor
+                							</goal>
+                						</goals>
+                					</pluginExecutionFilter>
+                					<action>
+                						<ignore />
+                					</action>
+                				</pluginExecution>
+                			</pluginExecutions>
+                		</lifecycleMappingMetadata>
+                	</configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-workflow</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-emf</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-hutn</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-workflow-emf</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>epsilon-spreadsheets</artifactId>
+            <version>${epsilon-version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
+            <version>${emf-mapping-ecore2xml}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.common</artifactId>
+            <version>${emf-common-version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore</artifactId>
+            <version>2.18.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+            <version>2.16.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.uml2.uml</groupId>
+            <artifactId>resources</artifactId>
+            <version>5.0.0-v20140602-0749</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.emf</groupId>
+                    <artifactId>ecore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.emf.ecore</groupId>
+                    <artifactId>xmi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.emf.mapping</groupId>
+                    <artifactId>ecore2xml</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
+            <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>hu.blackbelt.epsilon</groupId>
+                <artifactId>epsilon-runtime-utils</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <profiles>
+        <profile>
+            <id>modules</id>
+            <activation>
+                <property>
+                    <name>github_release</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>epsilon-runtime-utils</module>
+                <module>epsilon-runtime-execution</module>
+                <module>epsilon-runtime-osgi</module>
+                <module>features</module>
+                <module>kar</module>
+            </modules>
+        </profile>
+        
+
+
+        <profile>
+            <id>sign-artifacts</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>release-dummy</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>dummy-distribution</id>
+                    <url>file:///tmp/maven-snapshot/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>dummy-distribution</id>
+                    <url>file:///tmp/maven-release/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
+        <profile>
+            <id>release-judong</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>judong-nexus-distribution</id>
+                    <url>${env.JUDONG_MAVEN_UPSTREAM_SNAPSHOT}</url>
+                </snapshotRepository>
+                <repository>
+                    <id>judong-nexus-distribution</id>
+                    <url>${env.JUDONG_MAVEN_UPSTREAM_RELEASE}</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
+        <profile>
+            <id>release-central</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
         <profile>
             <id>release-github</id>
             <build>
@@ -22,32 +489,53 @@
                     <plugin>
                         <groupId>de.jutzig</groupId>
                         <artifactId>github-release-plugin</artifactId>
-                        <version>1.2.0</version>
-                        <configuration>
-                            <repositoryId>https://github.com/BlackBeltTechnology/epsilon-runtime.git</repositoryId>
-                            <description>Branch: ${env.WERCKER_GIT_BRANCH} Wercker: ${env.WERCKER_RUN_URL}</description>
-                            <releaseName>${project.version}</releaseName>
-                            <prerelease>true</prerelease>
-                            <tag>${project.version}</tag>
-                            <fileSets>
-                                <fileSet>
-                                    <directory>epsilon-runtime-utils/target</directory>
-                                    <includes>
-                                        <include>*.jar</include>
-                                    </includes>
-                                </fileSet>
-                                <fileSet>
-                                    <directory>epsilon-runtime-execution/target</directory>
-                                    <includes>
-                                        <include>*.jar</include>
-                                    </includes>
-                                </fileSet>
-                            </fileSets>
-                        </configuration>
+                        <version>1.3.0</version>
+                        <inherited>false</inherited>
                         <executions>
                             <execution>
                                 <id>release-to-github</id>
-                                <phase>install</phase>
+
+                                <configuration>
+                                    <repositoryId>https://github.com/BlackBeltTechnology/epsilon-runtime.git</repositoryId>
+                                    <description>Branch: ${env.WERCKER_GIT_BRANCH} Wercker: ${env.WERCKER_RUN_URL}</description>
+                                    <releaseName>${project.version}</releaseName>
+                                    <deleteRelease>true</deleteRelease>
+                                    <tag>${project.version}</tag>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>epsilon-runtime-execution/target</directory>
+                                            <includes>
+                                                <include>*.jar</include>
+                                            </includes>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>epsilon-runtime-utils/target</directory>
+                                            <includes>
+                                                <include>*.jar</include>
+                                            </includes>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>epsilon-runtime-osgi/target</directory>
+                                            <includes>
+                                                <include>*.jar</include>
+                                            </includes>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>features/target/feature/</directory>
+                                            <includes>
+                                                <include>feature.xml</include>
+                                            </includes>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>kar/target</directory>
+                                            <includes>
+                                                <include>*.kar</include>
+                                            </includes>
+                                        </fileSet>
+                                    </fileSets>
+                                </configuration>
+
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>release</goal>
                                 </goals>

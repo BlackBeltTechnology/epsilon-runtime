@@ -1,0 +1,5 @@
+# Epsilon development (notes)
+
+0. Guards are not inherited by ETL rules. -> Guards must be repeated in inherited rules.
+0. cache flag of loaded model must be set to false if it is used by EOL scripts during generation and return values of operations are not constants.
+0. equivalent calls are not supported in guard of ETL rules

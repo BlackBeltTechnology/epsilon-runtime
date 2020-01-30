@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/epsilon-runtime-execution/src/test/java" modelPluginID="epsilon-runtime-execution"
+    modelName="Epsilon-runtime-test" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>epsilon-runtime-test.ecore</foreignModel>
+  <genPackages prefix="Data" basePackage="hu.blackbelt.epsilon.runtime.model.test1"
+      resource="XMI" disposableProviderFactory="true" dataTypeConverters="true" extensibleProviderFactory="true"
+      childCreationExtenders="true" fileExtensions="test1-data" ecorePackage="epsilon-runtime-test.ecore#/">
+    <genClasses ecoreClass="epsilon-runtime-test.ecore#//DataModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute epsilon-runtime-test.ecore#//DataModel/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference epsilon-runtime-test.ecore#//DataModel/entity"/>
+    </genClasses>
+    <genClasses ecoreClass="epsilon-runtime-test.ecore#//Entity">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute epsilon-runtime-test.ecore#//Entity/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference epsilon-runtime-test.ecore#//Entity/attribute"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference epsilon-runtime-test.ecore#//Entity/reference"/>
+    </genClasses>
+    <genClasses ecoreClass="epsilon-runtime-test.ecore#//Attribute">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute epsilon-runtime-test.ecore#//Attribute/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute epsilon-runtime-test.ecore#//Attribute/type"/>
+    </genClasses>
+    <genClasses ecoreClass="epsilon-runtime-test.ecore#//EntityReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute epsilon-runtime-test.ecore#//EntityReference/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute epsilon-runtime-test.ecore#//EntityReference/toMany"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference epsilon-runtime-test.ecore#//EntityReference/target"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

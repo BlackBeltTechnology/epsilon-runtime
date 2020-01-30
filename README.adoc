@@ -1,0 +1,308 @@
+# epsilon-runtime
+
+Eclipse Epsilon Runtime for Maven and OSGi. There are builders and helper classes, 
+URI handlers that can help the usage of Epsilon out of Eclipse ecosystem. 
+
+## What is Epsilon?
+
+From: https://www.eclipse.org/epsilon/
+
+Epsilon is a family of languages and tools for code generation, model-to-model transformation, 
+model validation, comparison, migration and refactoring that work out of the box with EMF, 
+UML, Simulink, XML and other types of models.
+
+The currently supported epsilon language dialects are:
+ - EOL (Epsilon Object Language)
+ - ETL (Epsilon Transformation Language)
+ - EVL (Epsilon Validation Language)
+ - EGL (Epsilon Generation Language)
+ - EGX (Epsilon Generation XML(?))
+ - EML (Epsilon Merging Language)
+ - ECL (Epsilon Comparison Language)
+ 
+ To understand the epsilon stack recommended to read the free epsilon book: https://www.eclipse.org/epsilon/doc/book/
+ 
+
+## Example
+
+This example there is a model definition which can define a simple class structure with attributes and references. That models can be transformed to Liquibase (https://www.liquibase.org/) scripts. 
+Liquibase XML format used which is defined with an XSD file, which techcally the meta model of an XML file. 
+The original XSD file was modified (https://github.com/BlackBeltTechnology/epsilon-runtime/blob/develop/epsilon-runtime-execution/src/test/resources/liquibase.xsd) to be compatible with Ecore metamodel structure, so the output of transformation will be an XML file which is a Liquibase XML itself.
+
+### 1. Define a meta-model. The meta-model contains the definition of our structure:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="data" nsURI="http://www.blackbelt.hu/epsilon-runtime/test" nsPrefix="data">
+  <eClassifiers xsi:type="ecore:EClass" name="DataModel">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="entity" upperBound="-1"
+        eType="#//Entity" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Entity">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" lowerBound="1"
+        upperBound="-1" eType="#//Attribute" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reference" upperBound="-1"
+        eType="#//EntityReference" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Attribute">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EntityReference">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="toMany" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
+        eType="#//Entity"/>
+  </eClassifiers>
+</ecore:EPackage>
+----
+
+[NOTE]
+====
+In EMF (Emfatic fomat) - You can convert between .ecore and .emf within eclipse. 
+The epsilon-runtime will support emfatic format directly soon.
+====
+
+[source]
+----
+@namespace(uri="http://www.blackbelt.hu/epsilon-runtime/test", prefix="data")
+package data;
+
+class DataModel {
+  attr String name;
+  val Entity[*] entity;
+}
+
+class Entity { // <1>
+  attr String name;
+  val Attribute[+] attribute;
+  val EntityReference[*] reference;
+}
+
+class Attribute { // <2>
+  attr String name;
+  attr String type;
+}
+
+class EntityReference { // <3>
+  attr String name;
+  attr boolean toMany;
+  ref Entity[1] target;
+}
+----
+<1> Entity - Represents a class 
+<2> Attribute - Represents an attribute of class
+<3> Reference - Represents a reference to a class
+
+### 2. Define the model based on meta-model
+
+[source, xml]
+----
+<?xml version="1.0" encoding="ASCII"?>
+<data:DataModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:data="http://www.blackbelt.hu/epsilon-runtime/test" xmi:id="_CeiO8EAJEemOdvXw1zCXyw">
+  <entity xmi:id="_Ds1OEEAJEemOdvXw1zCXyw" name="Test1">
+    <attribute xmi:id="_FB4VcEAJEemOdvXw1zCXyw" name="attr1" type="String"/>
+  </entity>
+  <entity xmi:id="_H8fscEAJEemOdvXw1zCXyw" name="Test2">
+    <attribute xmi:id="_Ja6yQEAJEemOdvXw1zCXyw" name="attr2" type="String"/>
+    <reference xmi:id="_LwhXsEAJEemOdvXw1zCXyw" name="test1" target="_Ds1OEEAJEemOdvXw1zCXyw"/>
+  </entity>
+</data:DataModel>
+----
+
+[NOTE]
+====
+In HUTN (Emfatic fomat) - You can convert between .model and .hutn within eclipse. 
+The epsilon-runtime will support hutn format directly soon.
+====
+
+[source]
+----
+@Spec {
+	metamodel "http://www.blackbelt.hu/epsilon-runtime/test" {
+		nsUri: "http://www.blackbelt.hu/epsilon-runtime/test"
+	}
+}
+
+package  {
+	DataModel "DataModel1" {
+		entity: 
+			Entity "Test1" {
+				name: "Test1"
+				attribute: 
+					Attribute "attr1" {
+						name: "attr1"
+						type: "String"
+					}
+			
+			Entity "Test2" {
+				name: "Test2"
+				attribute: 
+					Attribute "attr2" {
+						name: "attr2"
+						type: "String"
+					}
+				reference: 
+					EntityReference "test1" {
+						name: "test1"
+						target: Entity "Test1"
+					}
+			}
+	}
+}
+----
+
+### 3. Define the transformation rules
+
+The rules can be defined in ETL language (Epsilon Transformation Language).
+
+[source]
+----
+rule DataModelToChangeLog
+	transform s : TEST1!DataModel
+	to t : LIQUIBASE!databaseChangeLog {
+}
+
+rule DataModelToChangeSet
+	transform s : TEST1!DataModel
+	to t : LIQUIBASE!ChangeSet {
+	    t.id =  s.name;
+	    t.author = "test1toliquibase";
+		s.equivalent("DataModelToChangeLog").changeSet.add(t);
+}
+
+rule EntityToCreateTable
+	transform s : TEST1!Entity
+	to t : LIQUIBASE!CreateTable {
+		t.tableName = s.name;
+		TEST1!DataModel.all.selectOne(e | e.entity.contains(s)).equivalent("DataModelToChangeSet").createTable.add(t);
+}
+
+rule EntityToIdColumn
+	transform s : TEST1!Entity
+	to t : LIQUIBASE!Column {
+		t.name = "ID";
+		t.type = "Identifier";
+		s.equivalent("EntityToCreateTable").column.add(t);
+}
+
+rule EntityToPrimaryKey
+	transform s : TEST1!Entity
+	to t : LIQUIBASE!AddPrimaryKey {
+		t.tableName = s.name;
+		t.columnNames = "ID";
+		TEST1!DataModel.all.selectOne(d | d.entity.contains(s)).equivalent("DataModelToChangeSet").addPrimaryKey.add(t);
+}
+
+rule AttributeToColumn
+	transform s : TEST1!Attribute
+	to t : LIQUIBASE!Column {
+		t.name = s.name;
+		t.type = s.type;
+		TEST1!Entity.all.selectOne(e | e.attribute.contains(s)).equivalent("EntityToCreateTable").column.add(t);
+}
+
+rule EntityReferenceToColumn
+	transform s : TEST1!EntityReference
+	to t : LIQUIBASE!Column {
+		t.name = "ID_" + s.name;
+		t.type = "Identifier";
+		TEST1!Entity.all.selectOne(e | e.reference.contains(s)).equivalent("EntityToCreateTable").column.add(t);
+}
+
+rule EntityReferenceToAddForeignKeyConstraint
+	transform s : TEST1!EntityReference
+	to t : LIQUIBASE!AddForeignKeyConstraint {
+		var entity : TEST1!Entity = TEST1!Entity.all.selectOne(e | e.reference.contains(s));
+		t.constraintName = "FK_" + entity.name + "_" + s.`target`.name;
+
+		t.baseTableName = entity.name;
+		t.baseColumnNames = "ID_" + s.`target`.name;		
+
+		t.referencedColumnNames = "ID";
+		t.referencedTableName = s.`target`.name;
+
+		TEST1!DataModel.all.selectOne(e | e.entity.contains(entity)).equivalent("DataModelToChangeSet").addForeignKeyConstraint.add(t);
+}
+----
+
+### 4. Run the transformation
+
+[source, java]
+----
+        // Preparing URI handler
+        uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
+                new File(targetDir(), "test-classes").getAbsolutePath());
+
+        // Setup resourcehandler used to load metamodels
+        executionResourceSet = new CachedResourceSet();
+        executionResourceSet.getURIConverter().getURIHandlers().add(0, uriHandler);
+
+        // Executrion context
+        ExecutionContext executionContext = executionContextBuilder()
+                .log(slf4jLogger)
+                .resourceSet(executionResourceSet)
+                .metaModels(ImmutableList.of(
+                        "urn:epsilon-runtime-test.ecore"))
+                .modelContexts(ImmutableList.of(
+                        emfModelContextBuilder()
+                                .log(slf4jLogger)
+                                .name("TEST1")
+                                .emf("urn:epsilon-runtime-test1.model")
+                                .build(),
+
+                        xmlModelContextBuilder()
+                                .log(slf4jLogger)
+                                .name("LIQUIBASE")
+                                // TODO: XSDEcoreBuilder creating separate ResourceSet, so URIHandlers are not
+                                // working. Have to find a way to inject
+                                // .xsd("urn:liquibase.xsd")
+                                .xsd(new File(targetDir(), "test-classes/liquibase.xsd").getAbsolutePath())
+                                .xml("urn:epsilon-transformedliquibase.xml")
+                                .readOnLoad(false)
+                                .storeOnDisposal(true)
+                                .build()))
+                .sourceDirectory(scriptDir())
+                .build();
+
+        // run the loading
+        executionContext.load();
+
+        // Transformation script
+        executionContext.executeProgram(
+                etlExecutionContextBuilder()
+                        .source("transformTest1ToLiquibase.etl")
+                        .build());
+
+        executionContext.commit();
+        executionContext.close();
+----
+
+The output liquibase model is:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog">
+  <changeSet author="test1toliquibase">
+    <createTable tableName="Test1">
+      <column name="ID" type="Identifier"/>
+      <column name="attr1" type="String"/>
+    </createTable>
+    <createTable tableName="Test2">
+      <column name="ID" type="Identifier"/>
+      <column name="attr2" type="String"/>
+      <column name="ID_test1" type="Identifier"/>
+    </createTable>
+    <addForeignKeyConstraint baseColumnNames="ID_Test1" baseTableName="Test2" constraintName="FK_Test2_Test1"
+        referencedColumnNames="ID" referencedTableName="Test1"/>
+    <addPrimaryKey columnNames="ID" tableName="Test1"/>
+    <addPrimaryKey columnNames="ID" tableName="Test2"/>
+  </changeSet>
+</databaseChangeLog>
+----
+

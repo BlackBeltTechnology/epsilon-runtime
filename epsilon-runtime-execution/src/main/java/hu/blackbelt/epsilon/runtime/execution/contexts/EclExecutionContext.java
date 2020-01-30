@@ -1,20 +1,17 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.ecl.EclModule;
 import org.eclipse.epsilon.ecl.trace.MatchTrace;
 import org.eclipse.epsilon.eol.IEolModule;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class EclExecutionContext extends EolExecutionContext {
 
     @Getter
@@ -29,10 +26,13 @@ public class EclExecutionContext extends EolExecutionContext {
     private EclModule eclModule = new EclModule();
 
     @Builder(builderMethodName = "eclExecutionContextBuilder")
-    public EclExecutionContext(String source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace) {
+    public EclExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace, EclModule eclModule) {
         super(source, parameters);
         this.useMatchTrace = useMatchTrace;
         this.exportMatchTrace = exportMatchTrace;
+        if (eclModule != null) {
+            this.eclModule = eclModule;
+        }
     }
 
     @Override

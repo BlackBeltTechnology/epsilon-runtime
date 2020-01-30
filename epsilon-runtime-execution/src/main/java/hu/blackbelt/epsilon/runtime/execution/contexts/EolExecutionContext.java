@@ -1,23 +1,20 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.eol.EolModule;
 import org.eclipse.epsilon.eol.IEolModule;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class EolExecutionContext {
     @Getter
     @NonNull
-    private String source;
+    private URI source;
 
     @Getter
     @NonNull
@@ -27,7 +24,7 @@ public class EolExecutionContext {
     private EolModule module = new EolModule();
 
     @Builder(builderMethodName = "eolExecutionContextBuilder")
-    public EolExecutionContext(String source, List<ProgramParameter> parameters) {
+    public EolExecutionContext(URI source, List<ProgramParameter> parameters) {
         this.source = source;
         this.parameters = parameters;
     }
@@ -44,6 +41,6 @@ public class EolExecutionContext {
         return "";
     }
     
-    public void post(Map<Object, Object> context) {}
+    public void post(Map<Object, Object> context) throws ScriptExecutionException {}
 
 }

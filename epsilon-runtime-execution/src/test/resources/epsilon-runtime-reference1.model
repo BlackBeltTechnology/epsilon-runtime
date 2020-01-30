@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="ASCII"?>
+<reference:EntityMap xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:reference="http://www.blackbelt.hu/epsilon-runtime/reference" xmi:id="_XcMNMENBEemjq6tP6H_kVQ">
+  <entity href="epsilon-runtime-test1.model#_Ds1OEEAJEemOdvXw1zCXyw"/>
+  <transformedEntity href="epsilon-runtime-test2.model#_2AhHoENAEemjq6tP6H_kVQ"/>
+</reference:EntityMap>

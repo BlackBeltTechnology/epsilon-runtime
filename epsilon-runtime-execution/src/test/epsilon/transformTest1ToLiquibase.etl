@@ -1,0 +1,71 @@
+rule DataModelToChangeLog
+	transform s : TEST1!DataModel
+	to t : LIQUIBASE!databaseChangeLog {
+}
+
+
+rule DataModelToChangeSet
+	transform s : TEST1!DataModel
+	to t : LIQUIBASE!ChangeSet {
+	    t.id =  s.name;
+	    t.author = "test1toliquibase";
+		s.equivalent("DataModelToChangeLog").changeSet.add(t);
+}
+
+rule EntityToCreateTable
+	transform s : TEST1!Entity
+	to t : LIQUIBASE!CreateTable {
+		t.tableName = s.name;
+		TEST1!DataModel.all.selectOne(e | e.entity.contains(s)).equivalent("DataModelToChangeSet").createTable.add(t);
+
+}
+
+rule EntityToIdColumn
+	transform s : TEST1!Entity
+	to t : LIQUIBASE!Column {
+		t.name = "ID";
+		t.type = "Identifier";
+		s.equivalent("EntityToCreateTable").column.add(t);
+}
+
+rule EntityToPrimaryKey
+	transform s : TEST1!Entity
+	to t : LIQUIBASE!AddPrimaryKey {
+		t.tableName = s.name;
+		t.columnNames = "ID";
+		TEST1!DataModel.all.selectOne(d | d.entity.contains(s)).equivalent("DataModelToChangeSet").addPrimaryKey.add(t);
+}
+
+
+
+rule AttributeToColumn
+	transform s : TEST1!Attribute
+	to t : LIQUIBASE!Column {
+		t.name = s.name;
+		t.type = s.type;
+		TEST1!Entity.all.selectOne(e | e.attribute.contains(s)).equivalent("EntityToCreateTable").column.add(t);
+}
+
+rule EntityReferenceToColumn
+	transform s : TEST1!EntityReference
+	to t : LIQUIBASE!Column {
+		t.name = "ID_" + s.name;
+		t.type = "Identifier";
+		TEST1!Entity.all.selectOne(e | e.reference.contains(s)).equivalent("EntityToCreateTable").column.add(t);
+}
+
+
+rule EntityReferenceToAddForeignKeyConstraint
+	transform s : TEST1!EntityReference
+	to t : LIQUIBASE!AddForeignKeyConstraint {
+		var entity : TEST1!Entity = TEST1!Entity.all.selectOne(e | e.reference.contains(s));
+		t.constraintName = "FK_" + entity.name + "_" + s.`target`.name;
+
+		t.baseTableName = entity.name;
+		t.baseColumnNames = "ID_" + s.`target`.name;		
+
+		t.referencedColumnNames = "ID";
+		t.referencedTableName = s.`target`.name;
+
+		TEST1!DataModel.all.selectOne(e | e.entity.contains(entity)).equivalent("DataModelToChangeSet").addForeignKeyConstraint.add(t);
+}

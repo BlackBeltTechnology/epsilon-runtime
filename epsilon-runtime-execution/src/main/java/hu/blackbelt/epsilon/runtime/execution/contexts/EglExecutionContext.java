@@ -1,10 +1,8 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.eclipse.epsilon.egl.EglFileGeneratingTemplateFactory;
 import org.eclipse.epsilon.egl.EglTemplateFactory;
@@ -17,8 +15,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class EglExecutionContext extends EolExecutionContext {
 
     public static final String ARTIFACT_ROOT = "ARTIFACT_ROOT";
@@ -28,7 +24,7 @@ public class EglExecutionContext extends EolExecutionContext {
     private String outputRoot;
 
     @Builder(builderMethodName = "eglExecutionContextBuilder")
-    public EglExecutionContext(String source, List<ProgramParameter> parameters, String outputRoot) {
+    public EglExecutionContext(URI source, List<ProgramParameter> parameters, String outputRoot) {
         super(source, parameters);
         this.outputRoot = outputRoot;
     }
@@ -39,7 +35,7 @@ public class EglExecutionContext extends EolExecutionContext {
             templateFactory = EglFileGeneratingTemplateFactory.class.newInstance();
         } catch (InstantiationException | IllegalAccessException e1) {
             // TODO Auto-generated catch block
-            throw new ScriptExecutionException("Could not isntattiate tempalte factory", e1);
+            throw new ScriptExecutionException("Could not instantiate templalte factory", e1);
         }
 
         File outputRootDir = new File(outputRoot);
