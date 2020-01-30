@@ -65,7 +65,6 @@
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karaf-version}/xml/features</descriptor>
                                 <descriptor>mvn:org.apache.cxf.karaf/apache-cxf/${cxf-version}/xml/features</descriptor>s
                                 <descriptor>mvn:hu.blackbelt.karaf.features/google-features/${google-karaf-features-version}/xml/features</descriptor>
-                                <descriptor>mvn:hu.blackbelt.karaf.features/javax-features/${javax-karaf-features-version}/xml/features</descriptor>
                                 <descriptor>mvn:hu.blackbelt.karaf.features/antlr-features/${antlr-karaf-features-version}/xml/features</descriptor>
                                 <descriptor>mvn:hu.blackbelt.karaf.features/bouncycastle-features/${bouncycastle-karaf-features-version}/xml/features</descriptor>
                                 <descriptor>mvn:hu.blackbelt.karaf.features/apache-commons-features/${apache-commons-karaf-features-version}/xml/features</descriptor>
@@ -170,15 +169,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>hu.blackbelt.karaf.features</groupId>
-            <artifactId>javax-features</artifactId>
-            <version>${javax-karaf-features-version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-            <scope>runtime</scope>
-        </dependency>
-        
         <dependency>
             <groupId>hu.blackbelt.karaf.features</groupId>
             <artifactId>eclipse-emf-features</artifactId>
