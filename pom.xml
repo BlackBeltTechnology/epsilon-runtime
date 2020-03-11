@@ -33,7 +33,7 @@
         <epsilon-version>1.5.1</epsilon-version>
         <karaf-version>4.2.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
-        <osgi-utils-version>1.0.8</osgi-utils-version>
+        <osgi-utils-version>1.0.9</osgi-utils-version>
         <google-karaf-features-version>1.0.3</google-karaf-features-version>
         <javax-karaf-features-version>1.0.2</javax-karaf-features-version>
         <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
@@ -88,13 +88,6 @@
                             </Export-Package>
                             <Import-Package>
                                 !lombok,
-                                com.google.common.base;version="[14.0,30)",
-                                com.google.common.cache;version="[14.0,30)",
-                                com.google.common.collect;version="[14.0,30)",
-                                com.google.common.io;version="[14.0,30)",
-                                com.google.common.primitives;version="[14.0,30)",
-                                com.google.common.hash;version="[14.0,30)",
-                                com.google.common.util.concurrent;version="[14.0,30)",
                                 javax.annotation;version="[1.0,2)",
                                 *
                             </Import-Package>
