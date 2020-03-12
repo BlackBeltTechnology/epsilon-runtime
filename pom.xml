@@ -494,6 +494,7 @@
                                     <releaseName>${project.version}</releaseName>
                                     <deleteRelease>true</deleteRelease>
                                     <tag>${project.version}</tag>
+                                    <!--
                                     <fileSets>
                                         <fileSet>
                                             <directory>epsilon-runtime-execution/target</directory>
@@ -526,6 +527,7 @@
                                             </includes>
                                         </fileSet>
                                     </fileSets>
+                                     -->
                                 </configuration>
 
                                 <phase>deploy</phase>
