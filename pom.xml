@@ -34,11 +34,11 @@
         <karaf-version>4.2.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <osgi-utils-version>1.0.9</osgi-utils-version>
-        <google-karaf-features-version>1.0.4.20200311_225448_cf03ead_develop</google-karaf-features-version>
+        <google-karaf-features-version>1.0.4</google-karaf-features-version>
         <javax-karaf-features-version>1.0.2</javax-karaf-features-version>
         <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
         <eclipse-emf-karaf-features-version>1.0.0</eclipse-emf-karaf-features-version>
-        <eclipse-epsilon-karaf-features-version>1.0.3.20200312_080304_ee1afd3_develop</eclipse-epsilon-karaf-features-version>
+        <eclipse-epsilon-karaf-features-version>1.0.3</eclipse-epsilon-karaf-features-version>
         <antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
         <apache-commons-karaf-features-version>1.0.5</apache-commons-karaf-features-version>
         <apache-poi-karaf-features-version>1.0.2</apache-poi-karaf-features-version>
