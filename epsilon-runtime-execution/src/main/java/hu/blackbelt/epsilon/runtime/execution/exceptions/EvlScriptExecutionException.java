@@ -50,7 +50,7 @@ public class EvlScriptExecutionException extends ScriptExecutionException {
         if (unexpectedErrors != null) this.unexpectedErrors = unexpectedErrors;
         if (unexpectedWarnings != null) this.unexpectedWarnings = unexpectedWarnings;
         if (unsatisfiedErrors != null) this.unsatisfiedErrors = unsatisfiedErrors;
-        if (unsatisfiedWarnings != null) this.unexpectedWarnings = unexpectedWarnings;
+        if (unsatisfiedWarnings != null) this.unsatisfiedWarnings = unsatisfiedWarnings;
     }
 
     public String toString() {
