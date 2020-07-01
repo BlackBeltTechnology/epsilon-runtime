@@ -53,7 +53,7 @@ public class EglExecutionContext extends EolExecutionContext {
                     throw new ScriptExecutionException("Artifact must be set!");
                 }
             } catch (EglRuntimeException e) {
-                throw new ScriptExecutionException("Could not create tempalte factory", e);
+                throw new ScriptExecutionException("Could not create template factory", e);
             }
         }
         return templateFactory;
