@@ -38,14 +38,19 @@ public class EglExecutionContext extends EolExecutionContext {
             throw new ScriptExecutionException("Could not instantiate templalte factory", e1);
         }
 
-        File outputRootDir = new File(outputRoot);
-        if (!outputRootDir.exists()) {
-            outputRootDir.mkdirs();
+        File outputRootDir = null;
+        if (outputRoot != null) {
+            outputRootDir = new File(outputRoot);
+            if (!outputRootDir.exists()) {
+                outputRootDir.mkdirs();
+            }
         }
 
         if (templateFactory instanceof EglFileGeneratingTemplateFactory && outputRoot != null) {
             try {
-                ((EglFileGeneratingTemplateFactory) templateFactory).setOutputRoot(outputRootDir.getAbsolutePath());
+                if (outputRootDir != null) {
+                    ((EglFileGeneratingTemplateFactory) templateFactory).setOutputRoot(outputRootDir.getAbsolutePath());
+                }
                 if (context.get(ARTIFACT_ROOT)!= null) {
                     URI main = (URI)context.get(ARTIFACT_ROOT);
                     ((EglFileGeneratingTemplateFactory) templateFactory).setRoot(main);
@@ -53,7 +58,7 @@ public class EglExecutionContext extends EolExecutionContext {
                     throw new ScriptExecutionException("Artifact must be set!");
                 }
             } catch (EglRuntimeException e) {
-                throw new ScriptExecutionException("Could not create tempalte factory", e);
+                throw new ScriptExecutionException("Could not create template factory", e);
             }
         }
         return templateFactory;
