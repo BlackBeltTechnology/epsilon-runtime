@@ -1,4 +1,8 @@
-box: maven:3.5.4-jdk-8
+box:
+      id: eu.gcr.io/judo-ng/maven
+      tag: latest
+      tag: 3.5.4-jdk-8
+      registry: https://eu.gcr.io
 no-response-timeout: 15
 command-timeout: 60
 ignore-file: .gitignore
