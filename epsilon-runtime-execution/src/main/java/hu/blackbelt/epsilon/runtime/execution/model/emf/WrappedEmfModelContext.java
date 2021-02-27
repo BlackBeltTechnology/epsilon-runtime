@@ -131,9 +131,9 @@ public class WrappedEmfModelContext implements ModelContext {
             this.wrappedResource = resource;
             this.wrappedResourceSet = resourceSet;
             this.uriConverterMap = uriConverterMap;
-            readOnLoad = false;
-            storeOnDisposal =  false;
-            cachingEnabled = true;
+            // setCachingEnabled(true);
+            setReadOnLoad(false);
+            setStoredOnDisposal(false);
         }
 
         @Override
