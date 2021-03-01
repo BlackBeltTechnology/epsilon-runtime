@@ -367,43 +367,7 @@
             <artifactId>org.eclipse.epsilon.antlr.postprocessor.model</artifactId>
             <version>${epsilon-version}</version>
         </dependency>
-
-        <!--
-        <dependency>
-            <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-workflow</artifactId>
-            <version>${epsilon-version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-emf</artifactId>
-            <version>${epsilon-version}</version>
-            <scope>provided</scope>
-        </dependency>
         
-        <dependency>
-            <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-hutn</artifactId>
-            <version>${epsilon-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-workflow-emf</artifactId>
-            <version>${epsilon-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-spreadsheets</artifactId>
-            <version>${epsilon-version}</version>
-            <scope>provided</scope>
-        </dependency>
--->
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
