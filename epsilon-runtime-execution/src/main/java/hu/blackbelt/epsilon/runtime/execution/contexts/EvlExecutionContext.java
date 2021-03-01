@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.evl.EvlModule;
+import org.eclipse.epsilon.evl.concurrent.EvlModuleParallel;
+import org.eclipse.epsilon.evl.concurrent.EvlModuleParallelElements;
 import org.eclipse.epsilon.evl.execute.UnsatisfiedConstraint;
 
 import java.net.URI;
@@ -19,7 +21,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EvlExecutionContext extends EolExecutionContext {
 
-    private EvlModule module = new EvlModule();
+    @Builder.Default
+    private EvlModule module = new EvlModuleParallelElements();
 
     private Collection<String> expectedErrors;
 

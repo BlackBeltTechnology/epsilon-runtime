@@ -214,8 +214,7 @@ public class ExecutionContext implements AutoCloseable {
             try {
                 Object result = eolModule.execute();
             } catch (EolRuntimeException e) {
-                throw new ScriptExecutionException("Program execute", e);
-
+                throw new ScriptExecutionException("Program execute: " + e.getMessage() + "\tat " + e.getAst().getUri() + " (" + e.getLine() + ", " + e.getColumn() + ")", e);
             }
             // getLog().info("EolExecutionContext executeAll result: " + result.toString());
         } finally {

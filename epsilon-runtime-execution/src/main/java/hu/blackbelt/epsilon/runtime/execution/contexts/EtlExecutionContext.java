@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.etl.EtlModule;
+import org.eclipse.epsilon.etl.concurrent.EtlModuleParallel;
 
 import java.net.URI;
 import java.util.List;
@@ -17,7 +18,7 @@ public class EtlExecutionContext extends EolExecutionContext {
     @NonNull
     private String exportTransformationTrace;
 
-    EtlModule etlModule = new EtlModule();
+    EtlModule etlModule = new EtlModuleParallel();
 
     @Builder(builderMethodName = "etlExecutionContextBuilder")
     public EtlExecutionContext(URI source, List<ProgramParameter> parameters, String exportTransformationTrace, EtlModule etlModule) {

@@ -57,13 +57,16 @@ public class WrappedEmfModelContext implements ModelContext {
     @Builder.Default
     Boolean validateModel = true;
 
+    @Builder.Default
+    Boolean useCache = false;
+
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         // Hack: to able to resolve supertypes
         Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
         uriMapExtended.put(URI.createURI(""), resource.getURI());
 
-        ResourceWrappedEMFModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource, uriMapExtended);
+        ResourceWrappedEMFModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource, uriMapExtended, useCache);
 
         final StringProperties properties = new StringProperties();
         properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
@@ -127,13 +130,13 @@ public class WrappedEmfModelContext implements ModelContext {
         ResourceSet wrappedResourceSet;
         Map<URI, URI> uriConverterMap;
 
-        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource, Map<URI, URI> uriConverterMap) {
+        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource, Map<URI, URI> uriConverterMap, boolean useCache) {
             this.wrappedResource = resource;
             this.wrappedResourceSet = resourceSet;
             this.uriConverterMap = uriConverterMap;
-            readOnLoad = false;
-            storeOnDisposal =  false;
-            cachingEnabled = true;
+            setCachingEnabled(useCache);
+            setReadOnLoad(false);
+            setStoredOnDisposal(false);
         }
 
         @Override

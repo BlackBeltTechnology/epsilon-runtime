@@ -162,7 +162,7 @@ class ExecutionContextTest {
         Resource createdSourceResource = executionResourceSet.createResource(
                 URI.createURI(createdSourceModelName));
 
-        // Adding ppackage from generated packages - the registration of source of the generated
+        // Adding packages from generated packages - the registration of source of the generated
         // ecore id not required
         executionResourceSet.getPackageRegistry().put(DataPackage.eNS_URI, DataPackage.eINSTANCE);
 
