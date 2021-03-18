@@ -27,7 +27,7 @@
         <emf-ecore-xmi-version>2.16.0</emf-ecore-xmi-version>
 
         <epsilon-version>2.2.0</epsilon-version>
-        <karaf-version>4.2.1</karaf-version>
+        <karaf-version>4.2.10</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <osgi-utils-version>1.0.10</osgi-utils-version>
         <google-karaf-features-version>1.0.6</google-karaf-features-version>
@@ -251,6 +251,12 @@
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>org.eclipse.epsilon.emc.spreadsheets</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.emc.spreadsheets.excel</artifactId>
             <version>${epsilon-version}</version>
         </dependency>
 

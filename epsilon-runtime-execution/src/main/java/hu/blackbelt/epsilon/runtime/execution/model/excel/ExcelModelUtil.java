@@ -14,6 +14,7 @@ public class ExcelModelUtil {
 
     public static ExcelModel loadExcel(Log log, ModelRepository repository, ExcelModelContext excelModelContext, URI excel, URI excelConfiguration) throws EolModelLoadingException {
 
+        org.eclipse.epsilon.emc.spreadsheets.excel.ExcelModel ddd;
         final ExcelModel model = new ExcelModel();
 
         final StringProperties properties = new StringProperties();

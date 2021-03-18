@@ -9,6 +9,7 @@
         <feature dependency="true">scr</feature>
         <feature dependency="true">eclipse-epsilon</feature>
         <feature dependency="true">apache-commons-io</feature>
+        <feature dependency="true">apache-poi4</feature>
         <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-utils/${project.version}</bundle>
         <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-execution/${project.version}</bundle>
         <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-osgi/${project.version}</bundle>

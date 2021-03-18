@@ -1,11 +1,10 @@
 package hu.blackbelt.epsilon.runtime.execution.model.excel;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.eclipse.epsilon.emc.spreadsheets.SpreadsheetColumn;
 import org.eclipse.epsilon.emc.spreadsheets.SpreadsheetRow;
+
+import static org.apache.poi.ss.usermodel.CellType.*;
 
 public class ExcelRow extends SpreadsheetRow {
     protected ExcelWorksheet worksheet;
@@ -28,13 +27,13 @@ public class ExcelRow extends SpreadsheetRow {
             final CellValue cellValue = evaluator.evaluate(cell);
             if (cellValue != null) {
                 switch (cellValue.getCellType()) {
-                    case Cell.CELL_TYPE_NUMERIC:
+                    case NUMERIC:
                         visibleCellValue += cell.getNumericCellValue();
                         break;
-                    case Cell.CELL_TYPE_STRING:
+                    case STRING:
                         visibleCellValue = cell.getStringCellValue();
                         break;
-                    case Cell.CELL_TYPE_BOOLEAN:
+                    case BOOLEAN:
                         visibleCellValue += cell.getBooleanCellValue();
                         break;
                 }
