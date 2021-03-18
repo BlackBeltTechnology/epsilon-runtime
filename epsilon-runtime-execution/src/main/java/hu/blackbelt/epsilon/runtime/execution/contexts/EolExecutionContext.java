@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.eclipse.epsilon.eol.EolModule;
 import org.eclipse.epsilon.eol.IEolModule;
-import org.eclipse.epsilon.eol.concurrent.EolModuleParallel;
 
 import java.net.URI;
 import java.util.List;
@@ -22,7 +21,7 @@ public class EolExecutionContext {
     private List<ProgramParameter> parameters;
 
     @Builder.Default
-    private EolModule module = new EolModuleParallel();
+    private EolModule module = new EolModule(); //new EolModuleParallel();
 
     @Builder(builderMethodName = "eolExecutionContextBuilder")
     public EolExecutionContext(URI source, List<ProgramParameter> parameters) {
