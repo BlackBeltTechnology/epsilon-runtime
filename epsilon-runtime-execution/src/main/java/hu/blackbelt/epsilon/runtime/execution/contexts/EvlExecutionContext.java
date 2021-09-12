@@ -23,7 +23,8 @@ public class EvlExecutionContext extends EolExecutionContext {
 
     @Builder.Default
     private EvlModule module = new EvlModuleParallelElements();
-
+    // private EvlModule module = new EvlModule();
+    
     private Collection<String> expectedErrors;
 
     private Collection<String> expectedWarnings;
