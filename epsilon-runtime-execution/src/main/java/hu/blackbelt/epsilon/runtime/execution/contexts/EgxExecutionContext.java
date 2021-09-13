@@ -11,12 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 public class EgxExecutionContext extends EglExecutionContext {
-    Boolean parallel = false;
 
     @Builder(builderMethodName = "egxExecutionContextBuilder")
     public EgxExecutionContext(URI source, List<ProgramParameter> parameters, String outputRoot, Boolean parallel) {
         super(source, parameters, outputRoot, parallel);
-        this.parallel = parallel;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class EvlExecutionContext extends EolExecutionContext {
         }
         if (module != null) {
             this.module = module;
-        } else if (parallel) {
+        } else if (parallel != null && parallel) {
             this.module = new EvlModuleParallelElements();
         }
     }
