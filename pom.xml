@@ -3,7 +3,7 @@
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
     
     <name>epsilon-runtime</name>
     <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
@@ -13,6 +13,7 @@
         <system>GitHub Issues</system>
     </issueManagement>
     <properties>
+        <deployOnly>false</deployOnly>
         <osgi-default-import>
           org.osgi.framework;version="[1.8,2.0)",
           !lombok,
@@ -26,7 +27,7 @@
         <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
         <emf-ecore-xmi-version>2.16.0</emf-ecore-xmi-version>
 
-        <epsilon-version>2.2.0</epsilon-version>
+        <epsilon-version>2.3.0</epsilon-version>
         <karaf-version>4.2.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <osgi-utils-version>1.0.11</osgi-utils-version>
@@ -34,15 +35,16 @@
         <javax-karaf-features-version>1.0.2</javax-karaf-features-version>
         <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
         <eclipse-emf-karaf-features-version>1.0.1</eclipse-emf-karaf-features-version>
-        <eclipse-epsilon-karaf-features-version>1.0.5</eclipse-epsilon-karaf-features-version>
+        <eclipse-epsilon-karaf-features-version>1.0.6</eclipse-epsilon-karaf-features-version>
         <antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
-        <apache-commons-karaf-features-version>1.0.5</apache-commons-karaf-features-version>
-        <apache-poi-karaf-features-version>1.0.2</apache-poi-karaf-features-version>
+        <apache-commons-karaf-features-version>1.0.6</apache-commons-karaf-features-version>
+        <apache-poi-karaf-features-version>1.0.4</apache-poi-karaf-features-version>
         <apache-httpclient-karaf-features-version>1.0.0</apache-httpclient-karaf-features-version>
     </properties>
     
     <scm>
         <connection>scm:git:git://github.com/BlackBeltTechnology/epsilon-runtime.git</connection>
+        <!--suppress UnresolvedMavenProperty -->
         <developerConnection>
             scm:git:ssh://${git.username}@github.com:BlackBeltTechnology/epsilon-runtime.git
         </developerConnection>
@@ -116,6 +118,7 @@
                         <execution>
                             <id>default-install</id>
                             <configuration>
+                                <!--suppress UnresolvedMavenProperty -->
                                 <skip>${deployOnly}</skip>
                             </configuration>
                         </execution>
@@ -545,10 +548,12 @@
             <distributionManagement>
                 <snapshotRepository>
                     <id>judong-nexus-distribution</id>
+                    <!--suppress UnresolvedMavenProperty -->
                     <url>${env.JUDONG_MAVEN_UPSTREAM_SNAPSHOT}</url>
                 </snapshotRepository>
                 <repository>
                     <id>judong-nexus-distribution</id>
+                    <!--suppress UnresolvedMavenProperty -->
                     <url>${env.JUDONG_MAVEN_UPSTREAM_RELEASE}</url>
                 </repository>
             </distributionManagement>

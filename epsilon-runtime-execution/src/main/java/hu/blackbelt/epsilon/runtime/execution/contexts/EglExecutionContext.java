@@ -31,8 +31,8 @@ public class EglExecutionContext extends EolExecutionContext {
     private ContentTypeRepository defaultContentTypeRepository;
 
     @Builder(builderMethodName = "eglExecutionContextBuilder")
-    public EglExecutionContext(URI source, List<ProgramParameter> parameters, String outputRoot) {
-        super(source, parameters);
+    public EglExecutionContext(URI source, List<ProgramParameter> parameters, String outputRoot, Boolean parallel) {
+        super(source, parameters, false, parallel);
         try {
             defaultContentTypeRepository = new DefaultContentTypeRepository(
                     UriResolver.calculateURI(this.getClass(), DEFAULT_CONFIG_XML).toURL().openStream());

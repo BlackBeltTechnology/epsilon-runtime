@@ -3,6 +3,7 @@ package hu.blackbelt.epsilon.runtime.execution.contexts;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
 import lombok.Builder;
 import org.eclipse.epsilon.egl.EgxModule;
+import org.eclipse.epsilon.egl.concurrent.EgxModuleParallelAnnotation;
 import org.eclipse.epsilon.eol.IEolModule;
 
 import java.net.URI;
@@ -12,14 +13,13 @@ import java.util.Map;
 public class EgxExecutionContext extends EglExecutionContext {
 
     @Builder(builderMethodName = "egxExecutionContextBuilder")
-    public EgxExecutionContext(URI source, List<ProgramParameter> parameters, String outputRoot) {
-        super(source, parameters, outputRoot);
+    public EgxExecutionContext(URI source, List<ProgramParameter> parameters, String outputRoot, Boolean parallel) {
+        super(source, parameters, outputRoot, parallel);
     }
 
     @Override
     public IEolModule getModule(Map<Object, Object> context) throws ScriptExecutionException {
-        EgxModule module = new EgxModule(getTemplateFactory(context));
-        return module;
+        return new EgxModule(getTemplateFactory(context));
     }
 
 }

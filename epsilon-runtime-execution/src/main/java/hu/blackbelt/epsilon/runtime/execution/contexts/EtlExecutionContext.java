@@ -18,14 +18,22 @@ public class EtlExecutionContext extends EolExecutionContext {
     @NonNull
     private String exportTransformationTrace;
 
-    EtlModule etlModule = new EtlModule(); // new EtlModuleParallel();
+    final EtlModule etlModule;
 
     @Builder(builderMethodName = "etlExecutionContextBuilder")
-    public EtlExecutionContext(URI source, List<ProgramParameter> parameters, String exportTransformationTrace, EtlModule etlModule) {
-        super(source, parameters);
+    public EtlExecutionContext(URI source, List<ProgramParameter> parameters, String exportTransformationTrace, EtlModule etlModule, Boolean createModule, Boolean parallel) {
+        super(source, parameters, false, parallel);
         this.exportTransformationTrace = exportTransformationTrace;
-        if (etlModule != null) {
-        	this.etlModule =  etlModule;
+        if (createModule == null || createModule) {
+            if (etlModule != null) {
+                this.etlModule =  etlModule;
+            } else if (parallel != null && parallel) {
+                this.etlModule = new EtlModuleParallel();
+            } else {
+                this.etlModule = new EtlModule();
+            }
+        } else {
+            this.etlModule = null;
         }
     }
 
