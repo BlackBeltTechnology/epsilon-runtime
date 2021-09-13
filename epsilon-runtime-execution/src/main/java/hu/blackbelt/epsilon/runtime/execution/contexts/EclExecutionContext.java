@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import org.eclipse.epsilon.ecl.EclModule;
+import org.eclipse.epsilon.ecl.concurrent.EclModuleParallel;
+import org.eclipse.epsilon.ecl.concurrent.EclModuleParallelAnnotation;
 import org.eclipse.epsilon.ecl.trace.MatchTrace;
 import org.eclipse.epsilon.eol.IEolModule;
 
@@ -22,16 +24,21 @@ public class EclExecutionContext extends EolExecutionContext {
     @NonNull
     private String useMatchTrace;
 
-    @Builder.Default
-    private EclModule eclModule = new EclModule();
+    private final EclModule eclModule;
 
     @Builder(builderMethodName = "eclExecutionContextBuilder")
-    public EclExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace, EclModule eclModule) {
-        super(source, parameters);
+    public EclExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace, EclModule eclModule, Boolean parallel) {
+        super(source, parameters, false, parallel);
         this.useMatchTrace = useMatchTrace;
         this.exportMatchTrace = exportMatchTrace;
         if (eclModule != null) {
             this.eclModule = eclModule;
+        } else if (parallel != null && parallel) {
+            // TODO: Not supported yet, newer version have to be released
+            // this.eclModule = new EclModuleParallelAnnotation();
+            this.eclModule = new EclModule();
+        } else {
+            this.eclModule = new EclModule();
         }
     }
 

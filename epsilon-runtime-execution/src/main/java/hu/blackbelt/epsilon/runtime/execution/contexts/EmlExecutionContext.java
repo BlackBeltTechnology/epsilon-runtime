@@ -18,14 +18,16 @@ public class EmlExecutionContext extends EtlExecutionContext {
     @NonNull
     private String useMatchTrace;
 
-    private EmlModule emlModule = new EmlModule();
+    private final EmlModule emlModule;
 
     @Builder(builderMethodName = "emlExecutionContextBuilder")
-    public EmlExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportTransformationTrace, EmlModule emlModule) {
-        super(source, parameters, exportTransformationTrace, null);
+    public EmlExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportTransformationTrace, EmlModule emlModule, Boolean parallel) {
+        super(source, parameters, exportTransformationTrace, null, false, parallel);
         this.useMatchTrace = useMatchTrace;
         if (emlModule != null) {
         	this.emlModule = emlModule;
+        } else {
+            this.emlModule = new EmlModule();
         }
     }
 

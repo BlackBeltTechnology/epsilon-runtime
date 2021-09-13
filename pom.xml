@@ -3,7 +3,7 @@
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
     
     <name>epsilon-runtime</name>
     <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
@@ -13,6 +13,7 @@
         <system>GitHub Issues</system>
     </issueManagement>
     <properties>
+        <deployOnly>false</deployOnly>
         <osgi-default-import>
           org.osgi.framework;version="[1.8,2.0)",
           !lombok,

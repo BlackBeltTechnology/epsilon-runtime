@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 public class EvlExecutionContext extends EolExecutionContext {
 
     @Builder.Default
-    private EvlModule module = new EvlModuleParallelElements();
-    // private EvlModule module = new EvlModule();
+    private EvlModule module = new EvlModule();
     
     private Collection<String> expectedErrors;
 
@@ -35,8 +34,9 @@ public class EvlExecutionContext extends EolExecutionContext {
 
     @Builder(builderMethodName = "evlExecutionContextBuilder")
     public EvlExecutionContext(URI source, List<ProgramParameter> parameters,
-                               Collection<String> expectedErrors, Collection<String> expectedWarnings, EvlModule module) {
-        super(source, parameters);
+                               Collection<String> expectedErrors, Collection<String> expectedWarnings, EvlModule module,
+                               Boolean parallel) {
+        super(source, parameters, false, parallel);
         if (expectedErrors != null) {
             this.expectedErrors = Collections.unmodifiableCollection(expectedErrors);
         }
@@ -45,6 +45,8 @@ public class EvlExecutionContext extends EolExecutionContext {
         }
         if (module != null) {
             this.module = module;
+        } else if (parallel) {
+            this.module = new EvlModuleParallelElements();
         }
     }
 
