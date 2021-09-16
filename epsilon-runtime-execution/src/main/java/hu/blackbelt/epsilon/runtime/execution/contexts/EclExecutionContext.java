@@ -4,16 +4,20 @@ import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionExceptio
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.epsilon.ecl.EclModule;
 import org.eclipse.epsilon.ecl.concurrent.EclModuleParallel;
 import org.eclipse.epsilon.ecl.concurrent.EclModuleParallelAnnotation;
 import org.eclipse.epsilon.ecl.trace.MatchTrace;
 import org.eclipse.epsilon.eol.IEolModule;
+import org.eclipse.epsilon.evl.EvlModule;
+import org.eclipse.epsilon.evl.concurrent.EvlModuleParallelElements;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class EclExecutionContext extends EolExecutionContext {
 
     @Getter
@@ -33,7 +37,10 @@ public class EclExecutionContext extends EolExecutionContext {
         this.exportMatchTrace = exportMatchTrace;
         if (eclModule != null) {
             this.eclModule = eclModule;
-        } else if (parallel != null && parallel) {
+            // TODO: Remove when JNG-3096 Resolved
+        } else if (Boolean.getBoolean("disableEpsilonParallel")) {
+            this.eclModule = new EclModule();
+        } else if (parallel == null || parallel) {
             // TODO: Not supported yet, newer version have to be released
             // this.eclModule = new EclModuleParallelAnnotation();
             this.eclModule = new EclModule();
