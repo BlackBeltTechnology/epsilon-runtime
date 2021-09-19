@@ -4,6 +4,7 @@ import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionExceptio
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.epsilon.eol.EolModule;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.eol.concurrent.EolModuleParallel;
@@ -12,6 +13,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class EolExecutionContext {
     @Getter
     @NonNull
@@ -28,7 +30,10 @@ public class EolExecutionContext {
         this.source = source;
         this.parameters = parameters;
         if (createModule == null || createModule) {
-            if (parallel != null && parallel) {
+            // TODO: Remove when JNG-3096 Resolved
+            if (Boolean.getBoolean("disableEpsilonParallel")) {
+                module = new EolModule();
+            } else if (parallel == null || parallel) {
                 module = new EolModuleParallel();
             } else {
                 module = new EolModule();

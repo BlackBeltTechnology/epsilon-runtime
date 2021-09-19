@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.evl.EvlModule;
-import org.eclipse.epsilon.evl.concurrent.EvlModuleParallel;
 import org.eclipse.epsilon.evl.concurrent.EvlModuleParallelElements;
 import org.eclipse.epsilon.evl.execute.UnsatisfiedConstraint;
 
@@ -21,8 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EvlExecutionContext extends EolExecutionContext {
 
-    @Builder.Default
-    private EvlModule module = new EvlModule();
+    private final EvlModule module;
     
     private Collection<String> expectedErrors;
 
@@ -45,8 +43,13 @@ public class EvlExecutionContext extends EolExecutionContext {
         }
         if (module != null) {
             this.module = module;
-        } else if (parallel != null && parallel) {
+        // TODO: Remove when JNG-3096 Resolved
+        } else if (Boolean.getBoolean("disableEpsilonParallel")) {
+            this.module = new EvlModule();
+        } else if (parallel == null || parallel) {
             this.module = new EvlModuleParallelElements();
+        } else {
+            this.module = new EvlModule();
         }
     }
 
