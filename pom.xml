@@ -31,7 +31,7 @@
         <karaf-version>4.2.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <osgi-utils-version>1.0.11</osgi-utils-version>
-        <google-karaf-features-version>1.0.6</google-karaf-features-version>
+        <google-karaf-features-version>1.0.7</google-karaf-features-version>
         <javax-karaf-features-version>1.0.2</javax-karaf-features-version>
         <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
         <eclipse-emf-karaf-features-version>1.0.1</eclipse-emf-karaf-features-version>
