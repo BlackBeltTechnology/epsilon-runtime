@@ -226,7 +226,9 @@ public class ExecutionContext implements AutoCloseable {
                             p.getExecutionTime().getAggregate()));
                 }
             }
-
+            if (eolModule != null && eolModule.getContext() != null) {
+                eolModule.getContext().dispose();
+            }
         }
     }
 
