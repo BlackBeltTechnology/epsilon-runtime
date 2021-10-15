@@ -3,7 +3,7 @@
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>${revision}</version>
     
     <name>epsilon-runtime</name>
     <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
@@ -13,6 +13,9 @@
         <system>GitHub Issues</system>
     </issueManagement>
     <properties>
+
+        <revision>1.4.0-SNAPSHOT</revision>
+
         <deployOnly>false</deployOnly>
         <osgi-default-import>
           org.osgi.framework;version="[1.8,2.0)",
@@ -20,6 +23,9 @@
           javax.annotation;version="[1.0,2)"
         </osgi-default-import>
         
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <emf-ecore-version>2.21.0</emf-ecore-version>
         <emf-xsd-version>2.17.0</emf-xsd-version>
         <emf-ecore-change-version>2.14.0</emf-ecore-change-version>
@@ -212,6 +218,31 @@
                                 <source>src/main/java</source>
                             </sources>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+			<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -416,7 +447,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.18</version>
+            <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
         
@@ -599,45 +630,6 @@
                 </repository>
             </distributionManagement>
         </profile>
-
-        <profile>
-            <id>generate-github-release-body</id>
-            <activation>
-                <property>
-                    <name>github_release</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>template-github-release-body</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${basedir}/.release</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${project.basedir}</directory>
-                                            <filtering>true</filtering>
-                                            <includes>
-                                                <include>.releasetemplate</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>        
+   
     </profiles>
 </project>
