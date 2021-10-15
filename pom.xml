@@ -581,12 +581,12 @@
                 <snapshotRepository>
                     <id>judong-nexus-distribution</id>
                     <!--suppress UnresolvedMavenProperty -->
-                    <url>${env.JUDONG_MAVEN_UPSTREAM_SNAPSHOT}</url>
+                    <url>https://nexus.judo.technology/repository/maven-judong-snapshots/</url>
                 </snapshotRepository>
                 <repository>
                     <id>judong-nexus-distribution</id>
                     <!--suppress UnresolvedMavenProperty -->
-                    <url>${env.JUDONG_MAVEN_UPSTREAM_RELEASE}</url>
+                    <url>https://nexus.judo.technology/repository/maven-judong-snapshots/</url>
                 </repository>
             </distributionManagement>
         </profile>
@@ -631,6 +631,5 @@
                 </repository>
             </distributionManagement>
         </profile>
-   
-    </profiles>
+        </profiles>
 </project>
