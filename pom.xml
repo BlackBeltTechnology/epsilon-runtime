@@ -562,18 +562,18 @@
         </profile>
 
         <profile>
-            <id>release-dummy</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>dummy-distribution</id>
-                    <url>file:///tmp/maven-snapshot/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>dummy-distribution</id>
-                    <url>file:///tmp/maven-release/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
+			<id>release-dummy</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>dummy-distribution</id>
+					<url>file:///tmp/${groupId}-${artifactId}-${project.version}/maven-snapshot/</url>
+				</snapshotRepository>
+				<repository>
+					<id>dummy-distribution</id>
+					<url>file:///tmp/${groupId}-${artifactId}-${project.version}/maven-release/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
 
         <profile>
             <id>release-judong</id>
@@ -631,5 +631,5 @@
                 </repository>
             </distributionManagement>
         </profile>
-        </profiles>
+    </profiles>
 </project>
