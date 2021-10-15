@@ -15,6 +15,7 @@
     <properties>
 
         <revision>1.4.0-SNAPSHOT</revision>
+        <maven>3.8.3</maven>
 
         <deployOnly>false</deployOnly>
         <osgi-default-import>
@@ -514,7 +515,7 @@
             <id>modules</id>
             <activation>
                 <property>
-                    <name>github_release</name>
+                    <name>skipModules</name>
                     <value>!true</value>
                 </property>
             </activation>

@@ -46,7 +46,7 @@ jobs:
         id: version
         run: |-
           TAG_NAME=$(echo "${{ steps.context.outputs.branch }}" | cut -d ' ' -f2 | tr '#\/\.-' '_')
-          BASE_VERSION=$(./mvnw org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dtycho.mode=maven -Dexpression=project.version -q -DforceStdout | cut -d'-' -f 1)
+          BASE_VERSION=$(./mvnw org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dtycho.mode=maven -DskipModules=true -Dexpression=project.version -q -DforceStdout | cut -d'-' -f 1)
           VERSION_NUMBER=${BASE_VERSION}.$(date +%Y%m%d_%H%M%S)_${{ steps.context.outputs.shortCommitId }}_${TAG_NAME//[(\)]}
           echo "Base version from POM: $BASE_VERSION"
           echo "Building version: ${VERSION_NUMBER}"
