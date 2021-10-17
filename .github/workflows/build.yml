@@ -9,15 +9,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  init:
+  build:
     runs-on: judong
-    timeout-minutes: 3
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      msg: ${{ steps.context.outputs.commitMsg }}
-      shortCommitId: ${{ steps.context.outputs.shortCommitId }}
-      branch: ${{ steps.context.outputs.branch }}
-
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
         with:
@@ -57,27 +51,6 @@ jobs:
 
       - name: Grep config
         run: gpg --version
-
-# Exexute wrapped command with: /usr/bin/xvfb-run --auto-servernum 
-#      - name: Install xvfb
-#        uses: GabrielBB/xvfb-action@v1
-#        with:
-#          run: echo "Installing..."
-#            
-
-  build:
-    runs-on: judong
-    timeout-minutes: 30
-    needs: init
-    steps:
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'zulu'
-          gpg-private-key: ${{ secrets.GPG_SECRET_KEYS }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Remove settings.xml
         run: rm $HOME/.m2/settings.xml || true
@@ -125,7 +98,7 @@ jobs:
 #      - name: Set project version
 #        run: |-
 #          ./mvnw -B -Dstyle.color=always \
-#          -DnewVersion=${{ needs.init.outputs.version }} \
+#          -DnewVersion=${{ steps.version.outputs.version }} \
 #          -DgenerateBackupPoms=false \
 #          -Dtycho.mode=maven \
 #          versions:set
@@ -140,7 +113,7 @@ jobs:
 #
 #      - name: Update category
 #        run: |-
-#          ./mvnw -B -Dstyle.color=always \
+#         ./mvnw -B -Dstyle.color=always \
 #          -Dtycho.mode=maven \
 #          -P update-category-versions \
 #          -f ./site/pom.xml \
@@ -156,38 +129,38 @@ jobs:
       - name: Build with Maven
         run: |-
           ./mvnw -B -Dstyle.color=always \
-          -Drevision=${{ needs.init.outputs.version }} \
+          -Drevision=${{ steps.version.outputs.version }} \
           -Psign-artifacts,release-judong \
           deploy
 
-#      - name: Release P2
-#        run: |-
-#          ./mvnw -B -Dstyle.color=always \
-#          -Dtycho.mode=maven \
-#          -Prelease-dummy,release-p2-judong \
-#          -DdeployOnly \
-#          -DskipTests=true \
-#          -DskipModules=true \
-#          deploy
-#
+      - name: Release P2
+        run: |-
+          ./mvnw -B -Dstyle.color=always \
+          -Dtycho.mode=maven \
+          -Prelease-dummy,release-p2-judong \
+          -DdeployOnly \
+          -DskipTests=true \
+          -DskipModules=true \
+          deploy
+
       - name: Create success message
         if: ${{ !failure() && !cancelled() }}
         run: |-
           echo ":check_mark_button: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" > build.msg
-          echo "Version: ${{ needs.init.outputs.version }}" >> build.msg
-          echo "Commit: ${{ needs.init.outputs.msg }}" >> build.msg
+          echo "Version: ${{ steps.version.outputs.version }}" >> build.msg
+          echo "Commit: ${{ steps.context.outputs.commitMsg }}" >> build.msg
 
       - name: Create faliure message
         if: ${{ failure() }}
         run: |-
           echo ":cross_mark: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" > build.msg
-          echo "Commit: ${{ needs.init.outputs.msg }}" >> build.msg
+          echo "Commit: ${{ steps.context.outputs.commitMsg }}" >> build.msg
 
       - name: Create canceled message
         if: ${{ cancelled() }}
         run: |-
           echo ":warning: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" > build.msg
-          echo "Commit: ${{ needs.init.outputs.msg }}" >> build.msg
+          echo "Commit: ${{ steps.context.outputs.commitMsg }}" >> build.msg
 
 
       - name: Send message to skype
