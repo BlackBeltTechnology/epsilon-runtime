@@ -133,15 +133,15 @@ jobs:
           -Psign-artifacts,release-judong \
           deploy
 
-      - name: Release P2
-        run: |-
-          ./mvnw -B -Dstyle.color=always \
-          -Dtycho.mode=maven \
-          -Prelease-dummy,release-p2-judong \
-          -DdeployOnly \
-          -DskipTests=true \
-          -DskipModules=true \
-          deploy
+#      - name: Release P2
+#        run: |-
+#          ./mvnw -B -Dstyle.color=always \
+#          -Dtycho.mode=maven \
+#          -Prelease-dummy,release-p2-judong \
+#          -DdeployOnly \
+#          -DskipTests=true \
+#          -DskipModules=true \
+#          deploy
 
       - name: Create success message
         if: ${{ !failure() && !cancelled() }}
