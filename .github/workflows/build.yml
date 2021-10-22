@@ -88,12 +88,12 @@ jobs:
       - name: List GPG keys
         run: gpg --list-keys
 
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2-
+#      - name: Cache Maven packages
+#        uses: actions/cache@v2
+#        with:
+#          path: ~/.m2
+#          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: ${{ runner.os }}-m2-
 
 #      - name: Set project version
 #        run: |-
@@ -162,6 +162,11 @@ jobs:
           echo ":warning: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" > build.msg
           echo "Commit: ${{ steps.context.outputs.commitMsg }}" >> build.msg
 
+      - name: Tag commit
+        uses: tvdias/github-tagger@v0.0.1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v${{ steps.version.outputs.version }}
 
       - name: Send message to skype
         uses: Eloco/docker-action-send-skype@v2
