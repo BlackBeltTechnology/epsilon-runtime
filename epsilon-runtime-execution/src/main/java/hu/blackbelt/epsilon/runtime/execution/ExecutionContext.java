@@ -156,14 +156,19 @@ public class ExecutionContext implements AutoCloseable {
 
         log.info("Running program: " + eolProgram.getSource().toString());
 
-        executeModule(eolModule, eolProgram.getSource(),
-                Stream.concat(
-                        params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
-                        context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))
-                        .collect(Collectors.toList()));
+        try {
+            executeModule(eolModule, eolProgram.getSource(),
+                    Stream.concat(
+                                    params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
+                                    context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))
+                            .collect(Collectors.toList()));
 
-
-        eolProgram.post(context);
+            eolProgram.post(context);
+        } finally {
+            if (eolModule != null && eolModule.getContext() != null) {
+                eolModule.getContext().dispose();
+            }
+        }
 
         if (!eolProgram.isOk()) {
             throw new ScriptExecutionException("Program aborted: " + eolProgram.toString());
@@ -225,9 +230,6 @@ public class ExecutionContext implements AutoCloseable {
                             p.getIndex(), p.getName(), p.getExecutionCount(), p.getExecutionTime().getIndividual(),
                             p.getExecutionTime().getAggregate()));
                 }
-            }
-            if (eolModule != null && eolModule.getContext() != null) {
-                eolModule.getContext().dispose();
             }
         }
     }
