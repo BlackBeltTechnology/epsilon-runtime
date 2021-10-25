@@ -36,7 +36,7 @@ public class EvlScriptExecutionException extends ScriptExecutionException {
 
     @Builder(builderMethodName = "evlScriptExecutionExceptionBuilder")
     @java.beans.ConstructorProperties({"message", "errorsNotFound", "warningsNotFound", "unexpectedErrors",
-            "unexpectedWarnings", "unexpectedWarnings", "unsatisfiedErrors", "unsatisfiedWarnings"})
+            "unexpectedWarnings", "unsatisfiedErrors", "unsatisfiedWarnings"})
     public EvlScriptExecutionException(String message,
                                        Set<String> errorsNotFound,
                                        Set<String> warningsNotFound,
