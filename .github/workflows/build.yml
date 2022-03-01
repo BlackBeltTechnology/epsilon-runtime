@@ -143,24 +143,21 @@ jobs:
 #          -DskipModules=true \
 #          deploy
 
-      - name: Create success message
-        if: ${{ !failure() && !cancelled() }}
+      - name: Create message
+        id: message
+        if: ${{ always() }}
         run: |-
-          echo ":check_mark_button: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" > build.msg
-          echo "Version: ${{ steps.version.outputs.version }}" >> build.msg
-          echo "Commit: ${{ steps.context.outputs.commitMsg }}" >> build.msg
-
-      - name: Create faliure message
-        if: ${{ failure() }}
-        run: |-
-          echo ":cross_mark: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" > build.msg
-          echo "Commit: ${{ steps.context.outputs.commitMsg }}" >> build.msg
-
-      - name: Create canceled message
-        if: ${{ cancelled() }}
-        run: |-
-          echo ":warning: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" > build.msg
-          echo "Commit: ${{ steps.context.outputs.commitMsg }}" >> build.msg
+          if [ "${{ job.status }}" == "success" ]; then
+            message=":white_check_mark: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            message="${message} Version: ${{ steps.version.outputs.version }}"
+          fi
+          if [ "${{ job.status }}" == "failure" ]; then
+            message=":x: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"    
+          fi
+          if [ "${{ job.status }}" == "canceled" ]; then
+            message=":x: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"    
+          fi
+          echo "::set-output name=message::${message}"
 
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.1
@@ -168,13 +165,10 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           tag: v${{ steps.version.outputs.version }}
 
-      - name: Send message to skype
-        uses: Eloco/docker-action-send-skype@v2
+      - name: Send message to discord
+        uses: sarisia/actions-status-discord@v1
         if: always()
         with:
-          skype_username: ${{ secrets.SKYPE_USERNAME }}
-          skype_password: ${{ secrets.SKYPE_PASSWORD }}
-          skype_ids: 19:0503749da2e44ed9910046678012bdf7@thread.skype
-          send_msg_path: build.msg
-
-      
+          webhook: ${{ secrets.JUDONG_DISCORD_WEBHOOK }}
+          title: "Gitub action"
+          description: "${{ steps.message.outputs.message }}"
