@@ -35,7 +35,7 @@
         <emf-ecore-xmi-version>2.16.0</emf-ecore-xmi-version>
 
         <epsilon-version>2.3.0</epsilon-version>
-        <karaf-version>4.2.1</karaf-version>
+        <karaf-version>4.4.0</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <osgi-utils-version>1.0.12.20220316_214508_c75030f0_develop</osgi-utils-version>
         <google-karaf-features-version>1.0.7</google-karaf-features-version>
