@@ -11,10 +11,7 @@ import hu.blackbelt.epsilon.runtime.execution.contexts.EolExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.ProgramParameter;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.*;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.common.parse.problem.ParseProblem;
@@ -84,9 +81,8 @@ public class ExecutionContext implements AutoCloseable {
     private Map<String, Object> injectContexts = new HashMap();
 
     @SneakyThrows
+    @Synchronized
     public void load() {
-        CachedResourceSet.getCache().clear();
-
         if (addUmlPackages) {
             addUmlPackagesToResourceSet(resourceSet);
         }
@@ -107,22 +103,26 @@ public class ExecutionContext implements AutoCloseable {
     }
 
 
+    @Synchronized
     public void rollback() {
         for (IModel model : projectModelRepository.getModels()) {
             model.setStoredOnDisposal(false);
         }
     }
 
+    @Synchronized
     public void commit() {
         rollback = false;
     }
 
+    @Synchronized
     public void disposeRepository() {
         if (projectModelRepository != null) {
             projectModelRepository.dispose();
         }
     }
 
+    @Synchronized
     public void executeProgram(EolExecutionContext eolProgram) throws ScriptExecutionException {
         //File sourceFile = new File(eolProgram.getSource());
         //URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
@@ -156,14 +156,19 @@ public class ExecutionContext implements AutoCloseable {
 
         log.info("Running program: " + eolProgram.getSource().toString());
 
-        executeModule(eolModule, eolProgram.getSource(),
-                Stream.concat(
-                        params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
-                        context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))
-                        .collect(Collectors.toList()));
+        try {
+            executeModule(eolModule, eolProgram.getSource(),
+                    Stream.concat(
+                                    params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
+                                    context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))
+                            .collect(Collectors.toList()));
 
-
-        eolProgram.post(context);
+            eolProgram.post(context);
+        } finally {
+            if (eolModule != null && eolModule.getContext() != null) {
+                eolModule.getContext().dispose();
+            }
+        }
 
         if (!eolProgram.isOk()) {
             throw new ScriptExecutionException("Program aborted: " + eolProgram.toString());
@@ -226,7 +231,6 @@ public class ExecutionContext implements AutoCloseable {
                             p.getExecutionTime().getAggregate()));
                 }
             }
-
         }
     }
 
@@ -238,7 +242,7 @@ public class ExecutionContext implements AutoCloseable {
     }
 
     @SneakyThrows
-    public void addMetaModel(String metaModel) {
+    private void addMetaModel(String metaModel) {
         log.info("Registering ecore: " + metaModel);
         org.eclipse.emf.common.util.URI uri = org.eclipse.emf.common.util.URI.createURI(metaModel);
         log.info("    Meta model: " + uri);
@@ -255,7 +259,7 @@ public class ExecutionContext implements AutoCloseable {
     }
 
     @SneakyThrows
-    public void addModel(ModelContext modelContext) {
+    private void addModel(ModelContext modelContext) {
         log.info("Model: " + modelContext.toString());
 
         Map<String, org.eclipse.emf.common.util.URI> uris = modelContext.getArtifacts().entrySet().stream()

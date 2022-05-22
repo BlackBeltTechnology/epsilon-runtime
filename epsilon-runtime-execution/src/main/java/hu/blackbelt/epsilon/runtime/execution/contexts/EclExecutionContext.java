@@ -4,14 +4,20 @@ import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionExceptio
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.epsilon.ecl.EclModule;
+import org.eclipse.epsilon.ecl.concurrent.EclModuleParallel;
+import org.eclipse.epsilon.ecl.concurrent.EclModuleParallelAnnotation;
 import org.eclipse.epsilon.ecl.trace.MatchTrace;
 import org.eclipse.epsilon.eol.IEolModule;
+import org.eclipse.epsilon.evl.EvlModule;
+import org.eclipse.epsilon.evl.concurrent.EvlModuleParallelElements;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class EclExecutionContext extends EolExecutionContext {
 
     @Getter
@@ -22,16 +28,24 @@ public class EclExecutionContext extends EolExecutionContext {
     @NonNull
     private String useMatchTrace;
 
-    @Builder.Default
-    private EclModule eclModule = new EclModule();
+    private final EclModule eclModule;
 
     @Builder(builderMethodName = "eclExecutionContextBuilder")
-    public EclExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace, EclModule eclModule) {
-        super(source, parameters);
+    public EclExecutionContext(URI source, List<ProgramParameter> parameters, String useMatchTrace, String exportMatchTrace, EclModule eclModule, Boolean parallel) {
+        super(source, parameters, false, parallel);
         this.useMatchTrace = useMatchTrace;
         this.exportMatchTrace = exportMatchTrace;
         if (eclModule != null) {
             this.eclModule = eclModule;
+            // TODO: Remove when JNG-3096 Resolved
+        } else if (Boolean.getBoolean("disableEpsilonParallel")) {
+            this.eclModule = new EclModule();
+        } else if (parallel == null || parallel) {
+            // TODO: Not supported yet, newer version have to be released
+            // this.eclModule = new EclModuleParallelAnnotation();
+            this.eclModule = new EclModule();
+        } else {
+            this.eclModule = new EclModule();
         }
     }
 

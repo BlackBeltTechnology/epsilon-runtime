@@ -5,8 +5,7 @@
     <parent>
         <groupId>hu.blackbelt.epsilon</groupId>
         <artifactId>epsilon-runtime-parent</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <version>${revision}</version>
     </parent>
     <artifactId>epsilon-runtime-utils</artifactId>
     <packaging>bundle</packaging>

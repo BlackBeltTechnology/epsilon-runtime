@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
+import org.eclipse.epsilon.emc.emf.EmfModelResourceSet;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -51,7 +52,7 @@ public final class EmfUtils {
     }
 
     public static ResourceSet initDefaultCachedResourceSet() {
-        ResourceSet rs = new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
+        ResourceSet rs = new ResourceSetImpl(); // new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
 
         rs.setResourceFactoryRegistry(Resource.Factory.Registry.INSTANCE);
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
