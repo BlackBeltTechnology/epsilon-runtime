@@ -2,6 +2,7 @@ package hu.blackbelt.epsilon.runtime.execution.impl;
 
 import com.google.common.collect.ImmutableSet;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,24 +12,26 @@ public class StringBuilderLogger implements Log {
     public static final String LF = "\n";
     StringBuilder buffer = new StringBuilder();
 
-    public enum LogLevel {
-        ERROR, WARN, INFO, DEBUG, TRACE
+    Logger logger;
+
+    @Override
+    public void close() throws Exception {
+        flush();
     }
 
     private Set<LogLevel> currentLevels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO);
 
+    public StringBuilderLogger() {
+    }
+
+    public StringBuilderLogger(Logger logger) {
+        LogLevel logLevel = Slf4jLog.determinateLogLevel(logger);
+        this.logger = logger;
+        currentLevels = LogLevel.getMatchingLogLevels(logLevel);
+    }
+
     public StringBuilderLogger(LogLevel logLevel) {
-        if (logLevel == LogLevel.ERROR) {
-            currentLevels = ImmutableSet.of(LogLevel.ERROR);
-        } else if (logLevel == LogLevel.WARN) {
-            currentLevels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN);
-        } else if (logLevel == LogLevel.INFO) {
-            currentLevels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO);
-        } else if (logLevel == LogLevel.DEBUG) {
-            currentLevels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG);
-        } else if (logLevel == LogLevel.TRACE) {
-            currentLevels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG, LogLevel.TRACE);
-        }
+        currentLevels = LogLevel.getMatchingLogLevels(logLevel);
     }
 
     public void trace(CharSequence charSequence) {
@@ -136,4 +139,21 @@ public class StringBuilderLogger implements Log {
         buffer.append(LF);
         return buffer.toString();
     }
+
+    @Override
+    public void flush() {
+        if (logger != null) {
+            String buff = getBuffer();
+            if (buff.trim().length() > 0) {
+                logger.info(getBuffer());
+            }
+        }
+        buffer = new StringBuilder();
+    }
+
+    @Override
+    public String toString() {
+        return "StringBuilderLogger";
+    }
+
 }

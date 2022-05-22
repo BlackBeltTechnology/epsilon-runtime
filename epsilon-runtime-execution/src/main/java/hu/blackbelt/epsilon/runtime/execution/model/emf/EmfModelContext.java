@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
+import hu.blackbelt.epsilon.runtime.execution.impl.LogLevel;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +29,7 @@ public class EmfModelContext implements ModelContext {
 
     public static final String MODEL = "model";
     @Builder.Default
-    Log log = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
+    Log log = new StringBuilderLogger(LogLevel.DEBUG);
 
     @NonNull
     String emf;

@@ -1,6 +1,6 @@
 package hu.blackbelt.epsilon.runtime.execution.api;
 
-public interface Log {
+public interface Log extends AutoCloseable {
 	
     /**
      * Send a message to the user in the <b>debug</b> error level.
@@ -108,8 +108,7 @@ public interface Log {
     void error( Throwable error );
 
     /**
-     * Get the current log buffer when it matter. Not all implementation retirn  others than an empty string.
+     * Flush the cached log entries - when the implementation is suitable
      */
-    String getBuffer();
-
+    void flush();
 }
