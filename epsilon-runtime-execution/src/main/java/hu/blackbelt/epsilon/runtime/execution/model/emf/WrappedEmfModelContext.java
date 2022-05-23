@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
+import hu.blackbelt.epsilon.runtime.execution.impl.LogLevel;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import lombok.*;
@@ -16,7 +17,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.epsilon.emc.emf.EmfModel;
-import org.eclipse.epsilon.emc.emf.EmfModelResourceSet;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.ModelReference;
@@ -25,7 +25,6 @@ import org.eclipse.epsilon.eol.models.ModelRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -36,7 +35,7 @@ import static java.util.stream.Collectors.joining;
 public class WrappedEmfModelContext implements ModelContext {
 
     @Builder.Default
-    Log log = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
+    Log log = new StringBuilderLogger(LogLevel.DEBUG);
 
     @NonNull
     Resource resource;
@@ -117,7 +116,7 @@ public class WrappedEmfModelContext implements ModelContext {
     public String toString() {
         return "WrappedEmfModelContext{" +
                 "log=" + log +
-                ", resource=" + resource +
+                ", resource={class: " + resource.getClass() + " uri: " + resource.getURI() + "}" +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
                 ", uriConverterMap='" + getUriConverterMap() + '\'' +

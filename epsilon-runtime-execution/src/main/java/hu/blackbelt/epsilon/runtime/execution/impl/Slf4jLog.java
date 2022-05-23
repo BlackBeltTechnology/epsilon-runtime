@@ -3,97 +3,78 @@ package hu.blackbelt.epsilon.runtime.execution.impl;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import org.slf4j.Logger;
 
-public class Slf4jLog extends StringBuilderLogger implements Log {
+public class Slf4jLog implements Log {
 
-    private static Logger log = org.slf4j.LoggerFactory.getLogger("Epsilon");
+    private static Logger defaultLogger = org.slf4j.LoggerFactory.getLogger("Epsilon");
+
+    private Logger log;
 
     public Slf4jLog() {
-        super(LogLevel.DEBUG);
+        this.log = defaultLogger;
     }
 
     public Slf4jLog(Logger logger) {
-        super(LogLevel.DEBUG);
         this.log = logger;
     }
 
     public void trace(CharSequence charSequence) {
-        super.trace(charSequence);
         log.trace(charSequence.toString());
     }
 
     public void trace(CharSequence charSequence, Throwable throwable) {
-        super.trace(charSequence, throwable);
         log.trace(charSequence.toString(), throwable);
     }
 
     public void trace(Throwable throwable) {
-        super.trace(throwable);
         log.trace("", throwable);
     }
 
     public void debug(CharSequence charSequence) {
-        super.debug(charSequence);
         log.debug(charSequence.toString());
     }
 
     public void debug(CharSequence charSequence, Throwable throwable) {
-        super.debug(charSequence, throwable);
         log.debug(charSequence.toString(), throwable);
     }
 
     public void debug(Throwable throwable) {
-        super.debug(throwable);
         log.debug("", throwable);
     }
 
     public void info(CharSequence charSequence) {
-        super.info(charSequence);
         log.info(charSequence.toString());
     }
 
     public void info(CharSequence charSequence, Throwable throwable) {
-        super.info(charSequence, throwable);
         log.info(charSequence.toString(), throwable);
     }
 
     public void info(Throwable throwable) {
-        super.info(throwable);
         log.info("", throwable);
     }
 
     public void warn(CharSequence charSequence) {
-        super.warn(charSequence);
         log.warn(charSequence.toString());
     }
 
     public void warn(CharSequence charSequence, Throwable throwable) {
-        super.warn(charSequence, throwable);
         log.warn(charSequence.toString(), throwable);
     }
 
     public void warn(Throwable throwable) {
-        super.warn(throwable);
         log.warn("", throwable);
     }
 
     public void error(CharSequence charSequence) {
-        super.error(charSequence);
         log.error(charSequence.toString());
     }
 
     public void error(CharSequence charSequence, Throwable throwable) {
-        super.error(charSequence, throwable);
         log.error(charSequence.toString(), throwable);
     }
 
     public void error(Throwable throwable) {
-        super.error(throwable);
         log.error("", throwable);
-    }
-
-    @Override
-    public String getBuffer() {
-        return super.getBuffer();
     }
 
     public static LogLevel determinateLogLevel(Logger log) {
@@ -110,4 +91,19 @@ public class Slf4jLog extends StringBuilderLogger implements Log {
         }
         return  LogLevel.INFO;
     }
+
+    @Override
+    public String toString() {
+        return "Slf4jLog{name=" + log.getName() +"}";
+    }
+
+    @Override
+    public void close() throws Exception {
+        flush();
+    }
+
+    @Override
+    public void flush() {
+    }
+
 }

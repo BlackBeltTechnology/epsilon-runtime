@@ -1,12 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
     <version>${revision}</version>
-    
+
     <name>epsilon-runtime</name>
-    <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
+    <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration
+    </description>
     <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
     <issueManagement>
         <url>https://github.com/BlackBeltTechnology/epsilon-runtime/issues</url>
@@ -19,13 +21,16 @@
 
         <deployOnly>false</deployOnly>
         <osgi-default-import>
-          org.osgi.framework;version="[1.8,2.0)",
-          !lombok,
-          javax.annotation;version="[1.0,2)"
+            org.osgi.framework;version="[1.8,2.0)",
+            !lombok,
+            javax.annotation;version="[1.0,2)"
         </osgi-default-import>
-        
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
+        <surefire-version>3.0.0-M6</surefire-version>
 
         <emf-ecore-version>2.21.0</emf-ecore-version>
         <emf-xsd-version>2.17.0</emf-xsd-version>
@@ -48,7 +53,7 @@
         <apache-poi-karaf-features-version>1.0.4</apache-poi-karaf-features-version>
         <apache-httpclient-karaf-features-version>1.0.0</apache-httpclient-karaf-features-version>
     </properties>
-    
+
     <scm>
         <connection>scm:git:git://github.com/BlackBeltTechnology/epsilon-runtime.git</connection>
         <!--suppress UnresolvedMavenProperty -->
@@ -57,7 +62,7 @@
         </developerConnection>
         <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
     </scm>
-    
+
     <developers>
         <developer>
             <id>robson</id>
@@ -68,7 +73,7 @@
             <organizationUrl>http://www.blackbelt.hu</organizationUrl>
         </developer>
     </developers>
-    
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -76,9 +81,8 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <build>
-        
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -106,7 +110,7 @@
                     <artifactId>karaf-maven-plugin</artifactId>
                     <version>${karaf-version}</version>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -137,14 +141,14 @@
                         </execution>
                     </executions>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.8.2</version>
                 </plugin>
-                
-                
+
+
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
@@ -152,53 +156,62 @@
                 </plugin>
 
                 <plugin>
-					<groupId>org.apache.maven.plugins</groupId>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.1.1</version>
                 </plugin>
-                
+
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>${surefire-version}</version>
                     <configuration>
-                        <argLine>-Dfile.encoding=UTF-8</argLine>
+                        <systemPropertyVariables>
+                            <logback.configurationFile>${logback-test-config}</logback.configurationFile>
+                        </systemPropertyVariables>
+                        <argLine>
+                            -Dfile.encoding=UTF-8
+                            --add-opens java.base/java.lang=ALL-UNNAMED
+                            --add-opens java.base/java.util=ALL-UNNAMED
+                            --add-opens java.base/java.time=ALL-UNNAMED
+                        </argLine>
+                        <trimStackTrace>false</trimStackTrace>
                     </configuration>
                 </plugin>
 
-
                 <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
-                	<groupId>org.eclipse.m2e</groupId>
-                	<artifactId>lifecycle-mapping</artifactId>
-                	<version>1.0.0</version>
-                	<configuration>
-                		<lifecycleMappingMetadata>
-                			<pluginExecutions>
-                				<pluginExecution>
-                					<pluginExecutionFilter>
-                						<groupId>
-                							org.apache.karaf.tooling
-                						</groupId>
-                						<artifactId>
-                							karaf-maven-plugin
-                						</artifactId>
-                						<versionRange>
-                							[4.2.1,)
-                						</versionRange>
-                						<goals>
-                							<goal>verify</goal>
-                							<goal>
-                								features-generate-descriptor
-                							</goal>
-                						</goals>
-                					</pluginExecutionFilter>
-                					<action>
-                						<ignore />
-                					</action>
-                				</pluginExecution>
-                			</pluginExecutions>
-                		</lifecycleMappingMetadata>
-                	</configuration>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.karaf.tooling
+                                        </groupId>
+                                        <artifactId>
+                                            karaf-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [4.2.1,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>verify</goal>
+                                            <goal>
+                                                features-generate-descriptor
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -222,7 +235,7 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
                 <version>1.1.0</version>
@@ -402,7 +415,7 @@
             <artifactId>org.eclipse.epsilon.antlr.postprocessor.model</artifactId>
             <version>${epsilon-version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
@@ -451,14 +464,14 @@
             <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>27.1-jre</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.eclipse.uml2.uml</groupId>
             <artifactId>resources</artifactId>
@@ -479,7 +492,7 @@
             </exclusions>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -498,9 +511,9 @@
             <version>1.7.21</version>
             <scope>test</scope>
         </dependency>
-        
+
     </dependencies>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -527,7 +540,6 @@
                 <module>kar</module>
             </modules>
         </profile>
-        
 
 
         <profile>
@@ -562,18 +574,18 @@
         </profile>
 
         <profile>
-			<id>release-dummy</id>
-			<distributionManagement>
-				<snapshotRepository>
-					<id>dummy-distribution</id>
-					<url>file:///tmp/${project.groupId}-${project.artifactId}-${project.version}/maven-snapshot/</url>
-				</snapshotRepository>
-				<repository>
-					<id>dummy-distribution</id>
-					<url>file:///tmp/${project.groupId}-${project.artifactId}-${project.version}/maven-release/</url>
-				</repository>
-			</distributionManagement>
-		</profile>
+            <id>release-dummy</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>dummy-distribution</id>
+                    <url>file:///tmp/${project.groupId}-${project.artifactId}-${project.version}/maven-snapshot/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>dummy-distribution</id>
+                    <url>file:///tmp/${project.groupId}-${project.artifactId}-${project.version}/maven-release/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
 
         <profile>
             <id>release-judong</id>
