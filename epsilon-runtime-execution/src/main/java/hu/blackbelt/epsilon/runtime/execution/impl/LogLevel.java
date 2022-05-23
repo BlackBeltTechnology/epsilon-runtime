@@ -1,27 +1,24 @@
 package hu.blackbelt.epsilon.runtime.execution.impl;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public enum LogLevel {
     ERROR, WARN, INFO, DEBUG, TRACE;
 
+    private static Map<LogLevel, Set<LogLevel>> logLevelSetMap = ImmutableMap.<LogLevel, Set<LogLevel>>builder()
+            .put(LogLevel.ERROR, ImmutableSet.of(LogLevel.ERROR))
+            .put(LogLevel.WARN, ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN))
+            .put(LogLevel.INFO, ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO))
+            .put(LogLevel.DEBUG, ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG))
+            .put(LogLevel.TRACE, ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG, LogLevel.TRACE))
+            .build();
+
     public static Set<LogLevel> getMatchingLogLevels(LogLevel logLevel) {
-        Set<LogLevel> levels = new HashSet<>();
-        if (logLevel == LogLevel.ERROR) {
-            levels = ImmutableSet.of(LogLevel.ERROR);
-        } else if (logLevel == LogLevel.WARN) {
-            levels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN);
-        } else if (logLevel == LogLevel.INFO) {
-            levels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO);
-        } else if (logLevel == LogLevel.DEBUG) {
-            levels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG);
-        } else if (logLevel == LogLevel.TRACE) {
-            levels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG, LogLevel.TRACE);
-        }
-        return levels;
+        return logLevelSetMap.get(logLevel);
     }
 
     }
