@@ -55,6 +55,7 @@ public class BufferedSlf4jLogger implements Log, Closeable {
 
     public BufferedSlf4jLogger(LogLevel logLevel) {
         logEntries = new ArrayList<>();
+        this.logger = log;
         setLoglevels(logLevel);
     }
 
