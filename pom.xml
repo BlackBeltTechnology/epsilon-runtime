@@ -29,16 +29,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
         <surefire-version>3.0.0-M6</surefire-version>
-
-        <emf-ecore-version>2.21.0</emf-ecore-version>
         <emf-xsd-version>2.17.0</emf-xsd-version>
-        <emf-ecore-change-version>2.14.0</emf-ecore-change-version>
-        <emf-common-version>2.21.0</emf-common-version>
         <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
-        <emf-ecore-xmi-version>2.16.0</emf-ecore-xmi-version>
-
         <epsilon-version>2.3.0</epsilon-version>
         <karaf-version>4.2.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
@@ -262,6 +257,7 @@
             </plugin>
         </plugins>
     </build>
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -294,6 +290,17 @@
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>org.eclipse.epsilon.emc.emf</artifactId>
             <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.equinox.preferences</artifactId>
+            <version>3.10.1</version>
         </dependency>
 
         <dependency>
@@ -318,6 +325,12 @@
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>org.eclipse.epsilon.emc.hutn</artifactId>
             <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -378,12 +391,24 @@
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>org.eclipse.epsilon.hutn.engine</artifactId>
             <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>org.eclipse.epsilon.hutn.model</artifactId>
             <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -396,12 +421,24 @@
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>org.eclipse.epsilon.hutn.xmi</artifactId>
             <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
             <artifactId>org.eclipse.epsilon.hutn.unparser</artifactId>
             <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -419,35 +456,31 @@
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
-            <version>${emf-mapping-ecore2xml}</version>
+             <version>${emf-mapping-ecore2xml}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.common</artifactId>
-            <version>${emf-common-version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.ecore</artifactId>
-            <version>${emf-ecore-version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-            <version>${emf-ecore-xmi-version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.ecore.change</artifactId>
-            <version>${emf-ecore-change-version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -516,6 +549,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>fr.jmini.ecentral</groupId>
+                <artifactId>eclipse-platform-dependencies</artifactId>
+                <version>4.18</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>hu.blackbelt.epsilon</groupId>
                 <artifactId>epsilon-runtime-utils</artifactId>
