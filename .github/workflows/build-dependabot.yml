@@ -1,22 +1,19 @@
-name: Build project
+name: Build project for Dependabot
 
 on:
-  push:
+  pull_request_target:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop, master, increment/*, release/* ]
-  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+  contents: write
 
 jobs:
   build:
-    name: ⏳ Build, test and deploy artifacts
+    name: ⏳ Dependabot test build
     runs-on: judong
     timeout-minutes: 30
-    env:
-      SIGN_KEY_ID: ${{ secrets.GPG_KEYNAME }}
-      SIGN_KEY_PASS: ${{ secrets.GPG_PASSPHRASE }}
-      SIGN_KEY: ${{ secrets.GPG_SECRET_KEYS }}
-    if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
     outputs:
       version: ${{ steps.version.outputs.version }}
 
@@ -35,12 +32,6 @@ jobs:
         with:
           java-version: '11'
           distribution: 'zulu'
-
-      - name: 🔢 Get the current PR number
-        uses: jwalton/gh-find-current-pr@v1
-        id: current-pr
-        with:
-          state: open
 
       - name: 🧹 Remove settings.xml
         run: rm $HOME/.m2/settings.xml || true
@@ -99,90 +90,11 @@ jobs:
 # MAVEN BUILD START
 ##########################
 
-      # Phase 1 - Build and deploy to judong nexus
       - name: 🔥 Build with Maven (build, test)
         run: |-
           ./mvnw -B -Dstyle.color=always \
           -Drevision=${{ steps.version.outputs.version }} \
-          -Psign-artifacts \
-          -Prelease-judong \
-          deploy
-
-      # Phase 2 - Build and deploy to maven central
-      - name: 🎁 Deploy with Maven (central)
-        if: ${{ always() && startsWith(github.head_ref, 'release') && job.status == 'success' }}
-        run: |-
-          ./mvnw -B -Dstyle.color=always \
-          -Drevision=${{ steps.version.outputs.version }} \
-          -DdeployOnly \
-          -P"release-central,sign-artifacts,-verify-feature" \
-          -Dmaven.test.skip=true \
-          deploy
-
-      - name: 🔎 Sonar Metrics
-        if: steps.context.outputs.branch == 'develop'
-        continue-on-error: true
-        run: |-
-          ./mvnw -B -Dstyle.color=always \
-          -Dsonar.projectKey=epsilon-runtime \
-          -Dsonar.host.url=https://sonar.judo.technology \
-          -Dsonar.login=${{ secrets.JUDO_SONAR_TOKEN }} \
-          sonar:sonar
-
-##########################
-# MAVEN BUILD END
-##########################
-
-      - name: 📌 Create version tag
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.OSS_PAT }}
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/v${{ steps.version.outputs.version }}',
-              sha: context.sha
-            })
-
-      - name: 📌 Tag to trigger PR merge on increment / release branch
-        if: |-
-          ${{ always() && 
-          (startsWith(github.head_ref, 'increment') || startsWith(github.head_ref, 'release')) && 
-          job.status == 'success' }}
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.OSS_PAT }}
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/merge-pr/${{ steps.current-pr.outputs.pr }}',
-              sha: context.sha
-            })
-
-      - name: 🏗️ Build Changelog
-        id: create_changelog
-        uses: mikepenz/release-changelog-builder-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          toTag: v${{ steps.version.outputs.version }}
-
-      - name: 📖 Create release
-        if: |-
-          ${{ always() && 
-          (startsWith(github.head_ref, 'develop') || github.ref == 'refs/heads/develop') && 
-          job.status == 'success' }}
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: v${{ steps.version.outputs.version }}
-          tag: v${{ steps.version.outputs.version }}
-          generateReleaseNotes: false
-          body: ${{steps.create_changelog.outputs.changelog}}
-          draft: false
-          prerelease: true
+          clean install
 
       - name: 🎤 Create message
         id: message
