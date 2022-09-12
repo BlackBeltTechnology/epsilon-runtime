@@ -7,21 +7,6 @@ updates:
     time: "04:00"
   open-pull-requests-limit: 10
   ignore:
-  - dependency-name: org.apache.commons:commons-lang3
-    versions:
-    - "3.11"
-  - dependency-name: org.projectlombok:lombok
-    versions:
-    - 1.18.18
-  - dependency-name: org.eclipse.emf:org.eclipse.emf.common
-    versions:
-    - 2.21.0
-  - dependency-name: org.junit.jupiter:junit-jupiter-engine
-    versions:
-    - 5.7.0
-  - dependency-name: org.apache.felix:maven-bundle-plugin
-    versions:
-    - 5.1.1
-  - dependency-name: de.jutzig:github-release-plugin
-    versions:
-    - 1.4.0
+  - dependency-name: com.google.guava:guava
+  - dependency-name: org.slf4j:slf4j-api
+  - dependency-name: org.jruby:jruby-complete
