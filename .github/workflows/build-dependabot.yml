@@ -1,0 +1,121 @@
+name: Build project for Dependabot
+
+on:
+  pull_request_target:
+    branches: [ develop ]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  build:
+    name: ⏳ Dependabot test build
+    runs-on: judong
+    timeout-minutes: 30
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: 🛠️ Project context
+        id: context
+        uses: zero88/gh-project-context@v1.1
+
+      - name: 🛠️ Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+
+      - name: 🧹 Remove settings.xml
+        run: rm $HOME/.m2/settings.xml || true
+
+      - name: 🛠️ Setup maven settings.xml
+        uses: whelk-io/maven-settings-xml-action@v20
+        with:
+          servers: >
+            [
+                {
+                    "id": "judong-nexus-mirror",
+                    "username": "${{ secrets.JUDONG_NEXUS_USERNAME }}",
+                    "password": "${{ secrets.JUDONG_NEXUS_PASSWORD }}"
+                },
+                {
+                    "id": "judong-nexus-distribution",
+                    "username": "${{ secrets.JUDONG_NEXUS_USERNAME }}",
+                    "password": "${{ secrets.JUDONG_NEXUS_PASSWORD }}"
+                },
+                {
+                    "id": "ossrh",
+                    "username": "${{ secrets.SONATYPE_USERNAME }}",
+                    "password": "${{ secrets.SONATYPE_PASSWORD }}"
+                }
+            ]
+          mirrors: >
+            [
+                {
+                    "id": "judong-nexus-mirror",
+                    "mirrorOf": "*",
+                    "url": "https://nexus.judo.technology/repository/maven-judong/"
+                 }
+            ]
+
+      - name: 🔢 Calculate version number
+        id: version
+        run: |-
+          POM_VERSION=$(./mvnw org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dtycho.mode=maven -DskipModules=true -Dexpression=project.version -q -DforceStdout)
+          if [[ "${POM_VERSION}" == *-SNAPSHOT ]]; then
+            BASE_VERSION=$(echo "${POM_VERSION}" | cut -d'-' -f 1)
+          else
+            BASE_VERSION=${POM_VERSION}
+          fi
+          if [[ "${{ github.base_ref }}" == "master" ]]; then
+            VERSION_NUMBER=${BASE_VERSION}
+          else
+            TAG_NAME=$(echo "${{ steps.context.outputs.branch }}" | cut -d ' ' -f2 | tr '#\/\.-' '_')
+            VERSION_NUMBER=${BASE_VERSION}.$(date +%Y%m%d_%H%M%S)_${{ steps.context.outputs.shortCommitId }}_${TAG_NAME//[(\)]}
+          fi
+          echo "Version from POM: ${POM_VERSION}"
+          echo "Base version from POM: ${BASE_VERSION}"
+          echo "Building version: ${VERSION_NUMBER}"
+          echo "::set-output name=version::${VERSION_NUMBER}"
+
+##########################
+# MAVEN BUILD START
+##########################
+
+      - name: 🔥 Build with Maven (build, test)
+        run: |-
+          ./mvnw -B -Dstyle.color=always \
+          -Drevision=${{ steps.version.outputs.version }} \
+          clean install
+
+      - name: 🎤 Create message
+        id: message
+        if: ${{ always() }}
+        run: |-
+          if [ "${{ job.status }}" == "success" ]; then
+            message=":white_check_mark: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            message="${message} Version: ${{ steps.version.outputs.version }}"
+          fi
+          if [ "${{ job.status }}" == "failure" ]; then
+            message=":x: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"    
+          fi
+          if [ "${{ job.status }}" == "canceled" ]; then
+            message=":x: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"    
+          fi
+          echo "::set-output name=message::${message}"
+
+      - name: 📢 Send message to discord
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.JUDONG_DISCORD_WEBHOOK }}
+          title: "Gitub action"
+          description: "${{ steps.message.outputs.message }}"
