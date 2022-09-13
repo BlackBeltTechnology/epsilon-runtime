@@ -1,9 +1,11 @@
-# epsilon-runtime
+= epsilon-runtime
+
+image::https://github.com/BlackBeltTechnology/epsilon-runtime/actions/workflows/build.yml/badge.svg?branch=develop[link="https://github.com/BlackBeltTechnology/epsilon-runtime/actions/workflows/build.yml" float="center"]
 
 Eclipse Epsilon Runtime for Maven and OSGi. There are builders and helper classes, 
 URI handlers that can help the usage of Epsilon out of Eclipse ecosystem. 
 
-## What is Epsilon?
+== What is Epsilon?
 
 From: https://www.eclipse.org/epsilon/
 
@@ -12,6 +14,7 @@ model validation, comparison, migration and refactoring that work out of the box
 UML, Simulink, XML and other types of models.
 
 The currently supported epsilon language dialects are:
+
  - EOL (Epsilon Object Language)
  - ETL (Epsilon Transformation Language)
  - EVL (Epsilon Validation Language)
@@ -19,17 +22,18 @@ The currently supported epsilon language dialects are:
  - EGX (Epsilon Generation XML(?))
  - EML (Epsilon Merging Language)
  - ECL (Epsilon Comparison Language)
- 
- To understand the epsilon stack recommended to read the free epsilon book: https://www.eclipse.org/epsilon/doc/book/
- 
 
-## Example
+
+To understand the epsilon stack recommended to read the free epsilon book: https://www.eclipse.org/epsilon/doc/book/
+
+
+== Example
 
 This example there is a model definition which can define a simple class structure with attributes and references. That models can be transformed to Liquibase (https://www.liquibase.org/) scripts. 
 Liquibase XML format used which is defined with an XSD file, which techcally the meta model of an XML file. 
 The original XSD file was modified (https://github.com/BlackBeltTechnology/epsilon-runtime/blob/develop/epsilon-runtime-execution/src/test/resources/liquibase.xsd) to be compatible with Ecore metamodel structure, so the output of transformation will be an XML file which is a Liquibase XML itself.
 
-### 1. Define a meta-model. The meta-model contains the definition of our structure:
+=== 1. Define a meta-model. The meta-model contains the definition of our structure:
 
 [source, xml]
 ----
@@ -98,7 +102,7 @@ class EntityReference { // <3>
 <2> Attribute - Represents an attribute of class
 <3> Reference - Represents a reference to a class
 
-### 2. Define the model based on meta-model
+=== 2. Define the model based on meta-model
 
 [source, xml]
 ----
@@ -156,7 +160,7 @@ package  {
 }
 ----
 
-### 3. Define the transformation rules
+=== 3. Define the transformation rules
 
 The rules can be defined in ETL language (Epsilon Transformation Language).
 
@@ -230,7 +234,7 @@ rule EntityReferenceToAddForeignKeyConstraint
 }
 ----
 
-### 4. Run the transformation
+=== 4. Run the transformation
 
 [source, java]
 ----
@@ -306,3 +310,12 @@ The output liquibase model is:
 </databaseChangeLog>
 ----
 
+
+== Contributing to the project
+
+Everyone is welcome to contribute to epsilon-runtime! As a starter, please read the corresponding link:CONTRIBUTING.adoc[CONTRIBUTING] guide for details!
+
+
+== License
+
+This project is licensed under the https://www.apache.org/licenses/LICENSE-2.0[Apache License 2.0].
