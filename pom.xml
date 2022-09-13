@@ -766,7 +766,7 @@
                             <dependency>
                                 <groupId>org.asciidoctor</groupId>
                                 <artifactId>asciidoctorj-diagram-ditaamini</artifactId>
-                                <version>1.0.0</version>
+                                <version>1.0.3</version>
                             </dependency>
                         </dependencies>
                         <configuration>
