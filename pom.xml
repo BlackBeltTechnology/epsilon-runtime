@@ -33,7 +33,7 @@
         <epsilon-version>2.3.0</epsilon-version>
         <karaf-version>4.4.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
-        <osgi-utils-version>1.0.12.20220628_205152_6d1b9262_develop</osgi-utils-version>
+        <osgi-utils-version>1.0.12</osgi-utils-version>
         <google-karaf-features-version>1.0.7</google-karaf-features-version>
         <javax-karaf-features-version>1.0.2</javax-karaf-features-version>
         <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
