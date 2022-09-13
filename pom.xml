@@ -31,7 +31,7 @@
         <emf-xsd-version>2.17.0</emf-xsd-version>
         <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
         <epsilon-version>2.3.0</epsilon-version>
-        <karaf-version>4.2.1</karaf-version>
+        <karaf-version>4.4.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <osgi-utils-version>1.0.12.20220628_205152_6d1b9262_develop</osgi-utils-version>
         <google-karaf-features-version>1.0.7</google-karaf-features-version>
