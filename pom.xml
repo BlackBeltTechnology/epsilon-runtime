@@ -34,14 +34,7 @@
         <karaf-version>4.2.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <osgi-utils-version>1.0.12.20220628_205152_6d1b9262_develop</osgi-utils-version>
-        <google-karaf-features-version>1.0.7</google-karaf-features-version>
-        <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
-        <eclipse-emf-karaf-features-version>1.0.1</eclipse-emf-karaf-features-version>
-        <eclipse-epsilon-karaf-features-version>1.0.6</eclipse-epsilon-karaf-features-version>
-        <antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
-        <apache-commons-karaf-features-version>1.0.6</apache-commons-karaf-features-version>
-        <apache-poi-karaf-features-version>1.0.4</apache-poi-karaf-features-version>
-        <apache-httpclient-karaf-features-version>1.0.0</apache-httpclient-karaf-features-version>
+        <karaf-features-version>2.0.0.20220914_195648_137a7afe_feature_JNG_3834_PrepareRelease</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
