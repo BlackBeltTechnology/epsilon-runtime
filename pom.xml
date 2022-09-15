@@ -15,7 +15,7 @@
     </issueManagement>
     <properties>
 
-        <revision>1.4.0-SNAPSHOT</revision>
+        <revision>1.5.0-SNAPSHOT</revision>
         <maven>3.8.3</maven>
 
         <deployOnly>false</deployOnly>
@@ -33,16 +33,9 @@
         <epsilon-version>2.4.0</epsilon-version>
         <karaf-version>4.4.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
-        <osgi-utils-version>1.0.12</osgi-utils-version>
-        <google-karaf-features-version>1.0.7</google-karaf-features-version>
-        <javax-karaf-features-version>1.0.2</javax-karaf-features-version>
-        <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
-        <eclipse-emf-karaf-features-version>1.0.1</eclipse-emf-karaf-features-version>
-        <eclipse-epsilon-karaf-features-version>1.0.6</eclipse-epsilon-karaf-features-version>
-        <antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
-        <apache-commons-karaf-features-version>1.0.6</apache-commons-karaf-features-version>
-        <apache-poi-karaf-features-version>1.0.4</apache-poi-karaf-features-version>
-        <apache-httpclient-karaf-features-version>1.0.0</apache-httpclient-karaf-features-version>
+
+        <osgi-utils-version>1.1.0</osgi-utils-version>
+        <karaf-features-version>2.0.0</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
