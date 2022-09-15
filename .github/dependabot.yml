@@ -11,4 +11,3 @@ updates:
   - dependency-name: org.slf4j:slf4j-api
   - dependency-name: org.jruby:jruby-complete
   - dependency-name: org.apache.maven.plugins/maven-install-plugin
-
