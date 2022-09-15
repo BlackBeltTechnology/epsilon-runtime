@@ -15,7 +15,7 @@
     </issueManagement>
     <properties>
 
-        <revision>1.4.0-SNAPSHOT</revision>
+        <revision>1.5.0-SNAPSHOT</revision>
         <maven>3.8.3</maven>
 
         <deployOnly>false</deployOnly>
@@ -33,8 +33,8 @@
         <epsilon-version>2.3.0</epsilon-version>
         <karaf-version>4.2.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
-        <osgi-utils-version>1.0.12.20220628_205152_6d1b9262_develop</osgi-utils-version>
-        <karaf-features-version>2.0.0.20220914_195648_137a7afe_feature_JNG_3834_PrepareRelease</karaf-features-version>
+        <osgi-utils-version>1.1.0</osgi-utils-version>
+        <karaf-features-version>2.0.0</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
