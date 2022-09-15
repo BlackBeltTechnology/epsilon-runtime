@@ -3,56 +3,65 @@
     <groupId>hu.blackbelt.epsilon</groupId>
     <artifactId>epsilon-runtime-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.4</version>
-    
+    <version>${revision}</version>
+
     <name>epsilon-runtime</name>
-    <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration</description>
+    <description>Eclipse Epsilon runtime for OSGi/Maven. It wraps the script calling and meta model regitration
+    </description>
     <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
     <issueManagement>
         <url>https://github.com/BlackBeltTechnology/epsilon-runtime/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
     <properties>
-        <!-- Xtend / Xcore -->
-        <emf-version>2.18.0</emf-version>
-        <emf-common-version>2.16.0</emf-common-version>
-        <core-resources-version>3.12.0</core-resources-version>
-        <eclipse-text-version>3.5.101</eclipse-text-version>
-        <emf-codegen-version>2.16.0</emf-codegen-version>
-        <emf-codegen-ecore-version>2.18.0</emf-codegen-ecore-version>
-        <emf-ecore-xmi-version>2.16.0</emf-ecore-xmi-version>
-        <xtext-version>2.17.0</xtext-version>
-        <ecore-xtext-version>1.2.0</ecore-xtext-version>
-        <ecore-xcore-version>1.3.1</ecore-xcore-version>
-        <ecore-xcore-lib-version>1.3.0</ecore-xcore-lib-version>
-        <emf-mwe2-launch-version>2.10.0</emf-mwe2-launch-version>
-        <emf-mwe-utils-version>1.4.0</emf-mwe-utils-version>
-        <xpand-version>2.0.0</xpand-version>
-        <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
 
-        <epsilon-version>1.5.1</epsilon-version>
-        <karaf-version>4.2.1</karaf-version>
+        <revision>1.5.0</revision>
+        <maven>3.8.3</maven>
+
+        <deployOnly>false</deployOnly>
+        <osgi-default-import>
+            org.osgi.framework;version="[1.8,2.0)",
+            !lombok,
+            javax.annotation;version="[1.0,2)"
+        </osgi-default-import>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <emf-xsd-version>2.17.0</emf-xsd-version>
+        <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
+        <epsilon-version>2.4.0</epsilon-version>
+        <karaf-version>4.4.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
-        <osgi-utils-version>1.0.10</osgi-utils-version>
-        <google-karaf-features-version>1.0.4</google-karaf-features-version>
-        <javax-karaf-features-version>1.0.2</javax-karaf-features-version>
-        <bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
-        <eclipse-emf-karaf-features-version>1.0.0</eclipse-emf-karaf-features-version>
-        <eclipse-epsilon-karaf-features-version>1.0.3</eclipse-epsilon-karaf-features-version>
-        <antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
-        <apache-commons-karaf-features-version>1.0.5</apache-commons-karaf-features-version>
-        <apache-poi-karaf-features-version>1.0.2</apache-poi-karaf-features-version>
-        <apache-httpclient-karaf-features-version>1.0.0</apache-httpclient-karaf-features-version>
+
+        <osgi-utils-version>1.1.0</osgi-utils-version>
+        <karaf-features-version>2.0.0</karaf-features-version>
+
+        <!--suppress UnresolvedMavenProperty -->
+        <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
+
+        <surefire-version>3.0.0-M7</surefire-version>
+        <pax-exam-version>4.13.4</pax-exam-version>
+
+        <!-- Code Quality-->
+        <sonar-maven-plugin-version>3.9.1.2184</sonar-maven-plugin-version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.language>java</sonar.language>
+        <sonar.java.source>${java.version}</sonar.java.source>
+        <jacoco.version>0.8.8</jacoco.version>
+
     </properties>
-    
+
     <scm>
         <connection>scm:git:git://github.com/BlackBeltTechnology/epsilon-runtime.git</connection>
+        <!--suppress UnresolvedMavenProperty -->
         <developerConnection>
             scm:git:ssh://${git.username}@github.com:BlackBeltTechnology/epsilon-runtime.git
         </developerConnection>
         <url>http://github.com/BlackBeltTechnology/epsilon-runtime</url>
     </scm>
-    
+
     <developers>
         <developer>
             <id>robson</id>
@@ -63,7 +72,7 @@
             <organizationUrl>http://www.blackbelt.hu</organizationUrl>
         </developer>
     </developers>
-    
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -71,15 +80,14 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <build>
-        
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>5.1.8</version>
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
@@ -87,8 +95,7 @@
                                 hu.blackbelt.epsilon.runtime.*;version=${project.version}
                             </Export-Package>
                             <Import-Package>
-                                !lombok,
-                                javax.annotation;version="[1.0,2)",
+                                ${osgi-default-import},
                                 *
                             </Import-Package>
                             <Include-Resource>{maven-resources}</Include-Resource>
@@ -102,98 +109,104 @@
                     <artifactId>karaf-maven-plugin</artifactId>
                     <version>${karaf-version}</version>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.10.1</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>11</source>
+                        <target>11</target>
                     </configuration>
                 </plugin>
 
+                <!-- Override version for maven-install-plugin because there is a bug in
+                3.0.0-M1 preventing installing of modules with packaging of feature
+                see: https://issues.apache.org/jira/browse/MINSTALL-151 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>2.5.2</version>
-                    <executions>
-                        <execution>
-                            <id>default-install</id>
-                            <configuration>
-                                <skip>${deployOnly}</skip>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>default-test</id>
-                            <configuration>
-                                <skip>${deployOnly}</skip>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.8.2</version>
                 </plugin>
-                
-                
+
+
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.3.0</version>
                 </plugin>
 
                 <plugin>
-					<groupId>org.apache.maven.plugins</groupId>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.1.1</version>
                 </plugin>
-                
+
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin-version}</version>
+                </plugin>
+
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M3</version>
+                    <version>${surefire-version}</version>
                     <configuration>
-                        <argLine>-Dfile.encoding=UTF-8</argLine>
+                        <trimStackTrace>false</trimStackTrace>
+                        <systemPropertyVariables>
+                            <logback.configurationFile>${logback-test-config}</logback.configurationFile>
+                        </systemPropertyVariables>
+                        <!--suppress UnresolvedMavenProperty -->
+                        <argLine>
+                            ${jacoco.agent}
+                            -Dfile.encoding=UTF-8
+                            --add-opens java.base/java.lang=ALL-UNNAMED
+                            --add-opens java.base/java.util=ALL-UNNAMED
+                            --add-opens java.base/java.time=ALL-UNNAMED
+                        </argLine>
+                        <trimStackTrace>false</trimStackTrace>
                     </configuration>
                 </plugin>
 
-
                 <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
-                	<groupId>org.eclipse.m2e</groupId>
-                	<artifactId>lifecycle-mapping</artifactId>
-                	<version>1.0.0</version>
-                	<configuration>
-                		<lifecycleMappingMetadata>
-                			<pluginExecutions>
-                				<pluginExecution>
-                					<pluginExecutionFilter>
-                						<groupId>
-                							org.apache.karaf.tooling
-                						</groupId>
-                						<artifactId>
-                							karaf-maven-plugin
-                						</artifactId>
-                						<versionRange>
-                							[4.2.1,)
-                						</versionRange>
-                						<goals>
-                							<goal>verify</goal>
-                							<goal>
-                								features-generate-descriptor
-                							</goal>
-                						</goals>
-                					</pluginExecutionFilter>
-                					<action>
-                						<ignore />
-                					</action>
-                				</pluginExecution>
-                			</pluginExecutions>
-                		</lifecycleMappingMetadata>
-                	</configuration>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.karaf.tooling
+                                        </groupId>
+                                        <artifactId>
+                                            karaf-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [4.2.1,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>verify</goal>
+                                            <goal>
+                                                features-generate-descriptor
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -201,7 +214,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>add-source</id>
@@ -217,93 +230,325 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.3.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <configuration>
+                    <propertyName>jacoco.agent</propertyName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.0</version>
+            <version>1.7.32</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-workflow</artifactId>
-            <version>${epsilon-version}</version>
-            <scope>provided</scope>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.11</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-emf</artifactId>
+            <artifactId>org.eclipse.epsilon.common</artifactId>
             <version>${epsilon-version}</version>
-            <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-hutn</artifactId>
+            <artifactId>org.eclipse.epsilon.profiling</artifactId>
             <version>${epsilon-version}</version>
-            <scope>provided</scope>
         </dependency>
-        
+
+        <!--
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-workflow-emf</artifactId>
+            <artifactId>org.eclipse.epsilon.workflow</artifactId>
             <version>${epsilon-version}</version>
             <scope>provided</scope>
-        </dependency>
-        
+        </dependency> -->
+
         <dependency>
             <groupId>org.eclipse.epsilon</groupId>
-            <artifactId>epsilon-spreadsheets</artifactId>
+            <artifactId>org.eclipse.epsilon.emc.emf</artifactId>
             <version>${epsilon-version}</version>
-            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.equinox.preferences</artifactId>
+            <version>3.10.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.emc.spreadsheets</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.emc.composite</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.emc.plainxml</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.emc.hutn</artifactId>
+            <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.eol.engine</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.erl.engine</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.etl.engine</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.evl.engine</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.emg.engine</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.ecl.engine</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.eml.engine</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.pinset.engine</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.hutn.model.config</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.hutn.engine</artifactId>
+            <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.hutn.model</artifactId>
+            <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.hutn.model.antlrAst</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.hutn.xmi</artifactId>
+            <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.hutn.unparser</artifactId>
+            <version>${epsilon-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.platform</groupId>
+                    <artifactId>org.eclipse.equinox.preferences</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.antlr.postprocessor</artifactId>
+            <version>${epsilon-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.epsilon</groupId>
+            <artifactId>org.eclipse.epsilon.antlr.postprocessor.model</artifactId>
+            <version>${epsilon-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.mapping.ecore2xml</artifactId>
-            <version>${emf-mapping-ecore2xml}</version>
+             <version>${emf-mapping-ecore2xml}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.common</artifactId>
-            <version>${emf-common-version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.ecore</artifactId>
-            <version>2.18.0</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.emf</groupId>
             <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-            <version>2.16.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.change</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.xsd</artifactId>
+            <version>${emf-xsd-version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.0</version>
+            <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>27.1-jre</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.eclipse.uml2.uml</groupId>
             <artifactId>resources</artifactId>
@@ -324,30 +569,31 @@
             </exclusions>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.3.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.3.2</version>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.21</version>
+            <version>1.7.33</version>
             <scope>test</scope>
         </dependency>
-        
+
     </dependencies>
-    
+
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>fr.jmini.ecentral</groupId>
+                <artifactId>eclipse-platform-dependencies</artifactId>
+                <version>4.18</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>hu.blackbelt.epsilon</groupId>
                 <artifactId>epsilon-runtime-utils</artifactId>
@@ -360,7 +606,7 @@
             <id>modules</id>
             <activation>
                 <property>
-                    <name>github_release</name>
+                    <name>skipModules</name>
                     <value>!true</value>
                 </property>
             </activation>
@@ -370,35 +616,23 @@
                 <module>epsilon-runtime-osgi</module>
                 <module>features</module>
                 <module>kar</module>
+                <module>epsilon-runtime-reports</module>
             </modules>
         </profile>
-        
-
 
         <profile>
             <id>sign-artifacts</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <groupId>org.simplify4u.plugins</groupId>
+                        <artifactId>sign-maven-plugin</artifactId>
+                        <version>1.0.1</version>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
-                                <configuration>
-                                    <keyname>${gpg.keyname}</keyname>
-                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
-                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
-                                    <gpgArguments>
-                                        <arg>--pinentry-mode</arg>
-                                        <arg>loopback</arg>
-                                    </gpgArguments>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -411,11 +645,11 @@
             <distributionManagement>
                 <snapshotRepository>
                     <id>dummy-distribution</id>
-                    <url>file:///tmp/maven-snapshot/</url>
+                    <url>file:///tmp/${project.groupId}-${project.artifactId}-${project.version}/maven-snapshot/</url>
                 </snapshotRepository>
                 <repository>
                     <id>dummy-distribution</id>
-                    <url>file:///tmp/maven-release/</url>
+                    <url>file:///tmp/${project.groupId}-${project.artifactId}-${project.version}/maven-release/</url>
                 </repository>
             </distributionManagement>
         </profile>
@@ -425,11 +659,13 @@
             <distributionManagement>
                 <snapshotRepository>
                     <id>judong-nexus-distribution</id>
-                    <url>${env.JUDONG_MAVEN_UPSTREAM_SNAPSHOT}</url>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>https://nexus.judo.technology/repository/maven-judong-snapshots/</url>
                 </snapshotRepository>
                 <repository>
                     <id>judong-nexus-distribution</id>
-                    <url>${env.JUDONG_MAVEN_UPSTREAM_RELEASE}</url>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>https://nexus.judo.technology/repository/maven-judong-snapshots/</url>
                 </repository>
             </distributionManagement>
         </profile>
@@ -448,19 +684,6 @@
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
             <distributionManagement>
@@ -476,64 +699,145 @@
         </profile>
 
         <profile>
-            <id>release-github</id>
+            <id>generate-github-asciidoc-diagrams</id>
+
+            <properties>
+                <asciidoctor.maven.plugin.version>2.2.2</asciidoctor.maven.plugin.version>
+                <asciidoctorj.version>2.5.5</asciidoctorj.version>
+                <asciidoctorj.diagram.version>2.2.3</asciidoctorj.diagram.version>
+                <jruby.version>9.3.4.0</jruby.version>
+            </properties>
+
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>de.jutzig</groupId>
-                        <artifactId>github-release-plugin</artifactId>
-                        <version>1.3.0</version>
-                        <inherited>false</inherited>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <version>${asciidoctor.maven.plugin.version}</version>
+                        <dependencies>
+                            <!-- Comment this section to use the default jruby artifact provided by the plugin -->
+                            <dependency>
+                                <groupId>org.jruby</groupId>
+                                <artifactId>jruby-complete</artifactId>
+                                <version>${jruby.version}</version>
+                            </dependency>
+                            <!-- Comment this section to use the default AsciidoctorJ artifact provided by the plugin -->
+                            <dependency>
+                                <groupId>org.asciidoctor</groupId>
+                                <artifactId>asciidoctorj</artifactId>
+                                <version>${asciidoctorj.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.asciidoctor</groupId>
+                                <artifactId>asciidoctorj-diagram</artifactId>
+                                <version>${asciidoctorj.diagram.version}</version>
+                            </dependency>
+                            <!-- Since asciidoctorj-diagram v2.2.0, uncomment to use specific version of plantuml or ditaa -->
+                            <dependency>
+                                <groupId>org.asciidoctor</groupId>
+                                <artifactId>asciidoctorj-diagram-plantuml</artifactId>
+                                <version>1.2022.5</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.asciidoctor</groupId>
+                                <artifactId>asciidoctorj-diagram-ditaamini</artifactId>
+                                <version>1.0.3</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <sourceDirectory>./.github</sourceDirectory>
+                            <requires>
+                                <require>asciidoctor-diagram</require>
+                            </requires>
+                            <attributes>
+                                <!-- Example below shows how to specify in this pom instead of System's PATH, the location of dot command of Graphviz, required by PlantUML libraries -->
+                                <!-- Windows:
+                                    <graphvizdot>C:\Program Files (x86)\Graphviz2.38\bin\dot.exe</graphvizdot>
+                                -->
+                                <!-- *nix :
+                                    <graphvizdot>/usr/local/bin/dot</graphvizdot>
+                                -->
+                            </attributes>
+                        </configuration>
                         <executions>
                             <execution>
-                                <id>release-to-github</id>
+                                <id>generate-html-doc</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>process-asciidoc</goal>
+                                </goals>
+                                <configuration>
+                                    <backend>html5</backend>
+                                    <attributes>
+                                        <imagesdir>./images</imagesdir>
+                                        <toc>left</toc>
+                                        <icons>font</icons>
+                                        <sectanchors>true</sectanchors>
+                                        <idprefix/>
+                                        <idseparator>-</idseparator>
+                                    </attributes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-generated-gitflow-diagrams</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
 
                                 <configuration>
-                                    <repositoryId>https://github.com/BlackBeltTechnology/epsilon-runtime.git</repositoryId>
-                                    <description>Branch: ${env.WERCKER_GIT_BRANCH} Wercker: ${env.WERCKER_RUN_URL}</description>
-                                    <releaseName>${project.version}</releaseName>
-                                    <deleteRelease>true</deleteRelease>
-                                    <tag>${project.version}</tag>
-                                    <!--
-                                    <fileSets>
-                                        <fileSet>
-                                            <directory>epsilon-runtime-execution/target</directory>
+                                    <outputDirectory>${basedir}/.github</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/target/generated-docs/images/</directory>
                                             <includes>
-                                                <include>*.jar</include>
+                                                <include>*.png</include>
                                             </includes>
-                                        </fileSet>
-                                        <fileSet>
-                                            <directory>epsilon-runtime-utils/target</directory>
-                                            <includes>
-                                                <include>*.jar</include>
-                                            </includes>
-                                        </fileSet>
-                                        <fileSet>
-                                            <directory>epsilon-runtime-osgi/target</directory>
-                                            <includes>
-                                                <include>*.jar</include>
-                                            </includes>
-                                        </fileSet>
-                                        <fileSet>
-                                            <directory>features/target/feature/</directory>
-                                            <includes>
-                                                <include>feature.xml</include>
-                                            </includes>
-                                        </fileSet>
-                                        <fileSet>
-                                            <directory>kar/target</directory>
-                                            <includes>
-                                                <include>*.kar</include>
-                                            </includes>
-                                        </fileSet>
-                                    </fileSets>
-                                     -->
+                                        </resource>
+                                    </resources>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
-                                <phase>deploy</phase>
+        <profile>
+            <id>update-source-code-license</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>2.0.0</version>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <addSvnKeyWords>false</addSvnKeyWords>
+                            <organizationName>BlackBelt Technology</organizationName>
+                            <inceptionYear>2018</inceptionYear>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>first</id>
                                 <goals>
-                                    <goal>release</goal>
+                                    <goal>update-file-header</goal>
                                 </goals>
+                                <phase>process-sources</phase>
+                                <configuration>
+                                    <licenseName>apache_v2</licenseName>
+                                    <roots>
+                                        <root>src/main/java</root>
+                                        <root>src/test</root>
+                                    </roots>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

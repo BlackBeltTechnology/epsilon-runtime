@@ -1,10 +1,31 @@
 package hu.blackbelt.epsilon.runtime.execution.contexts;
 
+/*-
+ * #%L
+ * epsilon-runtime-execution
+ * %%
+ * Copyright (C) 2018 - 2022 BlackBelt Technology
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import hu.blackbelt.epsilon.runtime.execution.exceptions.EvlScriptExecutionException;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.evl.EvlModule;
+import org.eclipse.epsilon.evl.concurrent.EvlModuleParallelElements;
 import org.eclipse.epsilon.evl.execute.UnsatisfiedConstraint;
 
 import java.net.URI;
@@ -19,8 +40,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EvlExecutionContext extends EolExecutionContext {
 
-    private EvlModule module = new EvlModule();
-
+    private final EvlModule module;
+    
     private Collection<String> expectedErrors;
 
     private Collection<String> expectedWarnings;
@@ -31,8 +52,9 @@ public class EvlExecutionContext extends EolExecutionContext {
 
     @Builder(builderMethodName = "evlExecutionContextBuilder")
     public EvlExecutionContext(URI source, List<ProgramParameter> parameters,
-                               Collection<String> expectedErrors, Collection<String> expectedWarnings, EvlModule module) {
-        super(source, parameters);
+                               Collection<String> expectedErrors, Collection<String> expectedWarnings, EvlModule module,
+                               Boolean parallel) {
+        super(source, parameters, false, parallel);
         if (expectedErrors != null) {
             this.expectedErrors = Collections.unmodifiableCollection(expectedErrors);
         }
@@ -41,6 +63,13 @@ public class EvlExecutionContext extends EolExecutionContext {
         }
         if (module != null) {
             this.module = module;
+        // TODO: Remove when JNG-3096 Resolved
+        } else if (Boolean.getBoolean("disableEpsilonParallel")) {
+            this.module = new EvlModule();
+        } else if (parallel == null || parallel) {
+            this.module = new EvlModuleParallelElements();
+        } else {
+            this.module = new EvlModule();
         }
     }
 

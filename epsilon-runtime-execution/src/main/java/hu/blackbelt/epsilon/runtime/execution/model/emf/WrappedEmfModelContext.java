@@ -1,11 +1,32 @@
 package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
+/*-
+ * #%L
+ * epsilon-runtime-execution
+ * %%
+ * Copyright (C) 2018 - 2022 BlackBelt Technology
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
+import hu.blackbelt.epsilon.runtime.execution.impl.LogLevel;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import lombok.*;
@@ -24,7 +45,6 @@ import org.eclipse.epsilon.eol.models.ModelRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -35,7 +55,7 @@ import static java.util.stream.Collectors.joining;
 public class WrappedEmfModelContext implements ModelContext {
 
     @Builder.Default
-    Log log = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
+    Log log = new StringBuilderLogger(LogLevel.DEBUG);
 
     @NonNull
     Resource resource;
@@ -57,13 +77,16 @@ public class WrappedEmfModelContext implements ModelContext {
     @Builder.Default
     Boolean validateModel = true;
 
+    @Builder.Default
+    Boolean useCache = false;
+
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         // Hack: to able to resolve supertypes
         Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
         uriMapExtended.put(URI.createURI(""), resource.getURI());
 
-        ResourceWrappedEMFModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource, uriMapExtended);
+        ResourceWrappedEMFModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource, uriMapExtended, useCache);
 
         final StringProperties properties = new StringProperties();
         properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
@@ -113,7 +136,7 @@ public class WrappedEmfModelContext implements ModelContext {
     public String toString() {
         return "WrappedEmfModelContext{" +
                 "log=" + log +
-                ", resource=" + resource +
+                ", resource={class: " + resource.getClass() + " uri: " + resource.getURI() + "}" +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
                 ", uriConverterMap='" + getUriConverterMap() + '\'' +
@@ -127,13 +150,13 @@ public class WrappedEmfModelContext implements ModelContext {
         ResourceSet wrappedResourceSet;
         Map<URI, URI> uriConverterMap;
 
-        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource, Map<URI, URI> uriConverterMap) {
+        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource, Map<URI, URI> uriConverterMap, boolean useCache) {
             this.wrappedResource = resource;
             this.wrappedResourceSet = resourceSet;
             this.uriConverterMap = uriConverterMap;
-            readOnLoad = false;
-            storeOnDisposal =  false;
-            cachingEnabled = true;
+            setCachingEnabled(useCache);
+            setReadOnLoad(false);
+            setStoredOnDisposal(false);
         }
 
         @Override

@@ -1,5 +1,25 @@
 package hu.blackbelt.epsilon.runtime.execution;
 
+/*-
+ * #%L
+ * epsilon-runtime-execution
+ * %%
+ * Copyright (C) 2018 - 2022 BlackBelt Technology
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -10,15 +30,12 @@ import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EolExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.ProgramParameter;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
+import hu.blackbelt.epsilon.runtime.execution.impl.LogLevel;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.*;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.common.parse.problem.ParseProblem;
-import org.eclipse.epsilon.emc.emf.CachedResourceSet;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
 import org.eclipse.epsilon.eol.execute.context.Variable;
@@ -29,7 +46,6 @@ import org.eclipse.epsilon.profiling.Profiler;
 import org.eclipse.epsilon.profiling.ProfilerTargetSummary;
 import org.eclipse.epsilon.profiling.ProfilingExecutionListener;
 
-import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,7 +84,7 @@ public class ExecutionContext implements AutoCloseable {
     private Boolean addEcorePackages = false;
 
     @Builder.Default
-    private Log log = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
+    private Log log = new StringBuilderLogger(LogLevel.DEBUG);
 
     @Builder.Default
     private List<String> metaModels = ImmutableList.of();
@@ -84,9 +100,8 @@ public class ExecutionContext implements AutoCloseable {
     private Map<String, Object> injectContexts = new HashMap();
 
     @SneakyThrows
+    @Synchronized
     public void load() {
-        CachedResourceSet.getCache().clear();
-
         if (addUmlPackages) {
             addUmlPackagesToResourceSet(resourceSet);
         }
@@ -97,32 +112,36 @@ public class ExecutionContext implements AutoCloseable {
 
         addMetaModels();
 
-        log.info("Registered packages: ");
+        log.debug("Registered packages: ");
         for (String key : new HashSet<String>(resourceSet.getPackageRegistry().keySet())) {
             EPackage ePackage = resourceSet.getPackageRegistry().getEPackage(key);
-            log.info("      Name: " +  ePackage.getName() + " nsURI: " + ePackage.getNsURI() + " nsPrefix: " + ePackage.getNsPrefix());
+            log.debug("      Name: " +  ePackage.getName() + " nsURI: " + ePackage.getNsURI() + " nsPrefix: " + ePackage.getNsPrefix());
         }
 
         addModels();
     }
 
 
+    @Synchronized
     public void rollback() {
         for (IModel model : projectModelRepository.getModels()) {
             model.setStoredOnDisposal(false);
         }
     }
 
+    @Synchronized
     public void commit() {
         rollback = false;
     }
 
+    @Synchronized
     public void disposeRepository() {
         if (projectModelRepository != null) {
             projectModelRepository.dispose();
         }
     }
 
+    @Synchronized
     public void executeProgram(EolExecutionContext eolProgram) throws ScriptExecutionException {
         //File sourceFile = new File(eolProgram.getSource());
         //URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
@@ -156,14 +175,19 @@ public class ExecutionContext implements AutoCloseable {
 
         log.info("Running program: " + eolProgram.getSource().toString());
 
-        executeModule(eolModule, eolProgram.getSource(),
-                Stream.concat(
-                        params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
-                        context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))
-                        .collect(Collectors.toList()));
+        try {
+            executeModule(eolModule, eolProgram.getSource(),
+                    Stream.concat(
+                                    params.stream().map(p -> Variable.createReadOnlyVariable(p.getName(), p.getValue())),
+                                    context.entrySet().stream().map(e -> Variable.createReadOnlyVariable(e.getKey().toString(), e.getValue())))
+                            .collect(Collectors.toList()));
 
-
-        eolProgram.post(context);
+            eolProgram.post(context);
+        } finally {
+            if (eolModule != null && eolModule.getContext() != null) {
+                eolModule.getContext().dispose();
+            }
+        }
 
         if (!eolProgram.isOk()) {
             throw new ScriptExecutionException("Program aborted: " + eolProgram.toString());
@@ -214,8 +238,7 @@ public class ExecutionContext implements AutoCloseable {
             try {
                 Object result = eolModule.execute();
             } catch (EolRuntimeException e) {
-                throw new ScriptExecutionException("Program execute", e);
-
+                throw new ScriptExecutionException("Program execute: " + e.getMessage() + "\tat " + e.getAst().getUri() + " (" + e.getLine() + ", " + e.getColumn() + ")", e);
             }
             // getLog().info("EolExecutionContext executeAll result: " + result.toString());
         } finally {
@@ -227,7 +250,6 @@ public class ExecutionContext implements AutoCloseable {
                             p.getExecutionTime().getAggregate()));
                 }
             }
-
         }
     }
 
@@ -239,7 +261,7 @@ public class ExecutionContext implements AutoCloseable {
     }
 
     @SneakyThrows
-    public void addMetaModel(String metaModel) {
+    private void addMetaModel(String metaModel) {
         log.info("Registering ecore: " + metaModel);
         org.eclipse.emf.common.util.URI uri = org.eclipse.emf.common.util.URI.createURI(metaModel);
         log.info("    Meta model: " + uri);
@@ -256,7 +278,7 @@ public class ExecutionContext implements AutoCloseable {
     }
 
     @SneakyThrows
-    public void addModel(ModelContext modelContext) {
+    private void addModel(ModelContext modelContext) {
         log.info("Model: " + modelContext.toString());
 
         Map<String, org.eclipse.emf.common.util.URI> uris = modelContext.getArtifacts().entrySet().stream()

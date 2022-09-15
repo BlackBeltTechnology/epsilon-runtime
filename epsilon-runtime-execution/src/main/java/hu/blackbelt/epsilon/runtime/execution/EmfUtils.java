@@ -1,5 +1,25 @@
 package hu.blackbelt.epsilon.runtime.execution;
 
+/*-
+ * #%L
+ * epsilon-runtime-execution
+ * %%
+ * Copyright (C) 2018 - 2022 BlackBelt Technology
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
@@ -14,6 +34,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.epsilon.emc.emf.CachedResourceSet;
+import org.eclipse.epsilon.emc.emf.EmfModelResourceSet;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.uml2.uml.UMLPackage;
@@ -51,7 +72,7 @@ public final class EmfUtils {
     }
 
     public static ResourceSet initDefaultCachedResourceSet() {
-        ResourceSet rs = new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
+        ResourceSet rs = new ResourceSetImpl(); // new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
 
         rs.setResourceFactoryRegistry(Resource.Factory.Registry.INSTANCE);
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
