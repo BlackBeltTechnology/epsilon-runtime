@@ -15,7 +15,7 @@
     </issueManagement>
     <properties>
 
-        <revision>1.5.0-SNAPSHOT</revision>
+        <revision>1.5.0</revision>
         <maven>3.8.3</maven>
 
         <deployOnly>false</deployOnly>
