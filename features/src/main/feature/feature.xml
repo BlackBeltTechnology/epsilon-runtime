@@ -9,6 +9,7 @@
         <feature dependency="true">scr</feature>
         <feature dependency="true">eclipse-epsilon</feature>
         <feature dependency="true">apache-commons-io</feature>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/2.9.0</bundle>
         <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-utils/${project.version}</bundle>
         <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-execution/${project.version}</bundle>
         <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-osgi/${project.version}</bundle>
