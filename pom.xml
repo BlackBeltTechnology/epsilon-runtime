@@ -34,7 +34,7 @@
         <karaf-version>4.4.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
 
-        <osgi-utils-version>1.1.0</osgi-utils-version>
+        <osgi-utils-version>1.1.1.20220926_225906_2390bae2_develop</osgi-utils-version>
         <karaf-features-version>2.0.0</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
@@ -773,7 +773,7 @@
                                         <toc>left</toc>
                                         <icons>font</icons>
                                         <sectanchors>true</sectanchors>
-                                        <idprefix/>
+                                        <idprefix />
                                         <idseparator>-</idseparator>
                                     </attributes>
                                 </configuration>
