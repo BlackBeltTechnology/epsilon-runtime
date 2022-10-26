@@ -34,8 +34,8 @@
         <karaf-version>4.4.1</karaf-version>
         <cxf-version>3.3.1</cxf-version>
 
-        <osgi-utils-version>1.1.1.20220926_225906_2390bae2_develop</osgi-utils-version>
-        <karaf-features-version>2.0.0</karaf-features-version>
+        <osgi-utils-version>1.1.1.20221026_231146_086b80be_develop</osgi-utils-version>
+        <karaf-features-version>2.0.1.20220926_213446_a786c6cc_develop</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
