@@ -32,7 +32,7 @@
         <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
         <epsilon-version>2.4.0</epsilon-version>
         <karaf-version>4.4.1</karaf-version>
-        <cxf-version>3.3.1</cxf-version>
+        <cxf-version>3.5.5</cxf-version>
 
         <osgi-utils-version>1.1.1.20221026_231146_086b80be_develop</osgi-utils-version>
         <karaf-features-version>2.0.1.20220926_213446_a786c6cc_develop</karaf-features-version>
