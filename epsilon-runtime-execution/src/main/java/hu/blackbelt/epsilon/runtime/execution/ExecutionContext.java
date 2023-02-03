@@ -36,6 +36,7 @@ import lombok.*;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.common.parse.problem.ParseProblem;
+import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
 import org.eclipse.epsilon.eol.execute.context.Variable;
@@ -100,17 +101,22 @@ public class ExecutionContext implements AutoCloseable {
     private Map<String, Object> injectContexts = new HashMap();
 
     @SneakyThrows
-    @Synchronized
     public void load() {
         if (addUmlPackages) {
-            addUmlPackagesToResourceSet(resourceSet);
+            synchronized (resourceSet) {
+                addUmlPackagesToResourceSet(resourceSet);
+            }
         }
 
         if (addEcorePackages) {
-            addEmfPackagesToResourceSet(resourceSet);
+            synchronized (resourceSet) {
+                addEmfPackagesToResourceSet(resourceSet);
+            }
         }
 
-        addMetaModels();
+        synchronized (resourceSet) {
+            addMetaModels();
+        }
 
         log.debug("Registered packages: ");
         for (String key : new HashSet<String>(resourceSet.getPackageRegistry().keySet())) {
@@ -122,26 +128,26 @@ public class ExecutionContext implements AutoCloseable {
     }
 
 
-    @Synchronized
     public void rollback() {
-        for (IModel model : projectModelRepository.getModels()) {
-            model.setStoredOnDisposal(false);
+        synchronized (resourceSet) {
+            for (IModel model : projectModelRepository.getModels()) {
+                model.setStoredOnDisposal(false);
+            }
         }
     }
 
-    @Synchronized
     public void commit() {
-        rollback = false;
+        synchronized (resourceSet) {
+            rollback = false;
+        }
     }
 
-    @Synchronized
     public void disposeRepository() {
         if (projectModelRepository != null) {
             projectModelRepository.dispose();
         }
     }
 
-    @Synchronized
     public void executeProgram(EolExecutionContext eolProgram) throws ScriptExecutionException {
         //File sourceFile = new File(eolProgram.getSource());
         //URI source = sourceFile.isAbsolute() ? sourceFile.toURI() : new File(sourceDirectory, eolProgram.getSource()).toURI();
@@ -192,13 +198,13 @@ public class ExecutionContext implements AutoCloseable {
         if (!eolProgram.isOk()) {
             throw new ScriptExecutionException("Program aborted: " + eolProgram.toString());
         } else {
-            log.info("Execution result: " + eolProgram.toString());
+            log.debug("Execution result: " + eolProgram.toString());
         }
     }
 
     private void executeModule(IEolModule eolModule, URI source, List<Variable> parameters) throws ScriptExecutionException {
         for (IModel m : projectModelRepository.getModels()) {
-            log.info("  Model: " + m.getName() + " Aliases: " + String.join(", ", m.getAliases()));
+            log.debug("  Model: " + m.getName() + " Aliases: " + String.join(", ", m.getAliases()));
         }
 
         try {
@@ -233,7 +239,7 @@ public class ExecutionContext implements AutoCloseable {
 
             StringBuffer sb = new StringBuffer();
             parameters.forEach(p -> sb.append("\t" + p.getName() + " - " + p.toString() + "\n"));
-            log.info("Parameters: \n" + sb.toString());
+            log.debug("Parameters: \n" + sb.toString());
 
             try {
                 Object result = eolModule.execute();
@@ -262,11 +268,11 @@ public class ExecutionContext implements AutoCloseable {
 
     @SneakyThrows
     private void addMetaModel(String metaModel) {
-        log.info("Registering ecore: " + metaModel);
+        log.debug("Registering ecore: " + metaModel);
         org.eclipse.emf.common.util.URI uri = org.eclipse.emf.common.util.URI.createURI(metaModel);
-        log.info("    Meta model: " + uri);
+        log.debug("    Meta model: " + uri);
         List<EPackage> ePackages = EmfUtils.register(resourceSet, uri, true);
-        log.info("    EPackages: " + ePackages.stream().map(e -> e.getNsURI()).collect(Collectors.joining(", ")));
+        log.debug("    EPackages: " + ePackages.stream().map(e -> e.getNsURI()).collect(Collectors.joining(", ")));
     }
 
 
@@ -279,7 +285,7 @@ public class ExecutionContext implements AutoCloseable {
 
     @SneakyThrows
     private void addModel(ModelContext modelContext) {
-        log.info("Model: " + modelContext.toString());
+        log.debug("addModel: " + modelContext.toString());
 
         Map<String, org.eclipse.emf.common.util.URI> uris = modelContext.getArtifacts().entrySet().stream()
                 .filter(e -> !Strings.isNullOrEmpty(e.getValue()))
@@ -297,6 +303,16 @@ public class ExecutionContext implements AutoCloseable {
 
         uris.forEach((k,v) -> log.info("    Artifact " + k + " file: " + v.toString()));
         modelContextMap.put(modelContext, modelContext.load(log, resourceSet, projectModelRepository, uris, uriConverters));
+        IModel iModel = modelContextMap.get(modelContext);
+        String modelUri = "<unknown>";
+        if (iModel instanceof EmfModel) {
+            modelUri = ((EmfModel) iModel).getModelFileUri().toString();
+        }
+
+        log.info("Model loaded: " + modelContext.getName() + " URI: " + modelUri +
+                (modelContext.getAliases() == null ? "" : " (aliases: " +
+                        modelContext.getAliases().stream().collect(Collectors.joining(", ")) + ")"));
+
     }
 
 

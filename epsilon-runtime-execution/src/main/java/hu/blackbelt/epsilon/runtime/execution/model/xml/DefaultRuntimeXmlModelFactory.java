@@ -50,7 +50,7 @@ public class DefaultRuntimeXmlModelFactory implements XmlModelFactory {
                 for (URIHandler uriHandler : resourceSet.getURIConverter().getURIHandlers()) {
                     int idx = resourceSet.getURIConverter().getURIHandlers().indexOf(uriHandler);
                     if (!emfReourceSet.getURIConverter().getURIHandlers().contains(uriHandler)) {
-                        log.info("    Adding uri handler: " + uriHandler.getClass().getName());
+                        log.debug("    Adding uri handler: " + uriHandler.getClass().getName());
                         emfReourceSet.getURIConverter().getURIHandlers().add(idx, uriHandler);
                     }
                 }
