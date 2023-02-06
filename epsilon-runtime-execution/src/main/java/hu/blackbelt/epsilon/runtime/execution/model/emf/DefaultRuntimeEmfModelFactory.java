@@ -50,7 +50,7 @@ public class DefaultRuntimeEmfModelFactory implements EmfModelFactory {
                 for (URIHandler uriHandler : resourceSet.getURIConverter().getURIHandlers()) {
                     int idx = resourceSet.getURIConverter().getURIHandlers().indexOf(uriHandler);
                     if (!emfReourceSet.getURIConverter().getURIHandlers().contains(uriHandler)) {
-                        log.info("    Adding uri handler: " + uriHandler.toString());
+                        log.debug("    Adding uri handler: " + uriHandler.toString());
                         emfReourceSet.getURIConverter().getURIHandlers().add(idx, uriHandler);
                     }
                 }
@@ -58,7 +58,7 @@ public class DefaultRuntimeEmfModelFactory implements EmfModelFactory {
                 for (URI key : resourceSet.getURIConverter().getURIMap().keySet()) {
                     if (!emfReourceSet.getURIConverter().getURIMap().containsKey(key)) {
                         URI value = resourceSet.getURIConverter().getURIMap().get(key);
-                        log.info("    Adding reference URI converter: " + key + " -> " + value);
+                        log.debug("    Adding reference URI converter: " + key + " -> " + value);
                         emfReourceSet.getURIConverter().getURIMap().put(key, value);
                     }
                 }
@@ -66,7 +66,7 @@ public class DefaultRuntimeEmfModelFactory implements EmfModelFactory {
                 if (uriMapConverter != null) {
                     for (URI from : uriMapConverter.keySet()) {
                         URI to = uriMapConverter.get(from);
-                        log.info(String.format("    Registering URI converter: %s -> %s", from.toString(), to.toString()));
+                        log.debug(String.format("    Registering URI converter: %s -> %s", from.toString(), to.toString()));
                         emfReourceSet.getURIConverter().getURIMap().put(from, to);
                     }
                 }

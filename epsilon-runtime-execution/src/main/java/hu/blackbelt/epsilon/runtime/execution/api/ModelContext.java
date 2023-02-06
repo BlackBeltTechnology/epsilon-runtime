@@ -39,4 +39,7 @@ public interface ModelContext {
 
     Map<String, String> getArtifacts();
     Map<String, String> getUriConverterMap();
+
+    String getName();
+
 }
