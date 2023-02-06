@@ -302,21 +302,11 @@ class ExecutionContextTest {
     }
 
     public File targetDir(){
-        String relPath = getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
-        File targetDir = new File(relPath+"../../target");
-        if(!targetDir.exists()) {
-            targetDir.mkdir();
-        }
-        return targetDir;
+        return new File("target");
     }
 
     public File scriptDir(){
-        String relPath = getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
-        File targetDir = new File(relPath+"../../src/test/epsilon");
-        if(!targetDir.exists()) {
-            targetDir.mkdir();
-        }
-        return targetDir;
+        return new File("src/test/epsilon");
     }
 
 }

@@ -62,12 +62,12 @@ public class EmfModelUtils {
         properties.put(EmfModel.PROPERTY_CACHED, emfModel.getCached() + "");
 
         if (emfModel.getReferenceUri() != null && !emfModel.getReferenceUri().trim().equals("")) {
-            log.info(String.format("Registering MODEL_URI: %s Reference URI: %s", uri.toString(), emfModel.getReferenceUri()));
+            log.debug(String.format("Registering MODEL_URI: %s Reference URI: %s", uri.toString(), emfModel.getReferenceUri()));
             URI referenceURI = URI.createURI(emfModel.getReferenceUri());
             properties.put(EmfModel.PROPERTY_MODEL_URI, uri);
             resourceSet.getURIConverter().getURIMap().put(referenceURI, uri);
         } else {
-            log.info(String.format("Registering MODEL_URI: %s", uri.toString()));
+            log.debug(String.format("Registering MODEL_URI: %s", uri.toString()));
             properties.put(EmfModel.PROPERTY_MODEL_URI, uri);
         }
 

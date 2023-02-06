@@ -83,37 +83,40 @@ public class WrappedEmfModelContext implements ModelContext {
     @Override
     public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         // Hack: to able to resolve supertypes
-        Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
-        uriMapExtended.put(URI.createURI(""), resource.getURI());
+        synchronized (resource) {
 
-        ResourceWrappedEMFModel emfModel =  new ResourceWrappedEMFModel(resourceSet,  resource, uriMapExtended, useCache);
+            Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
+            uriMapExtended.put(URI.createURI(""), resource.getURI());
 
-        final StringProperties properties = new StringProperties();
-        properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
-        if (emfModel.getAliases() != null && emfModel.getAliases().size() > 0) {
-            properties.put(EmfModel.PROPERTY_ALIASES, emfModel.getAliases().stream().collect(joining(",")) + "");
-        } else {
-            properties.put(EmfModel.PROPERTY_ALIASES, "");
+            ResourceWrappedEMFModel emfModel = new ResourceWrappedEMFModel(resourceSet, resource, uriMapExtended, useCache);
+            emfModel.setName(name);
+
+            final StringProperties properties = new StringProperties();
+            properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
+            if (emfModel.getAliases() != null && emfModel.getAliases().size() > 0) {
+                properties.put(EmfModel.PROPERTY_ALIASES, emfModel.getAliases().stream().collect(joining(",")) + "");
+            } else {
+                properties.put(EmfModel.PROPERTY_ALIASES, "");
+            }
+            properties.put(EmfModel.PROPERTY_MODEL_URI, resource.getURI());
+
+            if (getReferenceUri() != null && !getReferenceUri().trim().equals("")) {
+                properties.put(EmfModel.PROPERTY_MODEL_URI, getReferenceUri());
+                log.debug(String.format("Registering MODEL_URI: %s Alias URI: %s", resource.getURI().toString(), getReferenceUri().toString()));
+                resourceSet.getURIConverter().getURIMap().put(URI.createURI(getReferenceUri()), resource.getURI());
+            } else {
+                log.debug(String.format("Registering MODEL_URI: %s", resource.getURI().toString()));
+            }
+
+            emfModel.load(properties);
+
+            if (validateModel) {
+                ModelValidator.validate(emfModel);
+            }
+            repository.addModel(emfModel);
+
+            return emfModel;
         }
-        properties.put(EmfModel.PROPERTY_MODEL_URI, resource.getURI());
-
-        if (getReferenceUri() != null && !getReferenceUri().trim().equals("")) {
-            properties.put(EmfModel.PROPERTY_MODEL_URI, getReferenceUri());
-            log.info(String.format("Registering MODEL_URI: %s Alias URI: %s", resource.getURI().toString(), getReferenceUri().toString()));
-            resourceSet.getURIConverter().getURIMap().put(URI.createURI(getReferenceUri()), resource.getURI());
-        } else {
-            log.info(String.format("Registering MODEL_URI: %s", resource.getURI().toString()));
-        }
-
-        emfModel.load(properties);
-        emfModel.setName(getName());
-
-        if (validateModel) {
-            ModelValidator.validate(emfModel);
-        }
-        repository.addModel(emfModel);
-
-        return emfModel;
     }
 
     @Override
@@ -167,7 +170,7 @@ public class WrappedEmfModelContext implements ModelContext {
             for (URIHandler uriHandler : resourceSet.getURIConverter().getURIHandlers()) {
                 int idx = resourceSet.getURIConverter().getURIHandlers().indexOf(uriHandler);
                 if (!wrappedResourceSet.getURIConverter().getURIHandlers().contains(uriHandler)) {
-                    log.info("    Adding uri handler: " + uriHandler.toString());
+                    log.debug("    Adding uri handler: " + uriHandler.toString());
                     wrappedResourceSet.getURIConverter().getURIHandlers().add(idx, uriHandler);
                 }
             }
@@ -175,7 +178,7 @@ public class WrappedEmfModelContext implements ModelContext {
             for (URI key : resourceSet.getURIConverter().getURIMap().keySet()) {
                 if (!wrappedResourceSet.getURIConverter().getURIMap().containsKey(key)) {
                     URI value = resourceSet.getURIConverter().getURIMap().get(key);
-                    log.info("    Adding reference URI converter: " + key + " -> " + value);
+                    log.debug("    Adding reference URI converter: " + key + " -> " + value);
                     wrappedResourceSet.getURIConverter().getURIMap().put(key, value);
                 }
             }
@@ -183,7 +186,7 @@ public class WrappedEmfModelContext implements ModelContext {
             if (uriConverterMap != null) {
                 for (URI from : uriConverterMap.keySet()) {
                     URI to = uriConverterMap.get(from);
-                    log.info(String.format("    Registering URI converter: %s -> %s", from.toString(), to.toString()));
+                    log.debug(String.format("    Registering URI converter: %s -> %s", from.toString(), to.toString()));
                     wrappedResourceSet.getURIConverter().getURIMap().put(from, to);
                 }
             }
@@ -198,8 +201,10 @@ public class WrappedEmfModelContext implements ModelContext {
 
         @Override
         protected void loadModel() throws EolModelLoadingException {
-            super.loadModel();
-            modelImpl = wrappedResource;
+            synchronized (resource) {
+                super.loadModel();
+                modelImpl = wrappedResource;
+            }
         }
 
         @Override
