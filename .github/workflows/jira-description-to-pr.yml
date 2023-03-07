@@ -30,6 +30,6 @@ jobs:
         if: ${{ always() && job.status == 'failure' }}
         with:
           webhook: ${{ secrets.JUDONG_DISCORD_WEBHOOK }}
-          title: "Gitub action"
+          title: "Github action"
           description: ":x: Please add issue number to PR message! https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
