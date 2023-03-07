@@ -21,14 +21,14 @@ jobs:
         run: |
           pr=$(echo ${{ github.ref }} | cut -d/ -f4)
           echo "PR: $pr"
-          echo "::set-output name=pr::$pr"
+          echo "pr=$pr" >> $GITHUB_OUTPUT
 
       - name: 🔢 Get version
         id: version
         run: |
           version=$(echo ${{ github.event.base_ref }} | cut -d/ -f3)
           echo "Version: $version"
-          echo "::set-output name=version::$version"
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: 🧪 Check the version format is in release format
         uses: actions-ecosystem/action-regex-match@v2
@@ -67,5 +67,5 @@ jobs:
         if: ${{ always() && job.status == 'failure' }}
         with:
           webhook: ${{ secrets.JUDONG_DISCORD_WEBHOOK }}
-          title: "Gitub action"
+          title: "Github action"
           description: ":x: Could not merge PR! https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
