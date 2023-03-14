@@ -908,10 +908,16 @@
                                 <phase>process-sources</phase>
                                 <configuration>
                                     <licenseName>apache_v2</licenseName>
-                                    <roots>
-                                        <root>src/main/java</root>
-                                        <root>src/test</root>
-                                    </roots>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>second</id>
+                                <goals>
+                                    <goal>update-project-license</goal>
+                                </goals>
+                                <phase>process-sources</phase>
+                                <configuration>
+                                    <licenseName>apache_v2</licenseName>
                                 </configuration>
                             </execution>
                         </executions>
