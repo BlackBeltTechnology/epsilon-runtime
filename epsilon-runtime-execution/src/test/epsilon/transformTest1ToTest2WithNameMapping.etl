@@ -2,16 +2,16 @@ import "transformTest1ToTest2.etl";
 
 @cached
 operation String findNameMapping() : Any {
-	return NAMEMAPPING!NameMapping.all.selectOne(m | m.EntityName == self);
+    return NAMEMAPPING!NameMapping.all.selectOne(m | m.EntityName == self);
 }
 
 post {
-	for (e : TEST2!EntityTransformed in TEST2!EntityTransformed.all) {
-	    e.name.println("Transfomed entity: ");
-		var m : NAMEMAPPING!NameMapping = e.name.findNameMapping();
-		if (m.isDefined()) {
-			e.name = m.NewName;
-    	    e.name.println("    Renamed to: ");
-		}
-	}	
+    for (e : TEST2!EntityTransformed in TEST2!EntityTransformed.all) {
+        e.name.println("Transfomed entity: ");
+        var m : NAMEMAPPING!NameMapping = e.name.findNameMapping();
+        if (m.isDefined()) {
+            e.name = m.NewName;
+            e.name.println("    Renamed to: ");
+        }
+    }
 }
