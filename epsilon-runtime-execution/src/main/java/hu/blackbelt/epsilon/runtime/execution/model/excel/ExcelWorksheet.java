@@ -9,9 +9,9 @@ package hu.blackbelt.epsilon.runtime.execution.model.excel;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,114 +34,114 @@ import org.eclipse.epsilon.emc.spreadsheets.SpreadsheetRow;
 import org.eclipse.epsilon.emc.spreadsheets.SpreadsheetWorksheet;
 
 public class ExcelWorksheet extends SpreadsheetWorksheet {
-	
-	protected ExcelModel model;
-	protected Sheet sheet;
 
-	public ExcelWorksheet(final ExcelModel model, final Sheet sheet, final boolean existsInSpreadsheet) {
-		super(model, sheet.getSheetName(), existsInSpreadsheet);
+    protected ExcelModel model;
+    protected Sheet sheet;
 
-		this.model = model;
-		this.sheet = sheet;
+    public ExcelWorksheet(final ExcelModel model, final Sheet sheet, final boolean existsInSpreadsheet) {
+        super(model, sheet.getSheetName(), existsInSpreadsheet);
 
-		if (this.existsInSpreadsheet) {
-			this.loadHeader();
-		}
-	}
+        this.model = model;
+        this.sheet = sheet;
 
-	@Override
-	protected void createInSpreadsheet() {
-		this.existsInSpreadsheet = true;
-		this.writeHeaderRow();
-	}
+        if (this.existsInSpreadsheet) {
+            this.loadHeader();
+        }
+    }
 
-	private void writeHeaderRow() {
-		
-		final Row row = this.sheet.createRow(this.getHeaderRowIndex());
-		final ExcelRow headerRow = new ExcelRow(this, row);
+    @Override
+    protected void createInSpreadsheet() {
+        this.existsInSpreadsheet = true;
+        this.writeHeaderRow();
+    }
 
-		for (final SpreadsheetColumn column : this.getHeader().getColumns()) {
-			if (!StringUtil.isEmpty(column.getName())) {
-				row.createCell(column.getIndex());
-				headerRow.overwriteCellValue(column, column.getName());
-			}
-		}
-	}
+    private void writeHeaderRow() {
 
-	@Override
-	protected void loadHeader() {
-		super.checkThatWorksheetExists();
+        final Row row = this.sheet.createRow(this.getHeaderRowIndex());
+        final ExcelRow headerRow = new ExcelRow(this, row);
 
-		if (this.sheet.getPhysicalNumberOfRows() > 0) {
-			final Row row = this.sheet.getRow(0);
-			final ExcelRow excelRow = new ExcelRow(this, row);
-			for (Iterator<Cell> it = row.cellIterator(); it.hasNext();) {
-				final Cell headerCell = it.next();
-				final ExcelColumn excelColumn = new ExcelColumn(this, headerCell.getColumnIndex());
-				final String columnName = excelRow.getVisibleCellValue(excelColumn);
-				super.addColumn(headerCell.getColumnIndex(), columnName);
-			}
-		}
-	}
+        for (final SpreadsheetColumn column : this.getHeader().getColumns()) {
+            if (!StringUtil.isEmpty(column.getName())) {
+                row.createCell(column.getIndex());
+                headerRow.overwriteCellValue(column, column.getName());
+            }
+        }
+    }
 
-	@Override
-	protected SpreadsheetColumn createColumn(final int index) {
-		return new ExcelColumn(this, index);
-	}
+    @Override
+    protected void loadHeader() {
+        super.checkThatWorksheetExists();
 
-	@Override
-	public List<SpreadsheetRow> getRows() {
-		final List<SpreadsheetRow> rows = new ArrayList<>();
-		final int numOfRows = this.sheet.getPhysicalNumberOfRows();
-		for (int i = this.getFirstRowIndex(); i <= numOfRows; i++) {
-			final Row row = this.sheet.getRow(i);
-			if (row != null) {
-				rows.add(new ExcelRow(this, row));
-			}
-		}
-		return rows;
-	}
+        if (this.sheet.getPhysicalNumberOfRows() > 0) {
+            final Row row = this.sheet.getRow(0);
+            final ExcelRow excelRow = new ExcelRow(this, row);
+            for (Iterator<Cell> it = row.cellIterator(); it.hasNext();) {
+                final Cell headerCell = it.next();
+                final ExcelColumn excelColumn = new ExcelColumn(this, headerCell.getColumnIndex());
+                final String columnName = excelRow.getVisibleCellValue(excelColumn);
+                super.addColumn(headerCell.getColumnIndex(), columnName);
+            }
+        }
+    }
 
-	@Override
-	public SpreadsheetRow insertRow(final Map<SpreadsheetColumn, String> values) {
-		
-		final int newRowIndex = this.sheet.getPhysicalNumberOfRows();
-		final Row row = sheet.createRow(newRowIndex);
-		for (final Map.Entry<SpreadsheetColumn, String> entry : values.entrySet()) {
-			final Cell cell = row.createCell(entry.getKey().getIndex());
-			cell.setCellValue(entry.getValue());
-		}
+    @Override
+    protected SpreadsheetColumn createColumn(final int index) {
+        return new ExcelColumn(this, index);
+    }
 
-		final ExcelRow excelRow = new ExcelRow(this, row);
-		return excelRow;
-	}
+    @Override
+    public List<SpreadsheetRow> getRows() {
+        final List<SpreadsheetRow> rows = new ArrayList<>();
+        final int numOfRows = this.sheet.getPhysicalNumberOfRows();
+        for (int i = this.getFirstRowIndex(); i <= numOfRows; i++) {
+            final Row row = this.sheet.getRow(i);
+            if (row != null) {
+                rows.add(new ExcelRow(this, row));
+            }
+        }
+        return rows;
+    }
 
-	@Override
-	public void removeRow(final SpreadsheetRow row) {
-		if (row != null) {
-			final ExcelRow excelRow = (ExcelRow) row;
-			final int rowIndex = excelRow.row.getRowNum();
-			final int lastRowNum = this.sheet.getLastRowNum();
+    @Override
+    public SpreadsheetRow insertRow(final Map<SpreadsheetColumn, String> values) {
 
-			this.sheet.removeRow(excelRow.row);
+        final int newRowIndex = this.sheet.getPhysicalNumberOfRows();
+        final Row row = sheet.createRow(newRowIndex);
+        for (final Map.Entry<SpreadsheetColumn, String> entry : values.entrySet()) {
+            final Cell cell = row.createCell(entry.getKey().getIndex());
+            cell.setCellValue(entry.getValue());
+        }
 
-			if (rowIndex >= this.getFirstRowIndex() && rowIndex < lastRowNum) {
-				sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
-			}
-		}
-	}
+        final ExcelRow excelRow = new ExcelRow(this, row);
+        return excelRow;
+    }
 
-	@Override
-	public String getDefaultEmptyCellValue() {
-		return "";
-	}
+    @Override
+    public void removeRow(final SpreadsheetRow row) {
+        if (row != null) {
+            final ExcelRow excelRow = (ExcelRow) row;
+            final int rowIndex = excelRow.row.getRowNum();
+            final int lastRowNum = this.sheet.getLastRowNum();
 
-	public int getHeaderRowIndex() {
-		return 0;
-	}
+            this.sheet.removeRow(excelRow.row);
 
-	public int getFirstRowIndex() {
-		return 1;
-	}
+            if (rowIndex >= this.getFirstRowIndex() && rowIndex < lastRowNum) {
+                sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
+            }
+        }
+    }
+
+    @Override
+    public String getDefaultEmptyCellValue() {
+        return "";
+    }
+
+    public int getHeaderRowIndex() {
+        return 0;
+    }
+
+    public int getFirstRowIndex() {
+        return 1;
+    }
 
 }
