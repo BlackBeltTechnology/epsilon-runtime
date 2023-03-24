@@ -9,9 +9,9 @@ package hu.blackbelt.epsilon.runtime.execution;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -79,14 +79,14 @@ public final class EmfUtils {
 
         return rs;
     }
-    
+
     /**
      * Register all the packages in the metamodel specified by the uri in the registry.
      *
      * @param resourceSet The resourceSet metamodel registered for
      * @param uri The URI of the metamodel
      * @param useUriForResource If True, the URI of the resource created for the metamodel would be overwritten
-     * 	with the URI of the [last] EPackage in the metamodel.
+     *     with the URI of the [last] EPackage in the metamodel.
      * @return A list of the EPackages registered.
      * @throws Exception If there is an error accessing the resources.
      */
