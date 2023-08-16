@@ -25,11 +25,11 @@
     xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.5.0 http://karaf.apache.org/xmlns/features/v1.5.0">
     
     <feature name="epsilon-runtime" version="${project.version}" description="Blackbelt Eclipse Epsilon Runtime" install="false">
-        <feature dependency="true">guava-27</feature>
+        <feature dependency="true">guava-30</feature>
         <feature dependency="true">scr</feature>
         <feature dependency="true">eclipse-epsilon</feature>
         <feature dependency="true">apache-commons-io</feature>
-        <bundle>mvn:org.yaml/snakeyaml/1.33</bundle>
+        <bundle>mvn:org.yaml/snakeyaml/2.1</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/2.9.0</bundle>
         <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-utils/${project.version}</bundle>
         <bundle>mvn:hu.blackbelt.epsilon/epsilon-runtime-execution/${project.version}</bundle>
