@@ -22,7 +22,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.plainxml;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import lombok.Builder;
 import lombok.Data;
@@ -98,7 +98,7 @@ public class PlainXmlModelContext implements ModelContext {
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
+    public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
         return PlainXmlModelUtil.loadPlainXml(log, resourceSet, repository, this, uriMap.get(XML));
     }
 
