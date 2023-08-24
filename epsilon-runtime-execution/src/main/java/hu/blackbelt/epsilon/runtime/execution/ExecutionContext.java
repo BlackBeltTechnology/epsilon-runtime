@@ -24,7 +24,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EolExecutionContext;
@@ -46,6 +46,7 @@ import org.eclipse.epsilon.eol.types.EolAnyType;
 import org.eclipse.epsilon.profiling.Profiler;
 import org.eclipse.epsilon.profiling.ProfilerTargetSummary;
 import org.eclipse.epsilon.profiling.ProfilingExecutionListener;
+import org.slf4j.Logger;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class ExecutionContext implements AutoCloseable {
     private Boolean addEcorePackages = false;
 
     @Builder.Default
-    private Log log = new StringBuilderLogger(LogLevel.DEBUG);
+    private Logger log = new StringBuilderLogger(LogLevel.DEBUG);
 
     @Builder.Default
     private List<String> metaModels = ImmutableList.of();

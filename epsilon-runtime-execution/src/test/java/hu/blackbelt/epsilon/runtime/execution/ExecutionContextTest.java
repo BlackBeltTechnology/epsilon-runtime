@@ -21,10 +21,9 @@ package hu.blackbelt.epsilon.runtime.execution;
  */
 
 import com.google.common.collect.ImmutableList;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
-import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import hu.blackbelt.epsilon.runtime.model.test1.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.URI;
@@ -56,7 +55,7 @@ class ExecutionContextTest {
 
     URIHandler uriHandler;
     ResourceSet executionResourceSet;
-    Log slf4jLogger;
+    Logger delegatedLogger;
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
@@ -69,7 +68,7 @@ class ExecutionContextTest {
         executionResourceSet.getURIConverter().getURIHandlers().add(0, uriHandler);
 
         // Default logger
-        slf4jLogger = new Slf4jLog(log);
+        delegatedLogger = log;
 
     }
 
@@ -83,20 +82,20 @@ class ExecutionContextTest {
 
         // Executrion context
         ExecutionContext executionContext = executionContextBuilder()
-                .log(slf4jLogger)
+                .log(delegatedLogger)
                 .resourceSet(executionResourceSet)
                 .metaModels(ImmutableList.of(
                         new File(targetDir(), "test-classes/epsilon-runtime-test.ecore").getAbsolutePath(),
                         new File(targetDir(), "test-classes/epsilon-runtime-test2.ecore").getAbsolutePath()))
                 .modelContexts(ImmutableList.of(
                         emfModelContextBuilder()
-                                .log(slf4jLogger)
+                                .log(delegatedLogger)
                                 .name("TEST1")
                                 .emf(new File(targetDir(), "test-classes/epsilon-runtime-test1.model").getAbsolutePath())
                                 .build(),
 
                         emfModelContextBuilder()
-                                .log(slf4jLogger)
+                                .log(delegatedLogger)
                                 .name("TEST2")
                                 .emf(new File(targetDir(), "test-classes/epsilon-transformedfs.model").getAbsolutePath())
                                 .readOnLoad(false)
@@ -129,20 +128,20 @@ class ExecutionContextTest {
 
         // Executrion context
         ExecutionContext executionContext = executionContextBuilder()
-                .log(slf4jLogger)
+                .log(delegatedLogger)
                 .resourceSet(executionResourceSet)
                 .metaModels(ImmutableList.of(
                         "urn:epsilon-runtime-test.ecore",
                         "urn:epsilon-runtime-test2.ecore"))
                 .modelContexts(ImmutableList.of(
                         emfModelContextBuilder()
-                                .log(slf4jLogger)
+                                .log(delegatedLogger)
                                 .name("TEST1")
                                 .emf("urn:epsilon-runtime-test1.model")
                                 .build(),
 
                         emfModelContextBuilder()
-                                .log(slf4jLogger)
+                                .log(delegatedLogger)
                                 .name("TEST2")
                                 .emf("urn:epsilon-transformednio.model")
                                 .readOnLoad(false)
@@ -165,7 +164,7 @@ class ExecutionContextTest {
                 .getModelByName("TEST2")).getResource();
 
         for (Iterator<EObject> i = resource.getAllContents(); i.hasNext(); ) {
-            slf4jLogger.info(i.next().toString());
+            delegatedLogger.info(i.next().toString());
         }
 
         executionContext.commit();
@@ -217,18 +216,18 @@ class ExecutionContextTest {
 
         // Executrion context
         ExecutionContext executionContext = executionContextBuilder()
-                .log(slf4jLogger)
+                .log(delegatedLogger)
                 .resourceSet(executionResourceSet)
                 .metaModels(ImmutableList.of(
                         "urn:epsilon-runtime-test2.ecore"))
                 .modelContexts(ImmutableList.of(
                         wrappedEmfModelContextBuilder()
-                                .log(slf4jLogger)
+                                .log(delegatedLogger)
                                 .name("TEST1")
                                 .resource(createdSourceResource)
                                 .build(),
                         wrappedEmfModelContextBuilder()
-                                .log(slf4jLogger)
+                                .log(delegatedLogger)
                                 .name("TEST2")
                                 .resource(createdTargetResource)
                                 .build()))
@@ -255,7 +254,7 @@ class ExecutionContextTest {
                 .getModelByName("TEST1")).getResource();
 
         for (Iterator<EObject> i = resource.getAllContents(); i.hasNext(); ) {
-            slf4jLogger.info(i.next().toString());
+            delegatedLogger.info(i.next().toString());
         }
     }
 
@@ -264,19 +263,19 @@ class ExecutionContextTest {
 
         // Executrion context
         ExecutionContext executionContext = executionContextBuilder()
-                .log(slf4jLogger)
+                .log(delegatedLogger)
                 .resourceSet(executionResourceSet)
                 .metaModels(ImmutableList.of(
                         "urn:epsilon-runtime-test.ecore"))
                 .modelContexts(ImmutableList.of(
                         emfModelContextBuilder()
-                                .log(slf4jLogger)
+                                .log(delegatedLogger)
                                 .name("TEST1")
                                 .emf("urn:epsilon-runtime-test1.model")
                                 .build(),
 
                         xmlModelContextBuilder()
-                                .log(slf4jLogger)
+                                .log(delegatedLogger)
                                 .name("LIQUIBASE")
                                 // TODO: XSDEcoreBuilder creating separate ResourceSet, so URIHandlers are not
                                 // working. Have to find a way to inject

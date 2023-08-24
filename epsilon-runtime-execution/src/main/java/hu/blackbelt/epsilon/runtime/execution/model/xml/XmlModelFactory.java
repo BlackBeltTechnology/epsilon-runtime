@@ -20,7 +20,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.xml;
  * #L%
  */
 
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -37,7 +37,7 @@ public interface XmlModelFactory {
 
     XmlModel create(ResourceSet resourceSet);
 
-    static XmlModel loadXml(Log log, XmlModelFactory xmlModelFactory,
+    static XmlModel loadXml(Logger log, XmlModelFactory xmlModelFactory,
                             ResourceSet resourceSet, ModelRepository repository, XmlModelContext xmlModelContext,
                             URI uri, URI xsd) throws EolModelLoadingException {
 

@@ -21,9 +21,10 @@ package hu.blackbelt.epsilon.runtime.execution.impl;
  */
 
 import com.google.common.collect.ImmutableSet;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
+import org.slf4j.Marker;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Slf4j
-public class BufferedSlf4jLogger implements Log, Closeable {
+public class BufferedSlf4jLogger implements Logger, Closeable {
 
     Collection<LogEntry> logEntries;
     Logger logger;
@@ -68,7 +69,7 @@ public class BufferedSlf4jLogger implements Log, Closeable {
 
     public BufferedSlf4jLogger(Logger logger) {
         logEntries = new ArrayList<>();
-        LogLevel logLevel = Slf4jLog.determinateLogLevel(logger);
+        LogLevel logLevel = LogLevel.determinateLogLevel(logger);
         this.logger = logger;
         setLoglevels(logLevel);
     }
@@ -93,97 +94,411 @@ public class BufferedSlf4jLogger implements Log, Closeable {
         }
     }
 
-    public void trace(CharSequence charSequence) {
-        if (currentLevels.contains(LogLevel.TRACE)) {
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public boolean isTraceEnabled() {
+        return currentLevels.contains(LogLevel.TRACE);
+    }
+
+    @Override
+    public void trace(String charSequence) {
+        if (isTraceEnabled()) {
             logEntries.add(new LogEntry(LogLevel.TRACE, charSequence.toString(), null));
         }
     }
 
-    public void trace(CharSequence charSequence, Throwable throwable) {
-        if (currentLevels.contains(LogLevel.TRACE)) {
+    @Override
+    public void trace(String format, Object arg) {
+        if (isTraceEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.TRACE, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void trace(String format, Object arg1, Object arg2) {
+        if (isTraceEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.TRACE, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void trace(String format, Object... arguments) {
+        if (isTraceEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.TRACE, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void trace(String charSequence, Throwable throwable) {
+        if (isTraceEnabled()) {
             logEntries.add(new LogEntry(LogLevel.TRACE, charSequence.toString(), throwable));
         }
     }
 
-    public void trace(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.TRACE)) {
-            logEntries.add(new LogEntry(LogLevel.TRACE, null, throwable));
+    @Override
+    public boolean isTraceEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.TRACE);
+    }
+
+    @Override
+    public void trace(Marker marker, String msg) {
+        if (isTraceEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.TRACE, msg, null));
         }
     }
 
-    public void debug(CharSequence charSequence) {
+    @Override
+    public void trace(Marker marker, String format, Object arg) {
+        if (isTraceEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.TRACE, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void trace(Marker marker, String format, Object arg1, Object arg2) {
+        if (isTraceEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.TRACE, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void trace(Marker marker, String format, Object... argArray) {
+        if (isTraceEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.TRACE, String.format(format, argArray), null));
+        }
+    }
+
+    @Override
+    public void trace(Marker marker, String msg, Throwable t) {
+        if (isTraceEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.TRACE, msg, t));
+        }
+    }
+
+    @Override
+    public boolean isDebugEnabled() {
+        return currentLevels.contains(LogLevel.DEBUG);
+    }
+
+    @Override
+    public void debug(String charSequence) {
         if (currentLevels.contains(LogLevel.DEBUG)) {
             logEntries.add(new LogEntry(LogLevel.DEBUG, charSequence.toString(), null));
         }
     }
 
-    public void debug(CharSequence charSequence, Throwable throwable) {
+    @Override
+    public void debug(String format, Object arg) {
+        if (isDebugEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.DEBUG, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void debug(String format, Object arg1, Object arg2) {
+        if (isDebugEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.DEBUG, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void debug(String format, Object... arguments) {
+        if (isDebugEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.DEBUG, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void debug(String charSequence, Throwable throwable) {
         if (currentLevels.contains(LogLevel.DEBUG)) {
             logEntries.add(new LogEntry(LogLevel.DEBUG, charSequence.toString(), throwable));
         }
     }
 
-    public void debug(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.DEBUG)) {
-            logEntries.add(new LogEntry(LogLevel.DEBUG, null, throwable));
-        }
+    @Override
+    public boolean isDebugEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.DEBUG);
     }
 
-    public void info(CharSequence charSequence) {
-        if (currentLevels.contains(LogLevel.INFO)) {
-            logEntries.add(new LogEntry(LogLevel.INFO, charSequence.toString(), null));
-        }
-    }
-
-    public void info(CharSequence charSequence, Throwable throwable) {
-        if (currentLevels.contains(LogLevel.INFO)) {
-            logEntries.add(new LogEntry(LogLevel.INFO, charSequence.toString(), throwable));
-        }
-    }
-
-    public void info(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.INFO)) {
-            logEntries.add(new LogEntry(LogLevel.DEBUG, null, throwable));
-        }
-    }
-
-    public void warn(CharSequence charSequence) {
-        if (currentLevels.contains(LogLevel.WARN)) {
-            logEntries.add(new LogEntry(LogLevel.WARN, charSequence.toString(), null));
-        }
-    }
-
-    public void warn(CharSequence charSequence, Throwable throwable) {
-        if (currentLevels.contains(LogLevel.WARN)) {
-            logEntries.add(new LogEntry(LogLevel.WARN, charSequence.toString(), throwable));
-        }
-    }
-
-    public void warn(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.WARN)) {
-            logEntries.add(new LogEntry(LogLevel.WARN, null, throwable));
-        }
-    }
-
-    public void error(CharSequence charSequence) {
-        if (currentLevels.contains(LogLevel.ERROR)) {
-            logEntries.add(new LogEntry(LogLevel.ERROR, charSequence.toString(), null));
-        }
-    }
-
-    public void error(CharSequence charSequence, Throwable throwable) {
-        if (currentLevels.contains(LogLevel.ERROR)) {
-            logEntries.add(new LogEntry(LogLevel.ERROR, charSequence.toString(), throwable));
-        }
-    }
-
-    public void error(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.ERROR)) {
-            logEntries.add(new LogEntry(LogLevel.DEBUG, null, throwable));
+    @Override
+    public void debug(Marker marker, String msg) {
+        if (isDebugEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.DEBUG, msg, null));
         }
     }
 
     @Override
+    public void debug(Marker marker, String format, Object arg) {
+        if (isDebugEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.DEBUG, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void debug(Marker marker, String format, Object arg1, Object arg2) {
+        if (isDebugEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.DEBUG, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void debug(Marker marker, String format, Object... arguments) {
+        if (isDebugEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.DEBUG, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void debug(Marker marker, String msg, Throwable t) {
+        if (isDebugEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.DEBUG, msg, t));
+        }
+    }
+
+    @Override
+    public boolean isInfoEnabled() {
+        return currentLevels.contains(LogLevel.INFO);
+    }
+
+    @Override
+    public void info(String charSequence) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, charSequence.toString(), null));
+        }
+    }
+
+    @Override
+    public void info(String format, Object arg) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void info(String format, Object arg1, Object arg2) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void info(String format, Object... arguments) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void info(String charSequence, Throwable throwable) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, charSequence.toString(), throwable));
+        }
+    }
+
+    @Override
+    public boolean isInfoEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.INFO);
+    }
+
+    @Override
+    public void info(Marker marker, String msg) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, msg, null));
+        }
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object arg) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object arg1, Object arg2) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object... arguments) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void info(Marker marker, String msg, Throwable t) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.INFO, msg, t));
+        }
+    }
+
+    @Override
+    public boolean isWarnEnabled() {
+        return currentLevels.contains(LogLevel.WARN);
+    }
+
+    @Override
+    public void warn(String charSequence) {
+        if (isWarnEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, charSequence.toString(), null));
+        }
+    }
+
+    @Override
+    public void warn(String format, Object arg) {
+        if (isWarnEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void warn(String format, Object... arguments) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+        if (isInfoEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void warn(String charSequence, Throwable throwable) {
+        if (isWarnEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, charSequence.toString(), throwable));
+        }
+    }
+
+    @Override
+    public boolean isWarnEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.WARN);
+    }
+
+    @Override
+    public void warn(Marker marker, String msg) {
+        if (isWarnEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, msg, null));
+        }
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object arg) {
+        if (isWarnEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object arg1, Object arg2) {
+        if (isWarnEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object... arguments) {
+        if (isWarnEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void warn(Marker marker, String msg, Throwable t) {
+        if (isWarnEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.WARN, msg, t));
+        }
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
+        return currentLevels.contains(LogLevel.ERROR);
+    }
+
+    @Override
+    public void error(String charSequence) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, charSequence.toString(), null));
+        }
+    }
+
+    @Override
+    public void error(String format, Object arg) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void error(String format, Object arg1, Object arg2) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void error(String format, Object... arguments) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void error(String charSequence, Throwable throwable) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, charSequence.toString(), throwable));
+        }
+    }
+
+    @Override
+    public boolean isErrorEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.ERROR);
+    }
+
+    @Override
+    public void error(Marker marker, String msg) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, msg, null));
+        }
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object arg) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, String.format(format, arg), null));
+        }
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object arg1, Object arg2) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, String.format(format, arg1, arg2), null));
+        }
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object... arguments) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, String.format(format, arguments), null));
+        }
+    }
+
+    @Override
+    public void error(Marker marker, String msg, Throwable t) {
+        if (isErrorEnabled()) {
+            logEntries.add(new LogEntry(LogLevel.ERROR, msg, t));
+        }
+    }
+
     public synchronized void flush() {
         sendToLogger();
         logEntries.clear();
@@ -207,5 +522,5 @@ public class BufferedSlf4jLogger implements Log, Closeable {
     public void close() throws IOException {
         this.flush();
     }
-
+    
 }
