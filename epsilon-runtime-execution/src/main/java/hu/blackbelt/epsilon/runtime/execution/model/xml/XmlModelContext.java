@@ -21,7 +21,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.xml;
  */
 
 import com.google.common.collect.ImmutableMap;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelContext;
 import lombok.Builder;
@@ -51,7 +51,7 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
 
 
     @Builder(builderMethodName = "xmlModelContextBuilder")
-    public XmlModelContext(Log log, String xml, String xsd, String name, List<String> aliases,
+    public XmlModelContext(Logger log, String xml, String xsd, String name, List<String> aliases,
                            String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached,
                            boolean expand, boolean validateModel, XmlModelFactory xmlModelFactory, Map<String, String> uriConverterMap) {
         super(log, null, name, aliases, referenceUri, readOnLoad, storeOnDisposal, cached, expand,
@@ -93,7 +93,7 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
+    public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
         return XmlModelFactory.loadXml(log, xmlModelFactory, resourceSet, repository, this, uriMap.get(XML), uriMap.get(XSD));
     }
 

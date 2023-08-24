@@ -22,7 +22,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import hu.blackbelt.epsilon.runtime.execution.impl.LogLevel;
@@ -49,7 +49,7 @@ public class EmfModelContext implements ModelContext {
 
     public static final String MODEL = "model";
     @Builder.Default
-    Log log = new StringBuilderLogger(LogLevel.DEBUG);
+    Logger log = new StringBuilderLogger(LogLevel.DEBUG);
 
     @NonNull
     String emf;
@@ -94,7 +94,7 @@ public class EmfModelContext implements ModelContext {
     Map<String, String> uriConverterMap = ImmutableMap.of();
 
     @java.beans.ConstructorProperties({"log", "emf", "name", "aliases", "referenceUri", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "validateModel", "emfModelFactory", "uriConverterMap"})
-    public EmfModelContext(Log log, String emf, String name, List<String> aliases, String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, boolean validateModel, EmfModelFactory emfModelFactory, Map<String, String> uriConverterMap) {
+    public EmfModelContext(Logger log, String emf, String name, List<String> aliases, String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, boolean validateModel, EmfModelFactory emfModelFactory, Map<String, String> uriConverterMap) {
         this.log = log;
         this.emf = emf;
         this.name = name;
@@ -157,7 +157,7 @@ public class EmfModelContext implements ModelContext {
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
+    public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         return EmfModelUtils.loadEmf(log, emfModelFactory, resourceSet, repository, this, uriMap.get(MODEL), uriConverterMap);
     }
 

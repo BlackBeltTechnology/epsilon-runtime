@@ -21,7 +21,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.excel;
  */
 
 import com.google.common.base.Strings;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.joining;
 public class ExcelModelUtil {
 
 
-    public static ExcelModel loadExcel(Log log, ModelRepository repository, ExcelModelContext excelModelContext, URI excel, URI excelConfiguration) throws EolModelLoadingException {
+    public static ExcelModel loadExcel(Logger log, ModelRepository repository, ExcelModelContext excelModelContext, URI excel, URI excelConfiguration) throws EolModelLoadingException {
 
         final ExcelModel model = new ExcelModel();
 

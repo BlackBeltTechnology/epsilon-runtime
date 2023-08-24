@@ -22,7 +22,7 @@ package hu.blackbelt.epsilon.runtime.execution.model;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.Diagnostic;
@@ -51,7 +51,7 @@ public class ModelValidator {
         validate(Optional.empty(), model);
     }
 
-    public static void validate(Optional<Log> log, EmfModel model) throws ModelValidationException {
+    public static void validate(Optional<Logger> log, EmfModel model) throws ModelValidationException {
 
         List<String> validationErrors = ImmutableList.of();
         validationErrors = ModelValidator.getValidationErrors(log, model);
@@ -68,7 +68,7 @@ public class ModelValidator {
         return getValidationErrors(Optional.empty(), model);
     }
 
-    public static List<String> getValidationErrors(Optional<Log> log, EmfModel model) {
+    public static List<String> getValidationErrors(Optional<Logger> log, EmfModel model) {
         final List<String> errors = new LinkedList<>();
 
         model.allContents().forEach(e -> errors.addAll(extractValidationErrors(log, validate(e), 0)));
@@ -76,7 +76,7 @@ public class ModelValidator {
         return errors;
     }
 
-    private static List<String> extractValidationErrors(Optional<Log> log, Diagnostic diagnostic, int level) {
+    private static List<String> extractValidationErrors(Optional<Logger> log, Diagnostic diagnostic, int level) {
         final List<String> errors = new LinkedList<>();
 
         final String message = diagnostic.getMessage();
