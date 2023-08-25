@@ -96,7 +96,7 @@
                     <configuration>
                         <instructions>
                             <Export-Package>
-                                hu.blackbelt.epsilon.runtime.*;version=${project.version}
+                                hu.blackbelt.epsilon.runtime.*;version="${project.version}"
                             </Export-Package>
                             <Import-Package>
                                 ${osgi-default-import},
@@ -672,6 +672,12 @@
             <dependency>
                 <groupId>hu.blackbelt.epsilon</groupId>
                 <artifactId>epsilon-runtime-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>hu.blackbelt.epsilon</groupId>
+                <artifactId>epsilon-runtime-execution</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
