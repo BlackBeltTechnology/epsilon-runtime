@@ -22,7 +22,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import org.eclipse.emf.common.util.URI;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.joining;
 
 public class EmfModelUtils {
-    public static EmfModel loadEmf(Log log,
+    public static EmfModel loadEmf(Logger log,
                                    EmfModelFactory emfModelFactory, ResourceSet resourceSet,
                                    ModelRepository repository, EmfModelContext emfModel, URI uri, Map<URI, URI> uriMap) throws EolModelLoadingException, ModelValidationException {
 

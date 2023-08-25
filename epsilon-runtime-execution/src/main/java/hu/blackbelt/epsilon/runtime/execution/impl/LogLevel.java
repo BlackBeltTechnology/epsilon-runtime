@@ -22,6 +22,7 @@ package hu.blackbelt.epsilon.runtime.execution.impl;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.Set;
@@ -41,4 +42,18 @@ public enum LogLevel {
         return logLevelSetMap.get(logLevel);
     }
 
+    public static LogLevel determinateLogLevel(Logger log) {
+        if (log.isTraceEnabled()) {
+            return  LogLevel.TRACE;
+        } else if (log.isDebugEnabled()) {
+            return  LogLevel.DEBUG;
+        } else if (log.isInfoEnabled()) {
+            return  LogLevel.INFO;
+        } else if (log.isWarnEnabled()) {
+            return LogLevel.WARN;
+        } else if (log.isErrorEnabled()) {
+            return LogLevel.ERROR;
+        }
+        return  LogLevel.INFO;
     }
+}
