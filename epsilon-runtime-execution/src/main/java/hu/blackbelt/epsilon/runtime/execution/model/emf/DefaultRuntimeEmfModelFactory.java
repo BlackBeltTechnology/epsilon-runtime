@@ -20,7 +20,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
  * #L%
  */
 
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import lombok.*;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
@@ -37,7 +37,7 @@ import java.util.Map;
 public class DefaultRuntimeEmfModelFactory implements EmfModelFactory {
 
     @NonNull
-    Log log;
+    Logger log;
 
     @Override
     public EmfModel create(ResourceSet resourceSet, Map<URI, URI> uriMapConverter) {

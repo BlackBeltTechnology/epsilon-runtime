@@ -21,18 +21,19 @@ package hu.blackbelt.epsilon.runtime.execution.impl;
  */
 
 import com.google.common.collect.ImmutableSet;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import org.slf4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Set;
 
-public class StringBuilderLogger implements Log {
+public class StringBuilderLogger implements Logger, AutoCloseable {
     public static final String LF = "\n";
     StringBuilder buffer = new StringBuilder();
 
-    Logger logger;
+    final Logger logger;
 
     @Override
     public void close() throws Exception {
@@ -42,112 +43,95 @@ public class StringBuilderLogger implements Log {
     private Set<LogLevel> currentLevels = ImmutableSet.of(LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO);
 
     public StringBuilderLogger() {
+        this.logger = null;
     }
 
     public StringBuilderLogger(Logger logger) {
-        LogLevel logLevel = Slf4jLog.determinateLogLevel(logger);
+        LogLevel logLevel = LogLevel.determinateLogLevel(logger);
         this.logger = logger;
         currentLevels = LogLevel.getMatchingLogLevels(logLevel);
     }
 
     public StringBuilderLogger(LogLevel logLevel) {
         currentLevels = LogLevel.getMatchingLogLevels(logLevel);
+        this.logger = null;
     }
 
-    public void trace(CharSequence charSequence) {
-        if (currentLevels.contains(LogLevel.TRACE)) {
+    @Override
+    public void trace(String charSequence) {
+        if (isTraceEnabled()) {
             buffer.append(LF + charSequence.toString());
         }
     }
 
-    public void trace(CharSequence charSequence, Throwable throwable) {
-        if (currentLevels.contains(LogLevel.TRACE)) {
-            buffer.append(LF + charSequence.toString());
-            buffer.append(LF + exceptionToString(throwable));
-        }
-    }
-
-    public void trace(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.TRACE)) {
-            buffer.append(LF + exceptionToString(throwable));
-        }
-    }
-
-    public void debug(CharSequence charSequence) {
-        if (currentLevels.contains(LogLevel.DEBUG)) {
-            buffer.append(LF + charSequence.toString());
-        }
-    }
-
-    public void debug(CharSequence charSequence, Throwable throwable) {
-        if (currentLevels.contains(LogLevel.DEBUG)) {
+    @Override
+    public void trace(String charSequence, Throwable throwable) {
+        if (isTraceEnabled()) {
             buffer.append(LF + charSequence.toString());
             buffer.append(LF + exceptionToString(throwable));
         }
     }
 
-    public void debug(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.DEBUG)) {
-            buffer.append(LF + exceptionToString(throwable));
-        }
-    }
-
-    public void info(CharSequence charSequence) {
-        if (currentLevels.contains(LogLevel.INFO)) {
+    @Override
+    public void debug(String charSequence) {
+        if (isDebugEnabled()) {
             buffer.append(LF + charSequence.toString());
         }
     }
 
-    public void info(CharSequence charSequence, Throwable throwable) {
-        if (currentLevels.contains(LogLevel.INFO)) {
+    @Override
+    public void debug(String charSequence, Throwable throwable) {
+        if (isDebugEnabled()) {
             buffer.append(LF + charSequence.toString());
             buffer.append(LF + exceptionToString(throwable));
         }
     }
 
-    public void info(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.INFO)) {
-            buffer.append(LF + exceptionToString(throwable));
-        }
-    }
-
-    public void warn(CharSequence charSequence) {
-        if (currentLevels.contains(LogLevel.WARN)) {
+    @Override
+    public void info(String charSequence) {
+        if (isInfoEnabled()) {
             buffer.append(LF + charSequence.toString());
         }
     }
 
-    public void warn(CharSequence charSequence, Throwable throwable) {
-        if (currentLevels.contains(LogLevel.WARN)) {
+    @Override
+    public void info(String charSequence, Throwable throwable) {
+        if (isInfoEnabled()) {
             buffer.append(LF + charSequence.toString());
             buffer.append(LF + exceptionToString(throwable));
         }
     }
 
-    public void warn(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.WARN)) {
+    @Override
+    public void warn(String charSequence) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + charSequence.toString());
+        }
+    }
+
+    @Override
+    public void warn(String charSequence, Throwable throwable) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + charSequence.toString());
             buffer.append(LF + exceptionToString(throwable));
         }
     }
 
-    public void error(CharSequence charSequence) {
+    @Override
+    public void error(String charSequence) {
         if (currentLevels.contains(LogLevel.ERROR)) {
             buffer.append(LF + charSequence.toString());
         }
     }
 
-    public void error(CharSequence charSequence, Throwable throwable) {
+    @Override
+    public void error(String charSequence, Throwable throwable) {
         if (currentLevels.contains(LogLevel.ERROR)) {
             buffer.append(LF + charSequence.toString());
             buffer.append(LF + exceptionToString(throwable));
         }
     }
 
-    public void error(Throwable throwable) {
-        if (currentLevels.contains(LogLevel.ERROR)) {
-            buffer.append(LF + exceptionToString(throwable));
-        }
-    }
 
     private String exceptionToString(Throwable exception) {
         StringWriter errors = new StringWriter();
@@ -160,7 +144,6 @@ public class StringBuilderLogger implements Log {
         return buffer.toString();
     }
 
-    @Override
     public void flush() {
         if (logger != null) {
             String buff = getBuffer();
@@ -176,4 +159,345 @@ public class StringBuilderLogger implements Log {
         return "StringBuilderLogger";
     }
 
+    @Override
+    public String getName() {
+        return toString();
+    }
+
+    @Override
+    public boolean isTraceEnabled() {
+        return currentLevels.contains(LogLevel.TRACE);
+    }
+
+    @Override
+    public void trace(String format, Object arg) {
+        if (isTraceEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void trace(String format, Object arg1, Object arg2) {
+        if (isTraceEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void trace(String format, Object... arguments) {
+        if (isTraceEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public boolean isTraceEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.TRACE);
+    }
+
+    @Override
+    public void trace(Marker marker, String msg) {
+        if (isTraceEnabled()) {
+            buffer.append(LF + msg);
+        }
+    }
+
+    @Override
+    public void trace(Marker marker, String format, Object arg) {
+        if (isTraceEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void trace(Marker marker, String format, Object arg1, Object arg2) {
+        if (isTraceEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void trace(Marker marker, String format, Object... argArray) {
+        if (isTraceEnabled()) {
+            buffer.append(LF + String.format(format, argArray));
+        }
+    }
+
+    @Override
+    public void trace(Marker marker, String msg, Throwable t) {
+        if (isTraceEnabled()) {
+            buffer.append(LF + msg);
+            buffer.append(LF + exceptionToString(t));
+        }
+    }
+
+    @Override
+    public boolean isDebugEnabled() {
+        return currentLevels.contains(LogLevel.DEBUG);
+    }
+
+    @Override
+    public void debug(String format, Object arg) {
+        if (isDebugEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void debug(String format, Object arg1, Object arg2) {
+        if (isDebugEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void debug(String format, Object... arguments) {
+        if (isDebugEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public boolean isDebugEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.DEBUG);
+    }
+
+    @Override
+    public void debug(Marker marker, String msg) {
+        if (isDebugEnabled()) {
+            buffer.append(LF + msg);
+        }
+    }
+
+    @Override
+    public void debug(Marker marker, String format, Object arg) {
+        if (isDebugEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void debug(Marker marker, String format, Object arg1, Object arg2) {
+        if (isDebugEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void debug(Marker marker, String format, Object... arguments) {
+        if (isDebugEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public void debug(Marker marker, String msg, Throwable t) {
+        if (isDebugEnabled()) {
+            buffer.append(LF + msg);
+            buffer.append(LF + exceptionToString(t));
+        }
+    }
+
+    @Override
+    public boolean isInfoEnabled() {
+        return currentLevels.contains(LogLevel.INFO);
+    }
+
+
+    @Override
+    public void info(String format, Object arg) {
+        if (isInfoEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void info(String format, Object arg1, Object arg2) {
+        if (isInfoEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void info(String format, Object... arguments) {
+        if (isInfoEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public boolean isInfoEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.INFO);
+    }
+
+    @Override
+    public void info(Marker marker, String msg) {
+        if (isInfoEnabled()) {
+            buffer.append(LF + msg);
+        }
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object arg) {
+        if (isInfoEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object arg1, Object arg2) {
+        if (isInfoEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void info(Marker marker, String format, Object... arguments) {
+        if (isInfoEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public void info(Marker marker, String msg, Throwable t) {
+        if (isInfoEnabled()) {
+            buffer.append(LF + msg);
+            buffer.append(LF + exceptionToString(t));
+        }
+    }
+
+    @Override
+    public boolean isWarnEnabled() {
+        return currentLevels.contains(LogLevel.WARN);
+    }
+
+    @Override
+    public void warn(String format, Object arg) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void warn(String format, Object... arguments) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+
+    @Override
+    public boolean isWarnEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.WARN);
+    }
+
+    @Override
+    public void warn(Marker marker, String msg) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + msg);
+        }
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object arg) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object arg1, Object arg2) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void warn(Marker marker, String format, Object... arguments) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public void warn(Marker marker, String msg, Throwable t) {
+        if (isWarnEnabled()) {
+            buffer.append(LF + msg);
+            buffer.append(LF + exceptionToString(t));
+        }
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
+        return currentLevels.contains(LogLevel.ERROR);
+    }
+
+    @Override
+    public void error(String format, Object arg) {
+        if (isErrorEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void error(String format, Object arg1, Object arg2) {
+        if (isErrorEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void error(String format, Object... arguments) {
+        if (isErrorEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public boolean isErrorEnabled(Marker marker) {
+        return currentLevels.contains(LogLevel.ERROR);
+    }
+
+    @Override
+    public void error(Marker marker, String msg) {
+        if (isErrorEnabled()) {
+            buffer.append(LF + msg);
+        }
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object arg) {
+        if (isErrorEnabled()) {
+            buffer.append(LF + String.format(format, arg));
+        }
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object arg1, Object arg2) {
+        if (isErrorEnabled()) {
+            buffer.append(LF + String.format(format, arg1, arg2));
+        }
+    }
+
+    @Override
+    public void error(Marker marker, String format, Object... arguments) {
+        if (isErrorEnabled()) {
+            buffer.append(LF + String.format(format, arguments));
+        }
+    }
+
+    @Override
+    public void error(Marker marker, String msg, Throwable t) {
+        if (isErrorEnabled()) {
+            buffer.append(LF + msg);
+            buffer.append(LF + exceptionToString(t));
+        }
+    }
 }
