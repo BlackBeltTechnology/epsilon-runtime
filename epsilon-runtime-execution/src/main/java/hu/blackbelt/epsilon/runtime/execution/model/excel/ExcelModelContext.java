@@ -22,7 +22,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.excel;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import lombok.Builder;
 import lombok.Data;
@@ -105,7 +105,7 @@ public class ExcelModelContext implements ModelContext {
     }
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uri, Map<URI, URI> uriMap) throws EolModelLoadingException {
+    public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uri, Map<URI, URI> uriMap) throws EolModelLoadingException {
         return ExcelModelUtil.loadExcel(log, repository, this, uri.get(EXCEL), uri.get(EXCEL_CONFIGURATION));
     }
 

@@ -169,6 +169,15 @@
             <scope>runtime</scope>
         </dependency>
         
+    	<dependency>
+        	<groupId>hu.blackbelt.epsilon</groupId>
+            <artifactId>epsilon-runtime-utils</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>hu.blackbelt.epsilon</groupId>
+            <artifactId>epsilon-runtime-execution</artifactId>
+        </dependency>
 
     </dependencies>
 </project>

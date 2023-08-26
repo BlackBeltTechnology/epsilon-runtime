@@ -22,7 +22,8 @@
         <osgi-default-import>
             org.osgi.framework;version="[1.8,2.0)",
             !lombok,
-            javax.annotation;version="[1.0,2)"
+            javax.annotation;version="[1.0,2)",
+            org.slf4j;version="[1.6,3)",
         </osgi-default-import>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -95,7 +96,7 @@
                     <configuration>
                         <instructions>
                             <Export-Package>
-                                hu.blackbelt.epsilon.runtime.*;version=${project.version}
+                                hu.blackbelt.epsilon.runtime.*;version="${project.version}"
                             </Export-Package>
                             <Import-Package>
                                 ${osgi-default-import},
@@ -671,6 +672,12 @@
             <dependency>
                 <groupId>hu.blackbelt.epsilon</groupId>
                 <artifactId>epsilon-runtime-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>hu.blackbelt.epsilon</groupId>
+                <artifactId>epsilon-runtime-execution</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
