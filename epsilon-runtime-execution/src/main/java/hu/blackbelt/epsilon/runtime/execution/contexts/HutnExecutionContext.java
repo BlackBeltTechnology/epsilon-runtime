@@ -24,19 +24,14 @@ import hu.blackbelt.epsilon.runtime.execution.api.LoggingOutputStream;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.epsilon.common.parse.problem.ParseProblem;
-import org.eclipse.epsilon.eol.EolModule;
 import org.eclipse.epsilon.eol.IEolModule;
 import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
 import org.eclipse.epsilon.eol.models.ModelRepository;
-import org.eclipse.epsilon.etl.EtlModule;
 import org.eclipse.epsilon.hutn.HutnContext;
 import org.eclipse.epsilon.hutn.HutnModule;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor

@@ -23,7 +23,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import hu.blackbelt.epsilon.runtime.execution.impl.LogLevel;
@@ -55,7 +55,7 @@ import static java.util.stream.Collectors.joining;
 public class WrappedEmfModelContext implements ModelContext {
 
     @Builder.Default
-    Log log = new StringBuilderLogger(LogLevel.DEBUG);
+    Logger log = new StringBuilderLogger(LogLevel.DEBUG);
 
     @NonNull
     Resource resource;
@@ -81,7 +81,7 @@ public class WrappedEmfModelContext implements ModelContext {
     Boolean useCache = false;
 
     @Override
-    public IModel load(Log log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
+    public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         // Hack: to able to resolve supertypes
         synchronized (resource) {
 

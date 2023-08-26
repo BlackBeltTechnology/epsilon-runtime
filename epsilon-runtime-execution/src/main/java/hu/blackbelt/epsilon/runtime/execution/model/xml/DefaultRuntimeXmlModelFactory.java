@@ -20,7 +20,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.xml;
  * #L%
  */
 
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
@@ -37,7 +37,7 @@ import java.util.HashSet;
 public class DefaultRuntimeXmlModelFactory implements XmlModelFactory {
 
     @NonNull
-    Log log;
+    Logger log;
 
     @Override
     public XmlModel create(ResourceSet resourceSet) {

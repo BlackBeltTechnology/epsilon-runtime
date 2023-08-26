@@ -20,7 +20,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.plainxml;
  * #L%
  */
 
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.common.util.StringProperties;
@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.joining;
 
 public class PlainXmlModelUtil {
 
-    public static PlainXmlModel loadPlainXml(Log log, ResourceSet resourceSet, ModelRepository repository, PlainXmlModelContext plainXmlModelContext, URI uri) throws EolModelLoadingException {
+    public static PlainXmlModel loadPlainXml(Logger log, ResourceSet resourceSet, ModelRepository repository, PlainXmlModelContext plainXmlModelContext, URI uri) throws EolModelLoadingException {
 
         final PlainXmlModel model = new PlainXmlModel();
 
