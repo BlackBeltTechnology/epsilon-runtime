@@ -96,7 +96,7 @@ public class BufferedSlf4jLogger implements Logger, Closeable {
 
     @Override
     public String getName() {
-        return null;
+        return "Buffered Slf4j Logger";
     }
 
     @Override
