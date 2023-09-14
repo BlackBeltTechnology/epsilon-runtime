@@ -38,8 +38,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <osgi-utils-version>1.1.1.20230905_073209_2c2d4ff4_develop</osgi-utils-version>
-        <karaf-features-version>2.0.2.20230905_072320_beae5b1f_develop</karaf-features-version>
+        <osgi-utils-version>1.1.1.20230914_114955_5e3d2a78_develop</osgi-utils-version>
+        <karaf-features-version>2.0.2.20230914_091647_cbb59ce0_develop</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
