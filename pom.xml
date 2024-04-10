@@ -32,14 +32,14 @@
         <emf-xsd-version>2.17.0</emf-xsd-version>
         <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
         <epsilon-version>2.4.0</epsilon-version>
-        <karaf-version>4.4.1</karaf-version>
+        <karaf-version>4.4.5</karaf-version>
         <cxf-version>3.3.1</cxf-version>
 
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
         <osgi-utils-version>1.1.1.20230914_114955_5e3d2a78_develop</osgi-utils-version>
-        <karaf-features-version>2.0.2.20230914_091647_cbb59ce0_develop</karaf-features-version>
+        <karaf-features-version>2.0.2.20240410_083849_8b6fbfb2_develop</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
