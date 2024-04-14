@@ -693,6 +693,7 @@
             </activation>
             <modules>
                 <module>epsilon-runtime-utils</module>
+                <module>epsilon-runtime-eol-patch</module>
                 <module>epsilon-runtime-execution</module>
                 <module>epsilon-runtime-osgi</module>
                 <module>features</module>
