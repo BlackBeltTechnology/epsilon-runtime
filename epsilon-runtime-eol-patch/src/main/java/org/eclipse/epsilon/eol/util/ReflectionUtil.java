@@ -9,52 +9,76 @@
  ******************************************************************************/
 package org.eclipse.epsilon.eol.util;
 
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.*;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.eclipse.epsilon.common.module.ModuleElement;
-import org.eclipse.epsilon.eol.exceptions.*;
+import org.eclipse.epsilon.eol.exceptions.EolIllegalOperationException;
+import org.eclipse.epsilon.eol.exceptions.EolIllegalOperationParametersException;
+import org.eclipse.epsilon.eol.exceptions.EolInternalException;
+import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
 import org.eclipse.epsilon.eol.execute.prettyprinting.PrettyPrinterManager;
 import org.eclipse.epsilon.eol.types.EolNativeType;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class ReflectionUtil {
+
 	private ReflectionUtil() {}
-	
-	
+
+
 	public static boolean hasMethods(Object obj, String methodName) {
 		if (obj == null) return false;
-		
-		for (Method method : obj.getClass().getMethods()) {
+
+        Method[] methods = new Method[0];
+        try {
+            methods = classMethodsLoadingCache.get(obj.getClass());
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (Method method : methods) {
 			if (getMethodName(method).equals(methodName)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public static Set<String> getMethodNames(Object obj, boolean includeInheritedMethods) {
 		if (obj == null) return new HashSet<>(0);
-		
+
 		Method[] methods = getMethods(obj, includeInheritedMethods);
-		
+
 		Set<String> methodNames = new HashSet<>(methods.length);
 		for (Method method : methods) {
 			methodNames.add(getMethodName(method));
 		}
 		return methodNames;
 	}
-	
+
 	protected static String getMethodName(Method method) {
 		String methodName = method.getName();
 		if (methodName.startsWith("_")) methodName = methodName.substring(1);
 		return methodName;
 	}
-	
+
 	/**
 	 * Searches for a method matching the name and criteria for the given object,
 	 * including all super methods and super-interfaces recursively.
-	 * 
+	 *
 	 * @param obj The target object to look for methods on.
 	 * @param methodName The name of the method to find.
 	 * @param criteria Function which limits the search scope of methods.
@@ -65,7 +89,7 @@ public class ReflectionUtil {
 	 */
 	public static Method findApplicableMethodOrThrow(Object obj, String methodName, Predicate<Method> criteria, Collection<?> parameters, ModuleElement ast, PrettyPrinterManager ppm) throws EolIllegalOperationException, EolIllegalOperationParametersException {
 		final Method[] candidates = getMethodsFromPublicClassesForName(obj, methodName);
-		
+
 		Method method = Stream.of(candidates).filter(criteria).findAny().orElse(null);
 		if (method == null) {
 			method = searchMethodsFor(candidates, methodName, parameters.toArray(), true);
@@ -76,26 +100,51 @@ public class ReflectionUtil {
 				String expectedParams = Stream.of(candidates[0].getParameterTypes())
 					.map(Class::getTypeName)
 					.collect(paramJoiner);
-				
+
 				String actualParams = parameters.stream()
 					.map(expr -> expr.getClass().getTypeName())
 					.collect(paramJoiner);
-				
+
 				throw new EolIllegalOperationParametersException(methodName, expectedParams, actualParams, ast);
 			}
 			else throw new EolIllegalOperationException(obj, methodName, ast, ppm);
 		}
-		
+
 		return method;
 	}
-	
+
+	private static CacheLoader<Class<?>, Class<?>[]> discoverPublicClassesCacheLoader = new CacheLoader<>() {
+		@Override
+		public Class<?>[] load(Class<?> key) {
+			return discoverPublicClassesForCache(key);
+		}
+	};
+
+	private static LoadingCache<Class<?>, Class<?>[]> discoverPublicClassesLoadingCache =
+			CacheBuilder.newBuilder()
+					.build(discoverPublicClassesCacheLoader);
+
+	/**
+	 *
+	 * @param clazz
+	 * @return
+	 * @since 1.6
+	 */
+	public static Class<?>[] discoverPublicClasses(Class<?> clazz) {
+        try {
+            return discoverPublicClassesLoadingCache.get(clazz);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 	/**
 	 * 
 	 * @param clazz
 	 * @return
 	 * @since 1.6
 	 */
-	public static Class<?>[] discoverPublicClasses(Class<?> clazz) {
+	private static Class<?>[] discoverPublicClassesForCache(Class<?> clazz) {
 		List<Class<?>> interfaces = new ArrayList<>();
 		discoverPublicClasses(clazz, interfaces);
 		Collections.reverse(interfaces);
@@ -118,7 +167,30 @@ public class ReflectionUtil {
 		}
 		discoverPublicClasses(clazz.getSuperclass(), interfaces);
 	}
-	
+
+	private static CacheLoader<Class, Method[]> classMethodsCacheLoader = new CacheLoader<>() {
+		@Override
+		public Method[] load(Class key) {
+			return key.getMethods();
+		}
+	};
+
+	private static LoadingCache<Class, Method[]> classMethodsLoadingCache =
+			CacheBuilder.newBuilder()
+					.build(classMethodsCacheLoader);
+
+	private static CacheLoader<Class, Method[]> classDeclaredMethodsCacheLoader = new CacheLoader<>() {
+		@Override
+		public Method[] load(Class key) {
+			return key.getDeclaredMethods();
+		}
+	};
+
+	private static LoadingCache<Class, Method[]> classDeclaredMethodsLoadingCache =
+			CacheBuilder.newBuilder()
+					.build(classDeclaredMethodsCacheLoader);
+
+
 	/**
 	 * 
 	 * @param obj
@@ -128,28 +200,76 @@ public class ReflectionUtil {
 	 */
 	public static Method[] getMethodsFromPublicClassesForName(Object obj, String methodName) {
 		Class<?> clazz = obj instanceof EolNativeType ? ((EolNativeType) obj).getJavaClass() : obj.getClass();
-		return Stream.of(discoverPublicClasses(clazz))
-			//.parallel()
-			.flatMap(c -> Arrays.stream(c.getMethods()))
-			.filter(m -> getMethodName(m).equals(methodName))
-			.toArray(Method[]::new);
+		return getMethodsFromPublicClassesForName(clazz, methodName);
 	}
 
+	@Builder
+	@Getter
+	@EqualsAndHashCode
+	private static final class GetMethodsFromPublicClassesForNameKey {
+		Class clazz;
+		String methodName;
+	}
+
+	private static CacheLoader<GetMethodsFromPublicClassesForNameKey, Method[]> getMethodsFromPublicClassesForNameCacheLoader = new CacheLoader<>() {
+		@Override
+		public Method[] load(GetMethodsFromPublicClassesForNameKey key) {
+			return getMethodsFromPublicClassesForNameForCache(key.getClass(), key.getMethodName());
+		}
+	};
+
+	private static LoadingCache<GetMethodsFromPublicClassesForNameKey, Method[]> getMethodsFromPublicClassesForNameLoadingCache =
+			CacheBuilder.newBuilder()
+					.build(getMethodsFromPublicClassesForNameCacheLoader);
+
+	public static Method[] getMethodsFromPublicClassesForName(Class clazz, String methodName) {
+        try {
+            return getMethodsFromPublicClassesForNameLoadingCache.get(GetMethodsFromPublicClassesForNameKey.builder()
+                            .clazz(clazz)
+                            .methodName(methodName)
+                    .build());
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+	private static Method[] getMethodsFromPublicClassesForNameForCache(Class clazz, String methodName) {
+		return Stream.of(discoverPublicClasses(clazz))
+				//.parallel()
+				.flatMap(c -> {
+                    try {
+                        return Arrays.stream(classMethodsLoadingCache.get(c));
+                    } catch (ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+				.filter(m -> getMethodName(m).equals(methodName))
+				.toArray(Method[]::new);
+	}
 
 	private static Method[] getMethods(Object obj, boolean includeInheritedMethods) {
 		Class<?> clazz = obj.getClass();
 		if (includeInheritedMethods) {
-			return clazz.getMethods();
-		}
+            try {
+                return classMethodsLoadingCache.get(clazz);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
 		else {
-			return clazz.getDeclaredMethods();
-		}
+            try {
+                return classDeclaredMethodsLoadingCache.get(clazz);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
 	}
-	
+
+
 	/**
 	 * @param allowContravariantConversionForParameters
 	 *   when false, parameters will have exactly the same class as the arguments to the returned method
-	 *   when true, parameters may have a type that is more specific than the arguments to the returned method   
+	 *   when true, parameters may have a type that is more specific than the arguments to the returned method
 	 */
 	public static Method getMethodFor(Object obj, String methodName, Object[] parameters, boolean includeInheritedMethods, boolean allowContravariantConversionForParameters) {
 		if (obj == null)
@@ -169,7 +289,7 @@ public class ReflectionUtil {
 	private static Method getInstanceMethodFor(Object obj, String methodName, Object[] parameters, boolean includeInheritedMethods, boolean allowContravariantConversionForParameters) {
 		return searchMethodsFor(getMethods(obj, includeInheritedMethods), methodName, parameters, allowContravariantConversionForParameters);
 	}
-	
+
 	private static Method getStaticMethodFor(Object obj, String methodName, Object[] parameters, boolean allowContravariantConversionForParameters) {
 		Method staticMethod = null;
 
@@ -182,8 +302,12 @@ public class ReflectionUtil {
 		}
 		
 		if (javaClass != null) {
-			staticMethod = searchMethodsFor(javaClass.getMethods(), methodName, parameters, allowContravariantConversionForParameters);
-		}
+            try {
+                staticMethod = searchMethodsFor(classMethodsLoadingCache.get(javaClass), methodName, parameters, allowContravariantConversionForParameters);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
 		
 		return staticMethod;
 	}
