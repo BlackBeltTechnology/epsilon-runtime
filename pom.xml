@@ -35,6 +35,7 @@
         <karaf-version>4.4.5</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <logback-version>1.5.12</logback-version>
+        <lombok-version>1.18.34</lombok-version>
 
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -322,7 +323,7 @@
                     <dependency>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
-                        <version>1.18.24</version>
+                        <version>${lombok-version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -614,7 +615,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>${lombok-version}</version>
             <scope>provided</scope>
         </dependency>
 
