@@ -80,6 +80,12 @@ public class WrappedEmfModelContext implements ModelContext {
     @Builder.Default
     Boolean useCache = false;
 
+    @Builder.Default
+    Boolean parallel = true;
+
+    @Builder.Default
+    Boolean expandReference = false;
+
     @Override
     public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         // Hack: to able to resolve supertypes
@@ -88,7 +94,7 @@ public class WrappedEmfModelContext implements ModelContext {
             Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
             uriMapExtended.put(URI.createURI(""), resource.getURI());
 
-            ResourceWrappedEMFModel emfModel = new ResourceWrappedEMFModel(resourceSet, resource, uriMapExtended, useCache);
+            ResourceWrappedEMFModel emfModel = new ResourceWrappedEMFModel(resourceSet, resource, uriMapExtended);
             emfModel.setName(name);
 
             final StringProperties properties = new StringProperties();
@@ -114,6 +120,10 @@ public class WrappedEmfModelContext implements ModelContext {
                 ModelValidator.validate(emfModel);
             }
             repository.addModel(emfModel);
+
+            if (useCache) {
+                emfModel.setCachingEnabled(useCache);
+            }
 
             return emfModel;
         }
@@ -153,13 +163,15 @@ public class WrappedEmfModelContext implements ModelContext {
         ResourceSet wrappedResourceSet;
         Map<URI, URI> uriConverterMap;
 
-        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource, Map<URI, URI> uriConverterMap, boolean useCache) {
+        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource, Map<URI, URI> uriConverterMap) {
             this.wrappedResource = resource;
             this.wrappedResourceSet = resourceSet;
             this.uriConverterMap = uriConverterMap;
-            setCachingEnabled(useCache);
-            setReadOnLoad(false);
-            setStoredOnDisposal(false);
+            this.setReadOnLoad(false);
+            this.setStoredOnDisposal(false);
+            this.setParallelAllOf(parallel);
+            this.setExpand(expandReference);
+            this.setValidate(validateModel);
         }
 
         @Override
