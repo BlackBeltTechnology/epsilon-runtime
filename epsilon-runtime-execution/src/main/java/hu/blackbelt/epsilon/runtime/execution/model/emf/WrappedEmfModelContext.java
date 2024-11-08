@@ -23,6 +23,7 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import org.eclipse.epsilon.eol.execute.introspection.IReflectivePropertySetter;
 import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
@@ -114,16 +115,22 @@ public class WrappedEmfModelContext implements ModelContext {
                 log.debug(String.format("Registering MODEL_URI: %s", resource.getURI().toString()));
             }
 
+            if (parallel) {
+                properties.put(EmfModel.PROPERTY_CONCURRENT, true);
+                emfModel.setParallelAllOf(true);
+                emfModel.setConcurrent(true);
+            }
+            if (useCache) {
+                properties.put(EmfModel.PROPERTY_CACHED, true);
+                emfModel.setCachingEnabled(useCache);
+            }
+
             emfModel.load(properties);
 
             if (validateModel) {
                 ModelValidator.validate(emfModel);
             }
             repository.addModel(emfModel);
-
-            if (useCache) {
-                emfModel.setCachingEnabled(useCache);
-            }
 
             return emfModel;
         }
@@ -170,8 +177,14 @@ public class WrappedEmfModelContext implements ModelContext {
             this.setReadOnLoad(false);
             this.setStoredOnDisposal(false);
             this.setParallelAllOf(parallel);
+            this.setConcurrent(parallel);
             this.setExpand(expandReference);
             this.setValidate(validateModel);
+        }
+
+        @Override
+        protected synchronized void initCaches() {
+            super.initCaches();
         }
 
         @Override

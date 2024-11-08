@@ -101,6 +101,12 @@ public class ExecutionContext implements AutoCloseable {
     @Builder.Default
     private Map<String, Object> injectContexts = new HashMap();
 
+    @Builder.Default
+    Boolean useCache = false;
+
+    @Builder.Default
+    Boolean parallel = true;
+
     @SneakyThrows
     public void load() {
         if (addUmlPackages) {
