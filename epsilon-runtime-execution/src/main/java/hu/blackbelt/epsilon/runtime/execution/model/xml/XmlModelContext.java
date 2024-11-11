@@ -20,7 +20,13 @@ package hu.blackbelt.epsilon.runtime.execution.model.xml;
  * #L%
  */
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import hu.blackbelt.epsilon.runtime.execution.impl.LogLevel;
+import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
+import hu.blackbelt.epsilon.runtime.execution.model.emf.DefaultRuntimeEmfModelFactory;
+import hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelFactory;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.model.emf.EmfModelContext;
@@ -36,6 +42,7 @@ import org.eclipse.epsilon.eol.models.ModelRepository;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -43,28 +50,33 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     public static final String XML = "xml";
     public static final String XSD = "xsd";
+
     private String xml;
-
     private String xsd;
-
     private XmlModelFactory xmlModelFactory;
 
 
     @Builder(builderMethodName = "xmlModelContextBuilder")
-    public XmlModelContext(Logger log, String xml, String xsd, String name, List<String> aliases,
-                           String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached,
-                           boolean expand, boolean validateModel, XmlModelFactory xmlModelFactory, Map<String, String> uriConverterMap) {
-        super(log, null, name, aliases, referenceUri, readOnLoad, storeOnDisposal, cached, expand,
-                validateModel, null, uriConverterMap);
+    public XmlModelContext(Logger log,
+                           String xml,
+                           String xsd,
+                           String name,
+                           List<String> aliases,
+                           String referenceUri,
+                           Boolean readOnLoad,
+                           Boolean storeOnDisposal,
+                           Boolean cached,
+                           Boolean parallel,
+                           Boolean expand,
+                           Boolean validateModel,
+                           XmlModelFactory xmlModelFactory,
+                           Map<String, String> uriConverterMap) {
+
+        super(log, null, name, aliases, referenceUri, readOnLoad, storeOnDisposal, cached, parallel, expand,
+                validateModel, false, null, uriConverterMap);
         this.xml = xml;
         this.xsd = xsd;
-
-        if (xmlModelFactory != null) {
-            this.xmlModelFactory = xmlModelFactory;
-        } else {
-            this.xmlModelFactory = new DefaultRuntimeXmlModelFactory(log);
-        }
-
+        this.xmlModelFactory = Objects.requireNonNullElseGet(xmlModelFactory, () -> new DefaultRuntimeXmlModelFactory(getLog()));
     }
 
 
@@ -78,6 +90,7 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
                 ", readOnLoad=" + getReadOnLoad() +
                 ", storeOnDisposal=" + getStoreOnDisposal() +
                 ", cached=" + getCached() +
+                ", parallel=" + getParallel() +
                 ", referenceUri='" + getReferenceUri() + '\'' +
                 ", expand=" + getExpand() +
                 ", validateModel='" + getValidateModel() + '\'' +
@@ -94,7 +107,7 @@ public class XmlModelContext extends EmfModelContext implements ModelContext {
 
     @Override
     public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uriMap, Map<URI, URI> uriConverterMap) throws EolModelLoadingException {
-        return XmlModelFactory.loadXml(log, xmlModelFactory, resourceSet, repository, this, uriMap.get(XML), uriMap.get(XSD));
+        return XmlModelFactory.loadXml(log, xmlModelFactory, resourceSet, repository, this, uriMap.get(XML), uriMap.get(XSD), uriConverterMap);
     }
 
 }

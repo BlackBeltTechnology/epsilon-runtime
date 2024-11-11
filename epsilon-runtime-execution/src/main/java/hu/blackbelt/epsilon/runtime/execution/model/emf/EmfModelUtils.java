@@ -60,6 +60,8 @@ public class EmfModelUtils {
         properties.put(EmfModel.PROPERTY_STOREONDISPOSAL, emfModel.getStoreOnDisposal() + "");
         properties.put(EmfModel.PROPERTY_EXPAND, emfModel.getExpand() + "");
         properties.put(EmfModel.PROPERTY_CACHED, emfModel.getCached() + "");
+        properties.put(EmfModel.PROPERTY_CONCURRENT, emfModel.getParallel() + "");
+        properties.put(EmfModel.PROPERTY_PARALLELALLOF, emfModel.getParallel() + "");
 
         if (emfModel.getReferenceUri() != null && !emfModel.getReferenceUri().trim().equals("")) {
             log.debug(String.format("Registering MODEL_URI: %s Reference URI: %s", uri.toString(), emfModel.getReferenceUri()));
