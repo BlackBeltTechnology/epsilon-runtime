@@ -23,6 +23,11 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import hu.blackbelt.epsilon.runtime.execution.EmfUtils;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.epsilon.emc.emf.InMemoryEmfModel;
+import org.eclipse.epsilon.eol.exceptions.models.EolModelElementTypeNotFoundException;
 import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
@@ -41,6 +46,7 @@ import org.eclipse.epsilon.eol.models.ModelReference;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Collectors.joining;
 
@@ -71,8 +77,6 @@ public class WrappedEmfModelContext implements ModelContext {
 
     Boolean expandReference;
 
-    Boolean newModel;
-
     ResourceSet wrappedResourceSet;
 
     ResourceSet resourceSet;
@@ -92,7 +96,6 @@ public class WrappedEmfModelContext implements ModelContext {
             Boolean useCache,
             Boolean parallel,
             Boolean expandReference,
-            Boolean newModel,
             ResourceSet wrappedResourceSet
     ) {
         this.log = Objects.requireNonNullElseGet(log, () -> new StringBuilderLogger(LogLevel.DEBUG));
@@ -105,26 +108,25 @@ public class WrappedEmfModelContext implements ModelContext {
         this.useCache = Objects.requireNonNullElse(useCache, false);
         this.parallel = Objects.requireNonNullElse(parallel, true);
         this.expandReference = Objects.requireNonNullElse(expandReference, false);
-        this.newModel = Objects.requireNonNullElse(newModel, false);
         this.wrappedResourceSet = Objects.requireNonNullElseGet(wrappedResourceSet, () -> resource.getResourceSet());
     }
 
     public WrappedEmfModelContext() {
     }
-
     @Override
     public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         synchronized (resource) {
+            emfModel = new InMemoryEmfModel(name, resource, resource.getResourceSet().getPackageRegistry().values().stream().map(o -> (EPackage) o).toList()) {
+                @Override
+                public Object getCacheKeyForType(String type) throws EolModelElementTypeNotFoundException {
+                    try {
+                        return super.getCacheKeyForType(type);
+                    } catch (EolModelElementTypeNotFoundException ex) {
+                    }
+                    return type;
+                }
 
-            // Hack: to able to resolve supertypes
-            Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
-            uriMapExtended.put(URI.createURI(""), resource.getURI());
-
-            if (newModel) {
-                emfModel = new ClonedEMFModel(resourceSet, wrappedResourceSet, resource, parallel, expandReference, validateModel, newModel, log, uriMapExtended);
-            } else {
-                emfModel = new ResourceWrappedEMFModel(log, resourceSet, resource, parallel, expandReference, validateModel, uriMapExtended);
-            }
+            };
             emfModel.setName(name);
             this.resourceSet = emfModel.getResource().getResourceSet();
 
@@ -144,7 +146,6 @@ public class WrappedEmfModelContext implements ModelContext {
             } else {
                 log.debug(String.format("Registering MODEL_URI: %s", resource.getURI().toString()));
             }
-
             if (parallel) {
                 properties.put(EmfModel.PROPERTY_CONCURRENT, true);
                 emfModel.setParallelAllOf(true);
@@ -152,7 +153,7 @@ public class WrappedEmfModelContext implements ModelContext {
             }
             if (useCache) {
                 properties.put(EmfModel.PROPERTY_CACHED, true);
-                emfModel.setCachingEnabled(useCache);
+                emfModel.setCachingEnabled(true);
             }
 
             emfModel.load(properties);
@@ -190,7 +191,6 @@ public class WrappedEmfModelContext implements ModelContext {
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
                 ", referenceUri='" + referenceUri + '\'' +
-                ", newModel=" + newModel + "" +
                 ", useCache=" + useCache + "" +
                 ", parallel=" + parallel + "" +
                 '}';

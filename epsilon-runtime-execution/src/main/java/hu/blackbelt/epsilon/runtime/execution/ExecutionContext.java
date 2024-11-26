@@ -24,6 +24,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.eclipse.epsilon.eol.models.Model;
 import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
@@ -71,7 +72,6 @@ public class ExecutionContext implements AutoCloseable {
     private Boolean profile;
     private Map<String, Object> injectContexts;
     private Boolean useCache;
-    private Boolean parallel;
 
     @Builder(builderMethodName = "executionContextBuilder")
     public ExecutionContext(
@@ -87,8 +87,7 @@ public class ExecutionContext implements AutoCloseable {
             List<ModelContext> modelContexts,
             Boolean profile,
             Map<String, Object> injectContexts,
-            Boolean useCache,
-            Boolean parallel
+            Boolean useCache
     ) {
         this.modelContextMap = Objects.requireNonNullElseGet(modelContextMap, () -> Maps.newConcurrentMap());
         this.context = Objects.requireNonNullElseGet(context, () -> Maps.newHashMap());
@@ -103,7 +102,6 @@ public class ExecutionContext implements AutoCloseable {
         this.modelContexts = modelContexts;
         this.profile = Objects.requireNonNullElse(profile, false);;
         this.injectContexts = Objects.requireNonNullElseGet(injectContexts, () -> new HashMap());
-        this.parallel = Objects.requireNonNullElse(parallel, true);
     }
 
     @SneakyThrows
@@ -129,7 +127,6 @@ public class ExecutionContext implements AutoCloseable {
             EPackage ePackage = resourceSet.getPackageRegistry().getEPackage(key);
             log.debug("      Name: " +  ePackage.getName() + " nsURI: " + ePackage.getNsURI() + " nsPrefix: " + ePackage.getNsPrefix());
         }
-
         addModels();
     }
 
@@ -175,9 +172,6 @@ public class ExecutionContext implements AutoCloseable {
             for (ModelContext model : modelContextMap.keySet()) {
                 model.addAliases(repository, EpsilonUtils.createModelReference(modelContextMap.get(model)));
             }
-
-        } else {
-            eolModule.getContext().setModelRepository(projectModelRepository);
         }
 
         List<ProgramParameter> params = eolProgram.getParameters();
@@ -309,6 +303,7 @@ public class ExecutionContext implements AutoCloseable {
 
         uris.forEach((k,v) -> log.info("    Artifact " + k + " file: " + v.toString()));
         modelContextMap.put(modelContext, modelContext.load(log, resourceSet, projectModelRepository, uris, uriConverters));
+
         IModel iModel = modelContextMap.get(modelContext);
         String modelUri = "<unknown>";
         if (iModel instanceof EmfModel) {
@@ -318,7 +313,6 @@ public class ExecutionContext implements AutoCloseable {
         log.info("Model loaded: " + modelContext.getName() + " URI: " + modelUri +
                 (modelContext.getAliases() == null ? "" : " (aliases: " +
                         modelContext.getAliases().stream().collect(Collectors.joining(", ")) + ")"));
-
     }
 
 

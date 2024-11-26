@@ -22,6 +22,7 @@ package hu.blackbelt.epsilon.runtime.execution.api;
 
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.IModel;
@@ -29,6 +30,7 @@ import org.eclipse.epsilon.eol.models.ModelReference;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 import org.slf4j.Logger;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -42,5 +44,4 @@ public interface ModelContext {
     Map<String, String> getUriConverterMap();
 
     String getName();
-
 }
