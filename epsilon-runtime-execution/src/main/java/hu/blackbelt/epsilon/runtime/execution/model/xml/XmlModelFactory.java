@@ -29,19 +29,25 @@ import org.eclipse.epsilon.emc.emf.xml.XmlModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.joining;
 
 public interface XmlModelFactory {
 
-    XmlModel create(ResourceSet resourceSet);
+    XmlModel create(ResourceSet resourceSet, Map<URI, URI> uriMapConverter);
 
-    static XmlModel loadXml(Logger log, XmlModelFactory xmlModelFactory,
-                            ResourceSet resourceSet, ModelRepository repository, XmlModelContext xmlModelContext,
-                            URI uri, URI xsd) throws EolModelLoadingException {
+    static XmlModel loadXml(Logger log,
+                            XmlModelFactory xmlModelFactory,
+                            ResourceSet resourceSet,
+                            ModelRepository repository,
+                            XmlModelContext xmlModelContext,
+                            URI uri,
+                            URI xsd,
+                            Map<URI, URI> uriMapConverter) throws EolModelLoadingException {
 
-        final XmlModel model = xmlModelFactory.create(resourceSet);
+        final XmlModel model = xmlModelFactory.create(resourceSet, uriMapConverter);
 
         final StringProperties properties = new StringProperties();
         properties.put(XmlModel.PROPERTY_NAME, xmlModelContext.getName() + "");

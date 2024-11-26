@@ -24,6 +24,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.eclipse.epsilon.eol.models.Model;
 import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.contexts.EglExecutionContext;
@@ -49,57 +50,59 @@ import org.eclipse.epsilon.profiling.ProfilingExecutionListener;
 import org.slf4j.Logger;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.addEmfPackagesToResourceSet;
-import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.addUmlPackagesToResourceSet;
+import static hu.blackbelt.epsilon.runtime.execution.EmfUtils.*;
 
 @Getter
-@Builder(builderMethodName = "executionContextBuilder")
-@AllArgsConstructor
 public class ExecutionContext implements AutoCloseable {
 
-    @Builder.Default
-    private Map<ModelContext, IModel> modelContextMap = Maps.newConcurrentMap();
-
-    @Builder.Default
-    private Map<Object, Object> context = new HashMap();
-
-    @Builder.Default
-    private ResourceSet resourceSet = EmfUtils.initDefaultCachedResourceSet();
-
-    @Builder.Default
-    private ModelRepository projectModelRepository = new ModelRepository();
-
-    @Builder.Default
-    private Boolean rollback = true;
-
-    @Builder.Default
-    private Boolean addUmlPackages = false;
-
-    @Builder.Default
-    private Boolean addEcorePackages = false;
-
-    @Builder.Default
-    private Logger log = new StringBuilderLogger(LogLevel.DEBUG);
-
-    @Builder.Default
-    private List<String> metaModels = ImmutableList.of();
-
+    private Map<ModelContext, IModel> modelContextMap;
+    private Map<Object, Object> context;
+    private ResourceSet resourceSet;
+    private ModelRepository projectModelRepository;
+    private Boolean rollback;
+    private Boolean addUmlPackages;
+    private Boolean addEcorePackages;
+    private Logger log;
+    private List<String> metaModels;
     private List<ModelContext> modelContexts;
+    private Boolean profile;
+    private Map<String, Object> injectContexts;
+    private Boolean useCache;
 
-    //private File sourceDirectory;
-
-    @Builder.Default
-    private Boolean profile = false;
-
-    @Builder.Default
-    private Map<String, Object> injectContexts = new HashMap();
+    @Builder(builderMethodName = "executionContextBuilder")
+    public ExecutionContext(
+            Map<ModelContext, IModel> modelContextMap,
+            Map<Object, Object> context,
+            ResourceSet resourceSet,
+            ModelRepository projectModelRepository,
+            Boolean rollback,
+            Boolean addUmlPackages,
+            Boolean addEcorePackages,
+            Logger log,
+            List<String> metaModels,
+            List<ModelContext> modelContexts,
+            Boolean profile,
+            Map<String, Object> injectContexts,
+            Boolean useCache
+    ) {
+        this.modelContextMap = Objects.requireNonNullElseGet(modelContextMap, () -> Maps.newConcurrentMap());
+        this.context = Objects.requireNonNullElseGet(context, () -> Maps.newHashMap());
+        this.useCache = Objects.requireNonNullElse(useCache, false);
+        this.resourceSet = Objects.requireNonNullElseGet(resourceSet, () -> this.useCache ? EmfUtils.initDefaultCachedResourceSet() : EmfUtils.initDefaultResourceSet());
+        this.projectModelRepository = Objects.requireNonNullElseGet(projectModelRepository, () -> new ModelRepository());
+        this.rollback = Objects.requireNonNullElse(rollback, true);
+        this.addUmlPackages = Objects.requireNonNullElse(addUmlPackages, false);
+        this.addEcorePackages = Objects.requireNonNullElse(addEcorePackages, false);
+        this.log = Objects.requireNonNullElseGet(log, () -> new StringBuilderLogger(LogLevel.DEBUG));
+        this.metaModels = Objects.requireNonNullElseGet(metaModels, () -> ImmutableList.of());
+        this.modelContexts = modelContexts;
+        this.profile = Objects.requireNonNullElse(profile, false);;
+        this.injectContexts = Objects.requireNonNullElseGet(injectContexts, () -> new HashMap());
+    }
 
     @SneakyThrows
     public void load() {
@@ -124,7 +127,6 @@ public class ExecutionContext implements AutoCloseable {
             EPackage ePackage = resourceSet.getPackageRegistry().getEPackage(key);
             log.debug("      Name: " +  ePackage.getName() + " nsURI: " + ePackage.getNsURI() + " nsPrefix: " + ePackage.getNsPrefix());
         }
-
         addModels();
     }
 
@@ -170,9 +172,6 @@ public class ExecutionContext implements AutoCloseable {
             for (ModelContext model : modelContextMap.keySet()) {
                 model.addAliases(repository, EpsilonUtils.createModelReference(modelContextMap.get(model)));
             }
-
-        } else {
-            eolModule.getContext().setModelRepository(projectModelRepository);
         }
 
         List<ProgramParameter> params = eolProgram.getParameters();
@@ -304,6 +303,7 @@ public class ExecutionContext implements AutoCloseable {
 
         uris.forEach((k,v) -> log.info("    Artifact " + k + " file: " + v.toString()));
         modelContextMap.put(modelContext, modelContext.load(log, resourceSet, projectModelRepository, uris, uriConverters));
+
         IModel iModel = modelContextMap.get(modelContext);
         String modelUri = "<unknown>";
         if (iModel instanceof EmfModel) {
@@ -313,7 +313,6 @@ public class ExecutionContext implements AutoCloseable {
         log.info("Model loaded: " + modelContext.getName() + " URI: " + modelUri +
                 (modelContext.getAliases() == null ? "" : " (aliases: " +
                         modelContext.getAliases().stream().collect(Collectors.joining(", ")) + ")"));
-
     }
 
 

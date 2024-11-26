@@ -22,15 +22,12 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import lombok.*;
 import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
 import hu.blackbelt.epsilon.runtime.execution.impl.LogLevel;
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.epsilon.common.util.StringProperties;
@@ -41,15 +38,15 @@ import org.eclipse.epsilon.eol.models.ModelRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Data
-@Builder(builderMethodName = "emfModelContextBuilder")
 @EqualsAndHashCode
 public class EmfModelContext implements ModelContext {
 
     public static final String MODEL = "model";
-    @Builder.Default
-    Logger log = new StringBuilderLogger(LogLevel.DEBUG);
+
+    Logger log;
 
     @NonNull
     String emf;
@@ -57,19 +54,18 @@ public class EmfModelContext implements ModelContext {
     @NonNull
     String name;
 
-    @Builder.Default
-    List<String> aliases = ImmutableList.of();
+    List<String> aliases;
 
     String referenceUri;
 
-    @Builder.Default
-    Boolean readOnLoad = true;
+    Boolean readOnLoad;
 
-    @Builder.Default
-    Boolean storeOnDisposal = false;
+    Boolean storeOnDisposal;
 
-    @Builder.Default
-    Boolean cached = true;
+    Boolean cached;
+
+    Boolean parallel;
+
 
     /**
      * One of the keys used to construct the first argument to {@link org.eclipse.epsilon.emc.emf.EmfModel#load(StringProperties, String)}.
@@ -79,48 +75,54 @@ public class EmfModelContext implements ModelContext {
      *
      * Paired with "true" by default.
      */
-    @Builder.Default
-    Boolean expand = true;
+    Boolean expand;
 
     /**
      * Validate model against Ecore metamodel and fail on validation errors.
      */
-    @Builder.Default
-    Boolean validateModel = true;
+    Boolean validateModel;
 
     EmfModelFactory emfModelFactory;
 
-    @Builder.Default
-    Map<String, String> uriConverterMap = ImmutableMap.of();
+    Map<String, String> uriConverterMap;
 
-    @java.beans.ConstructorProperties({"log", "emf", "name", "aliases", "referenceUri", "readOnLoad", "storeOnDisposal", "cached", "expand", "metaModelUris", "validateModel", "emfModelFactory", "uriConverterMap"})
-    public EmfModelContext(Logger log, String emf, String name, List<String> aliases, String referenceUri, boolean readOnLoad, boolean storeOnDisposal, boolean cached, boolean expand, boolean validateModel, EmfModelFactory emfModelFactory, Map<String, String> uriConverterMap) {
-        this.log = log;
+    Boolean addExecutionMetModels;
+
+    @java.beans.ConstructorProperties({"log", "emf", "name", "aliases", "referenceUri", "readOnLoad", "storeOnDisposal", "cached", "parallel", "expand", "metaModelUris", "validateModel", "addExecutionMetModels", "emfModelFactory", "uriConverterMap"})
+    @Builder(builderMethodName = "emfModelContextBuilder")
+    public EmfModelContext(Logger log,
+                           String emf,
+                           @NonNull
+                           String name,
+                           List<String> aliases,
+                           String referenceUri,
+                           Boolean readOnLoad,
+                           Boolean storeOnDisposal,
+                           Boolean cached,
+                           Boolean parallel,
+                           Boolean expand,
+                           Boolean validateModel,
+                           Boolean addExecutionMetModels,
+                           EmfModelFactory emfModelFactory,
+                           Map<String, String> uriConverterMap) {
+        this.log = Objects.requireNonNullElseGet(log, () -> new StringBuilderLogger(LogLevel.DEBUG));
         this.emf = emf;
         this.name = name;
-        this.aliases = aliases;
+        this.aliases = Objects.requireNonNullElseGet(aliases, () -> ImmutableList.of());
         this.referenceUri = referenceUri;
-        this.readOnLoad = readOnLoad;
-        this.storeOnDisposal = storeOnDisposal;
-        this.cached = cached;
-        this.expand = expand;
-        this.validateModel = validateModel;
-        if (emfModelFactory != null) {
-            this.emfModelFactory = emfModelFactory;
-        } else {
-            this.emfModelFactory = new DefaultRuntimeEmfModelFactory(log);
-        }
-        if (uriConverterMap != null) {
-            this.uriConverterMap = uriConverterMap;
-        } else {
-            this.uriConverterMap = ImmutableMap.of();
-        }
-
+        this.readOnLoad = Objects.requireNonNullElse(readOnLoad, true);
+        this.storeOnDisposal = Objects.requireNonNullElse(storeOnDisposal, false);
+        this.cached = Objects.requireNonNullElse(cached, true);
+        this.parallel = Objects.requireNonNullElse(parallel, false);
+        this.expand = Objects.requireNonNullElse(expand, true);
+        this.validateModel = Objects.requireNonNullElse(validateModel, true);
+        this.emfModelFactory = Objects.requireNonNullElseGet(emfModelFactory, () -> new DefaultRuntimeEmfModelFactory(this.log));
+        this.uriConverterMap = Objects.requireNonNullElseGet(uriConverterMap, () -> ImmutableMap.of());
+        this.addExecutionMetModels = Objects.requireNonNullElse(addExecutionMetModels, true);
     }
 
     public EmfModelContext() {
     }
-
 
     @Override
     public Map<String, String> getArtifacts() {
@@ -137,6 +139,7 @@ public class EmfModelContext implements ModelContext {
                 ", readOnLoad=" + readOnLoad +
                 ", storeOnDisposal=" + storeOnDisposal +
                 ", cached=" + cached +
+                ", parallel=" + parallel +
                 ", referenceUri='" + referenceUri + '\'' +
                 ", expand=" + expand +
                 ", validateModel='" + validateModel + '\'' +
