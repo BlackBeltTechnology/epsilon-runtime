@@ -40,7 +40,6 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <osgi-utils-version>1.1.1.20241126_013611_9413e9b2_feature_JNG_5995_UpdateEclipse</osgi-utils-version>
         <karaf-features-version>2.0.2.20241126_010802_125d5050_feature_JNG_5995_UpdateEclipse</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
