@@ -3,53 +3,29 @@
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * Contributors:
  *     Dimitrios Kolovos - initial API and implementation
  ******************************************************************************/
 package org.eclipse.epsilon.eol.util;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 import org.eclipse.epsilon.common.module.ModuleElement;
-import org.eclipse.epsilon.eol.exceptions.EolIllegalOperationException;
-import org.eclipse.epsilon.eol.exceptions.EolIllegalOperationParametersException;
-import org.eclipse.epsilon.eol.exceptions.EolInternalException;
-import org.eclipse.epsilon.eol.exceptions.EolRuntimeException;
+import org.eclipse.epsilon.eol.exceptions.*;
 import org.eclipse.epsilon.eol.execute.prettyprinting.PrettyPrinterManager;
 import org.eclipse.epsilon.eol.types.EolNativeType;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class ReflectionUtil {
-
 	private ReflectionUtil() {}
 
 
 	public static boolean hasMethods(Object obj, String methodName) {
 		if (obj == null) return false;
 
-        Method[] methods = new Method[0];
-        try {
-            methods = classMethodsLoadingCache.get(obj.getClass());
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-
-        for (Method method : methods) {
+		for (Method method : obj.getClass().getMethods()) {
 			if (getMethodName(method).equals(methodName)) {
 				return true;
 			}
@@ -98,12 +74,12 @@ public class ReflectionUtil {
 			Collector<CharSequence, ?, String> paramJoiner = Collectors.joining(", ");
 			if (candidates.length > 0) {
 				String expectedParams = Stream.of(candidates[0].getParameterTypes())
-					.map(Class::getTypeName)
-					.collect(paramJoiner);
+						.map(Class::getTypeName)
+						.collect(paramJoiner);
 
 				String actualParams = parameters.stream()
-					.map(expr -> expr.getClass().getTypeName())
-					.collect(paramJoiner);
+						.map(expr -> expr.getClass().getTypeName())
+						.collect(paramJoiner);
 
 				throw new EolIllegalOperationParametersException(methodName, expectedParams, actualParams, ast);
 			}
@@ -113,17 +89,6 @@ public class ReflectionUtil {
 		return method;
 	}
 
-	private static CacheLoader<Class<?>, Class<?>[]> discoverPublicClassesCacheLoader = new CacheLoader<>() {
-		@Override
-		public Class<?>[] load(Class<?> key) {
-			return discoverPublicClassesForCache(key);
-		}
-	};
-
-	private static LoadingCache<Class<?>, Class<?>[]> discoverPublicClassesLoadingCache =
-			CacheBuilder.newBuilder()
-					.build(discoverPublicClassesCacheLoader);
-
 	/**
 	 *
 	 * @param clazz
@@ -131,20 +96,6 @@ public class ReflectionUtil {
 	 * @since 1.6
 	 */
 	public static Class<?>[] discoverPublicClasses(Class<?> clazz) {
-        try {
-            return discoverPublicClassesLoadingCache.get(clazz);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-	/**
-	 * 
-	 * @param clazz
-	 * @return
-	 * @since 1.6
-	 */
-	private static Class<?>[] discoverPublicClassesForCache(Class<?> clazz) {
 		List<Class<?>> interfaces = new ArrayList<>();
 		discoverPublicClasses(clazz, interfaces);
 		Collections.reverse(interfaces);
@@ -152,7 +103,7 @@ public class ReflectionUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param clazz
 	 * @param interfaces
 	 * @since 1.6
@@ -168,31 +119,8 @@ public class ReflectionUtil {
 		discoverPublicClasses(clazz.getSuperclass(), interfaces);
 	}
 
-	private static CacheLoader<Class, Method[]> classMethodsCacheLoader = new CacheLoader<>() {
-		@Override
-		public Method[] load(Class key) {
-			return key.getMethods();
-		}
-	};
-
-	private static LoadingCache<Class, Method[]> classMethodsLoadingCache =
-			CacheBuilder.newBuilder()
-					.build(classMethodsCacheLoader);
-
-	private static CacheLoader<Class, Method[]> classDeclaredMethodsCacheLoader = new CacheLoader<>() {
-		@Override
-		public Method[] load(Class key) {
-			return key.getDeclaredMethods();
-		}
-	};
-
-	private static LoadingCache<Class, Method[]> classDeclaredMethodsLoadingCache =
-			CacheBuilder.newBuilder()
-					.build(classDeclaredMethodsCacheLoader);
-
-
 	/**
-	 * 
+	 *
 	 * @param obj
 	 * @param methodName
 	 * @return
@@ -200,71 +128,23 @@ public class ReflectionUtil {
 	 */
 	public static Method[] getMethodsFromPublicClassesForName(Object obj, String methodName) {
 		Class<?> clazz = obj instanceof EolNativeType ? ((EolNativeType) obj).getJavaClass() : obj.getClass();
-		return getMethodsFromPublicClassesForName(clazz, methodName);
-	}
-
-	@Builder
-	@Getter
-	@EqualsAndHashCode
-	private static final class GetMethodsFromPublicClassesForNameKey {
-		Class clazz;
-		String methodName;
-	}
-
-	private static CacheLoader<GetMethodsFromPublicClassesForNameKey, Method[]> getMethodsFromPublicClassesForNameCacheLoader = new CacheLoader<>() {
-		@Override
-		public Method[] load(GetMethodsFromPublicClassesForNameKey key) {
-			return getMethodsFromPublicClassesForNameForCache(key.getClass(), key.getMethodName());
-		}
-	};
-
-	private static LoadingCache<GetMethodsFromPublicClassesForNameKey, Method[]> getMethodsFromPublicClassesForNameLoadingCache =
-			CacheBuilder.newBuilder()
-					.build(getMethodsFromPublicClassesForNameCacheLoader);
-
-	public static Method[] getMethodsFromPublicClassesForName(Class clazz, String methodName) {
-        try {
-            return getMethodsFromPublicClassesForNameLoadingCache.get(GetMethodsFromPublicClassesForNameKey.builder()
-                            .clazz(clazz)
-                            .methodName(methodName)
-                    .build());
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-	private static Method[] getMethodsFromPublicClassesForNameForCache(Class clazz, String methodName) {
 		return Stream.of(discoverPublicClasses(clazz))
 				//.parallel()
-				.flatMap(c -> {
-                    try {
-                        return Arrays.stream(classMethodsLoadingCache.get(c));
-                    } catch (ExecutionException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+				.flatMap(c -> Arrays.stream(c.getMethods()))
 				.filter(m -> getMethodName(m).equals(methodName))
 				.toArray(Method[]::new);
 	}
 
+
 	private static Method[] getMethods(Object obj, boolean includeInheritedMethods) {
 		Class<?> clazz = obj.getClass();
 		if (includeInheritedMethods) {
-            try {
-                return classMethodsLoadingCache.get(clazz);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        }
+			return clazz.getMethods();
+		}
 		else {
-            try {
-                return classDeclaredMethodsLoadingCache.get(clazz);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        }
+			return clazz.getDeclaredMethods();
+		}
 	}
-
 
 	/**
 	 * @param allowContravariantConversionForParameters
@@ -274,15 +154,15 @@ public class ReflectionUtil {
 	public static Method getMethodFor(Object obj, String methodName, Object[] parameters, boolean includeInheritedMethods, boolean allowContravariantConversionForParameters) {
 		if (obj == null)
 			return null;
-		
+
 		Method instanceMethod = getInstanceMethodFor(obj, methodName, parameters, includeInheritedMethods, allowContravariantConversionForParameters);
 		if (instanceMethod != null)
 			return instanceMethod;
-		
+
 		Method staticMethod = getStaticMethodFor(obj, methodName, parameters, allowContravariantConversionForParameters);
 		if (staticMethod != null)
 			return staticMethod;
-		
+
 		return null;
 	}
 
@@ -300,15 +180,11 @@ public class ReflectionUtil {
 		if (obj instanceof Class) {
 			javaClass = (Class<?>) obj;
 		}
-		
+
 		if (javaClass != null) {
-            try {
-                staticMethod = searchMethodsFor(classMethodsLoadingCache.get(javaClass), methodName, parameters, allowContravariantConversionForParameters);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        }
-		
+			staticMethod = searchMethodsFor(javaClass.getMethods(), methodName, parameters, allowContravariantConversionForParameters);
+		}
+
 		return staticMethod;
 	}
 
@@ -321,12 +197,18 @@ public class ReflectionUtil {
 		for (int stage = 0; stage < 2; ++stage) {
 			for (Method method : methods) {
 				if (getMethodName(method).equalsIgnoreCase(methodName)) {
-					
 					Class<?>[] parameterTypes = method.getParameterTypes();
-					boolean parametersMatch = parameterTypes.length == parameters.length;
+					boolean isVarargs = method.isVarArgs(),
+							parametersMatch = parameterTypes.length == parameters.length || isVarargs;
+
 					if (parametersMatch) {
 						//TODO: See why parameter type checking does not work with EolSequence
-						for (int j = 0; j < parameterTypes.length && parametersMatch; j++) {
+						int varargIndex = method.getParameterCount() - 1;
+						int endIndex = isVarargs ? varargIndex : parameterTypes.length;
+						if (parameters.length < endIndex) {
+							continue;
+						}
+						for (int j = 0; j < endIndex && parametersMatch; j++) {
 							Class<?> parameterType = parameterTypes[j];
 							Object parameter = parameters[j];
 							if (allowContravariantConversionForParameters) {
@@ -336,16 +218,23 @@ public class ReflectionUtil {
 								parametersMatch = parametersMatch && parameterType.equals(parameter.getClass());
 							}
 						}
-						if (parametersMatch) {
-							return method;
+						if (isVarargs) {
+							Class<?> varargType = parameterTypes[varargIndex].getComponentType();
+							for (int va = varargIndex; va < parameters.length && parametersMatch; va++) {
+								Object parameter = parameters[va];
+								parametersMatch = (stage == 0 ? varargType.isInstance(parameter) : isInstance(varargType, parameter));
+							}
 						}
+					}
+					if (parametersMatch) {
+						return method;
 					}
 				}
 			}
 		}
 		return null;
 	}
-	
+
 	public static Object executeMethod(Object obj, String methodName, Object... parameters) throws Throwable {
 		Method method = getMethodFor(obj, methodName, parameters, true, true);
 		try {
@@ -354,7 +243,7 @@ public class ReflectionUtil {
 				method.setAccessible(true);
 			}
 			return method.invoke(obj, parameters);
-		} 
+		}
 		catch (InvocationTargetException e) {
 			throw e.getTargetException();
 		}
@@ -404,10 +293,10 @@ public class ReflectionUtil {
 			
 		throw new EolIllegalOperationException(obj, method.getName(), ast, null);
 	}*/
-	
+
 	/**
 	 * This tries to find a method such that invoking via reflection won't be illegal in Java 9+
-	 * 
+	 *
 	 * @param obj
 	 * @param method
 	 * @return
@@ -421,7 +310,7 @@ public class ReflectionUtil {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a string representation
 	 * of the method
@@ -441,7 +330,7 @@ public class ReflectionUtil {
 		str += ")";
 		return str;
 	}
-	
+
 	/**
 	 * Returns the value of a field of an object
 	 * @param object
@@ -460,7 +349,7 @@ public class ReflectionUtil {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets a field of a class using reflection
 	 * by introspecting the class and its supertype(s)
@@ -474,13 +363,13 @@ public class ReflectionUtil {
 			if (fields[i].getName().equals(fieldName))
 				return fields[i];
 		}
-		
+
 		if (clazz.getSuperclass() != Object.class)
 			return getField(clazz.getSuperclass(), fieldName);
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Checks if the instance is an instance of clazz
 	 * Necessary because in Java, int.class != Integer.class etc
