@@ -23,6 +23,11 @@ package hu.blackbelt.epsilon.runtime.execution.model.emf;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import hu.blackbelt.epsilon.runtime.execution.EmfUtils;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.epsilon.emc.emf.InMemoryEmfModel;
+import org.eclipse.epsilon.eol.exceptions.models.EolModelElementTypeNotFoundException;
 import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ModelValidationException;
@@ -31,10 +36,8 @@ import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import hu.blackbelt.epsilon.runtime.execution.model.ModelValidator;
 import lombok.*;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.epsilon.common.util.StringProperties;
 import org.eclipse.epsilon.emc.emf.EmfModel;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelLoadingException;
@@ -42,54 +45,90 @@ import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.epsilon.eol.models.ModelReference;
 import org.eclipse.epsilon.eol.models.ModelRepository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Collectors.joining;
 
-@Data
-@Builder(builderMethodName = "wrappedEmfModelContextBuilder")
-@AllArgsConstructor
 @EqualsAndHashCode
+@Getter
 public class WrappedEmfModelContext implements ModelContext {
 
-    @Builder.Default
-    Logger log = new StringBuilderLogger(LogLevel.DEBUG);
+    Logger log;
 
-    @NonNull
     Resource resource;
 
-    @NonNull
     String name;
 
-    @Builder.Default
-    List<String> aliases = ImmutableList.of();
+    List<String> aliases;
 
     String referenceUri;
 
-    @Builder.Default
-    Map<String, String> uriConverterMap = ImmutableMap.of();
+    Map<String, String> uriConverterMap;
 
     /**
      * Validate model against Ecore metamodel and fail on validation errors.
      */
-    @Builder.Default
-    Boolean validateModel = true;
+    Boolean validateModel;
 
-    @Builder.Default
-    Boolean useCache = false;
+    Boolean useCache;
 
+    Boolean parallel;
+
+    Boolean expandReference;
+
+    ResourceSet wrappedResourceSet;
+
+    ResourceSet resourceSet;
+
+    @Getter
+    private EmfModel emfModel;
+
+    @Builder(builderMethodName = "wrappedEmfModelContextBuilder")
+    public WrappedEmfModelContext(
+            Logger log,
+            @NonNull Resource resource,
+            @NonNull String name,
+            List<String> aliases,
+            String referenceUri,
+            Map<String, String> uriConverterMap,
+            Boolean validateModel,
+            Boolean useCache,
+            Boolean parallel,
+            Boolean expandReference,
+            ResourceSet wrappedResourceSet
+    ) {
+        this.log = Objects.requireNonNullElseGet(log, () -> new StringBuilderLogger(LogLevel.DEBUG));
+        this.resource = resource;
+        this.name = name;
+        this.aliases = Objects.requireNonNullElseGet(aliases, () -> ImmutableList.of());
+        this.referenceUri = referenceUri;
+        this.uriConverterMap = Objects.requireNonNullElseGet(uriConverterMap, () -> ImmutableMap.of());
+        this.validateModel = Objects.requireNonNullElse(validateModel, true);
+        this.useCache = Objects.requireNonNullElse(useCache, false);
+        this.parallel = Objects.requireNonNullElse(parallel, true);
+        this.expandReference = Objects.requireNonNullElse(expandReference, false);
+        this.wrappedResourceSet = Objects.requireNonNullElseGet(wrappedResourceSet, () -> resource.getResourceSet());
+    }
+
+    public WrappedEmfModelContext() {
+    }
     @Override
     public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
-        // Hack: to able to resolve supertypes
         synchronized (resource) {
+            emfModel = new InMemoryEmfModel(name, resource, resource.getResourceSet().getPackageRegistry().values().stream().map(o -> (EPackage) o).toList()) {
+                @Override
+                public Object getCacheKeyForType(String type) throws EolModelElementTypeNotFoundException {
+                    try {
+                        return super.getCacheKeyForType(type);
+                    } catch (EolModelElementTypeNotFoundException ex) {
+                    }
+                    return type;
+                }
 
-            Map<URI, URI> uriMapExtended = Maps.newHashMap(uriConverterMap);
-            uriMapExtended.put(URI.createURI(""), resource.getURI());
-
-            ResourceWrappedEMFModel emfModel = new ResourceWrappedEMFModel(resourceSet, resource, uriMapExtended, useCache);
+            };
             emfModel.setName(name);
+            this.resourceSet = emfModel.getResource().getResourceSet();
 
             final StringProperties properties = new StringProperties();
             properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
@@ -106,6 +145,15 @@ public class WrappedEmfModelContext implements ModelContext {
                 resourceSet.getURIConverter().getURIMap().put(URI.createURI(getReferenceUri()), resource.getURI());
             } else {
                 log.debug(String.format("Registering MODEL_URI: %s", resource.getURI().toString()));
+            }
+            if (parallel) {
+                properties.put(EmfModel.PROPERTY_CONCURRENT, true);
+                emfModel.setParallelAllOf(true);
+                emfModel.setConcurrent(true);
+            }
+            if (useCache) {
+                properties.put(EmfModel.PROPERTY_CACHED, true);
+                emfModel.setCachingEnabled(true);
             }
 
             emfModel.load(properties);
@@ -142,75 +190,10 @@ public class WrappedEmfModelContext implements ModelContext {
                 ", resource={class: " + resource.getClass() + " uri: " + resource.getURI() + "}" +
                 ", name='" + name + '\'' +
                 ", aliases=" + aliases +
-                ", uriConverterMap='" + getUriConverterMap() + '\'' +
                 ", referenceUri='" + referenceUri + '\'' +
+                ", useCache=" + useCache + "" +
+                ", parallel=" + parallel + "" +
                 '}';
-    }
-
-    class ResourceWrappedEMFModel extends EmfModel {
-
-        Resource wrappedResource;
-        ResourceSet wrappedResourceSet;
-        Map<URI, URI> uriConverterMap;
-
-        public ResourceWrappedEMFModel(ResourceSet resourceSet, Resource resource, Map<URI, URI> uriConverterMap, boolean useCache) {
-            this.wrappedResource = resource;
-            this.wrappedResourceSet = resourceSet;
-            this.uriConverterMap = uriConverterMap;
-            setCachingEnabled(useCache);
-            setReadOnLoad(false);
-            setStoredOnDisposal(false);
-        }
-
-        @Override
-        @SneakyThrows
-        protected ResourceSet createResourceSet() {
-            ResourceSet resourceSet =  super.createResourceSet();
-
-            for (URIHandler uriHandler : resourceSet.getURIConverter().getURIHandlers()) {
-                int idx = resourceSet.getURIConverter().getURIHandlers().indexOf(uriHandler);
-                if (!wrappedResourceSet.getURIConverter().getURIHandlers().contains(uriHandler)) {
-                    log.debug("    Adding uri handler: " + uriHandler.toString());
-                    wrappedResourceSet.getURIConverter().getURIHandlers().add(idx, uriHandler);
-                }
-            }
-
-            for (URI key : resourceSet.getURIConverter().getURIMap().keySet()) {
-                if (!wrappedResourceSet.getURIConverter().getURIMap().containsKey(key)) {
-                    URI value = resourceSet.getURIConverter().getURIMap().get(key);
-                    log.debug("    Adding reference URI converter: " + key + " -> " + value);
-                    wrappedResourceSet.getURIConverter().getURIMap().put(key, value);
-                }
-            }
-
-            if (uriConverterMap != null) {
-                for (URI from : uriConverterMap.keySet()) {
-                    URI to = uriConverterMap.get(from);
-                    log.debug(String.format("    Registering URI converter: %s -> %s", from.toString(), to.toString()));
-                    wrappedResourceSet.getURIConverter().getURIMap().put(from, to);
-                }
-            }
-
-            for (String key : new HashSet<String>(wrappedResourceSet.getPackageRegistry().keySet())) {
-                EPackage ePackage = wrappedResourceSet.getPackageRegistry().getEPackage(key);
-                resourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
-            }
-            return resourceSet;
-        }
-
-
-        @Override
-        protected void loadModel() throws EolModelLoadingException {
-            synchronized (resource) {
-                super.loadModel();
-                modelImpl = wrappedResource;
-            }
-        }
-
-        @Override
-        public boolean store() {
-            return false;
-        }
     }
 
 }

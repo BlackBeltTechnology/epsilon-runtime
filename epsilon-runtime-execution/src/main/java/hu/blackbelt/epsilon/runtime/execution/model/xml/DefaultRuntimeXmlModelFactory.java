@@ -20,17 +20,17 @@ package hu.blackbelt.epsilon.runtime.execution.model.xml;
  * #L%
  */
 
+import hu.blackbelt.epsilon.runtime.execution.EmfUtils;
+import org.eclipse.emf.common.util.URI;
 import org.slf4j.Logger;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.epsilon.emc.emf.xml.XmlModel;
 
-import java.util.HashSet;
+import java.util.Map;
 
 @AllArgsConstructor
 @Builder
@@ -40,25 +40,13 @@ public class DefaultRuntimeXmlModelFactory implements XmlModelFactory {
     Logger log;
 
     @Override
-    public XmlModel create(ResourceSet resourceSet) {
+    public XmlModel create(ResourceSet resourceSet, Map<URI, URI> uriMapConverter) {
         return new XmlModel() {
             @Override
             @SneakyThrows
             protected ResourceSet createResourceSet() {
                 ResourceSet emfReourceSet =  super.createResourceSet();
-
-                for (URIHandler uriHandler : resourceSet.getURIConverter().getURIHandlers()) {
-                    int idx = resourceSet.getURIConverter().getURIHandlers().indexOf(uriHandler);
-                    if (!emfReourceSet.getURIConverter().getURIHandlers().contains(uriHandler)) {
-                        log.debug("    Adding uri handler: " + uriHandler.getClass().getName());
-                        emfReourceSet.getURIConverter().getURIHandlers().add(idx, uriHandler);
-                    }
-                }
-
-                for (String key : new HashSet<String>(resourceSet.getPackageRegistry().keySet())) {
-                    EPackage ePackage = resourceSet.getPackageRegistry().getEPackage(key);
-                    emfReourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
-                }
+                EmfUtils.setupResourceSet(log, resourceSet, emfReourceSet, uriMapConverter);
                 return emfReourceSet;
             }
         };
