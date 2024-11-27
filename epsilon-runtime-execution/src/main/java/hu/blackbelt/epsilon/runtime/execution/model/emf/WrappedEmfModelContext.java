@@ -126,6 +126,10 @@ public class WrappedEmfModelContext implements ModelContext {
                     return type;
                 }
 
+                @Override
+                synchronized public void setupContainmentChangeListeners() {
+                    super.setupContainmentChangeListeners();
+                }
             };
             emfModel.setName(name);
             this.resourceSet = emfModel.getResource().getResourceSet();
