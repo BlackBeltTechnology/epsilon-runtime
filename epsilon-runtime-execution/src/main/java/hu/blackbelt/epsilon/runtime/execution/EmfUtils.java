@@ -28,6 +28,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -40,39 +41,47 @@ import org.eclipse.epsilon.eol.models.IModel;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.resource.UMLResource;
 import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public final class EmfUtils {
 
 
     public static void addUmlPackagesToResourceSet(ResourceSet resourceSet) {
 
-        resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
-        if (resourceSet.getPackageRegistry().getEPackage(UMLPackage.eNS_URI) == null) {
-            resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
+        synchronized (resourceSet) {
+            resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(UMLResource.FILE_EXTENSION, UMLResource.Factory.INSTANCE);
+            if (resourceSet.getPackageRegistry().getEPackage(UMLPackage.eNS_URI) == null) {
+                resourceSet.getPackageRegistry().put(UMLPackage.eNS_URI, UMLPackage.eINSTANCE);
+            }
+
+            UMLResourcesUtil.init(resourceSet);
+            UMLResourcesUtil.initLocalRegistries(resourceSet);
+            ((ResourceSetImpl) resourceSet).setURIResourceMap(new HashMap<>());
         }
-
-        UMLResourcesUtil.init(resourceSet);
-        UMLResourcesUtil.initLocalRegistries(resourceSet);
-        ((ResourceSetImpl) resourceSet).setURIResourceMap(new HashMap<>());
-
     }
 
     public static void addEmfPackagesToResourceSet(ResourceSet resourceSet) {
-        // resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
-        resourceSet.getPackageRegistry().put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
-        // EmfUtils.register(resourceSet, uri, true);
+        synchronized (resourceSet) {
+            // resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
+            resourceSet.getPackageRegistry().put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
+            // EmfUtils.register(resourceSet, uri, true);
+        }
     }
 
     public static ResourceSet initDefaultCachedResourceSet() {
-        ResourceSet rs = new ResourceSetImpl(); // new CachedResourceSet(); // new ResourceSetImpl(); // new EmfModelResourceSet();
+        ResourceSet rs = new CachedResourceSet();
+        rs.setResourceFactoryRegistry(Resource.Factory.Registry.INSTANCE);
+        rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+
+        return rs;
+    }
+
+    public static ResourceSet initDefaultResourceSet() {
+        ResourceSet rs = new ResourceSetImpl();
 
         rs.setResourceFactoryRegistry(Resource.Factory.Registry.INSTANCE);
         rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put(rs.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
@@ -92,55 +101,56 @@ public final class EmfUtils {
      */
     public static List<EPackage> register(ResourceSet resourceSet, URI uri, boolean useUriForResource) throws Exception {
 
-        List<EPackage> ePackages = new ArrayList<EPackage>();
+        synchronized (resourceSet) {
+            List<EPackage> ePackages = new ArrayList<EPackage>();
 
-        Resource metamodel = resourceSet.createResource(uri);
-        metamodel.load(Collections.EMPTY_MAP);
+            Resource metamodel = resourceSet.createResource(uri);
+            metamodel.load(Collections.EMPTY_MAP);
 
-        setDataTypesInstanceClasses(metamodel);
+            setDataTypesInstanceClasses(metamodel);
 
-        Iterator<EObject> it = metamodel.getAllContents();
-        while (it.hasNext()) {
-            Object next = it.next();
-            if (next instanceof EPackage) {
-                EPackage p = (EPackage) next;
+            Iterator<EObject> it = metamodel.getAllContents();
+            while (it.hasNext()) {
+                Object next = it.next();
+                if (next instanceof EPackage) {
+                    EPackage p = (EPackage) next;
 
-                if (p.getNsURI() == null || p.getNsURI().trim().length() == 0) {
-                    if (p.getESuperPackage() == null) {
-                        p.setNsURI(p.getName());
-                    }
-                    else {
-                        p.setNsURI(p.getESuperPackage().getNsURI() + "/" + p.getName());
-                    }
-                }
-
-                if (p.getNsPrefix() == null || p.getNsPrefix().trim().length() == 0) {
-                    if (p.getESuperPackage() != null) {
-                        if (p.getESuperPackage().getNsPrefix()!=null) {
-                            p.setNsPrefix(p.getESuperPackage().getNsPrefix() + "." + p.getName());
+                    if (p.getNsURI() == null || p.getNsURI().trim().length() == 0) {
+                        if (p.getESuperPackage() == null) {
+                            p.setNsURI(p.getName());
                         }
                         else {
-                            p.setNsPrefix(p.getName());
+                            p.setNsURI(p.getESuperPackage().getNsURI() + "/" + p.getName());
                         }
                     }
-                }
 
-                if (p.getNsPrefix() == null) {
-                    p.setNsPrefix(p.getName());
-                }
+                    if (p.getNsPrefix() == null || p.getNsPrefix().trim().length() == 0) {
+                        if (p.getESuperPackage() != null) {
+                            if (p.getESuperPackage().getNsPrefix()!=null) {
+                                p.setNsPrefix(p.getESuperPackage().getNsPrefix() + "." + p.getName());
+                            }
+                            else {
+                                p.setNsPrefix(p.getName());
+                            }
+                        }
+                    }
 
-                // EPackage.Registry.INSTANCE.put(p.getNsURI(), p);
-                resourceSet.getPackageRegistry().put(p.getNsURI(), p);
+                    if (p.getNsPrefix() == null) {
+                        p.setNsPrefix(p.getName());
+                    }
 
-                if (useUriForResource) {
-                    metamodel.setURI(URI.createURI(p.getNsURI()));
+                    // EPackage.Registry.INSTANCE.put(p.getNsURI(), p);
+                    resourceSet.getPackageRegistry().put(p.getNsURI(), p);
+
+                    if (useUriForResource) {
+                        metamodel.setURI(URI.createURI(p.getNsURI()));
+                    }
+                    ePackages.add(p);
                 }
-                ePackages.add(p);
             }
+            return ePackages;
         }
-        return ePackages;
     }
-
 
     protected static void setDataTypesInstanceClasses(Resource metamodel) {
         Iterator<EObject> it = metamodel.getAllContents();
@@ -210,5 +220,37 @@ public final class EmfUtils {
         return resource;
 
     }
+
+    public static void setupResourceSet(Logger log, ResourceSet sourceResourceSet, ResourceSet targetResourceSet, Map<URI, URI> uriConverterMap) {
+        for (URIHandler uriHandler : sourceResourceSet.getURIConverter().getURIHandlers()) {
+            int idx = sourceResourceSet.getURIConverter().getURIHandlers().indexOf(uriHandler);
+            if (!targetResourceSet.getURIConverter().getURIHandlers().contains(uriHandler)) {
+                log.debug("    Adding uri handler: " + uriHandler.toString());
+                targetResourceSet.getURIConverter().getURIHandlers().add(idx, uriHandler);
+            }
+        }
+
+        for (URI key : sourceResourceSet.getURIConverter().getURIMap().keySet()) {
+            if (!targetResourceSet.getURIConverter().getURIMap().containsKey(key)) {
+                URI value = sourceResourceSet.getURIConverter().getURIMap().get(key);
+                log.debug("    Adding reference URI converter: " + key + " -> " + value);
+                targetResourceSet.getURIConverter().getURIMap().put(key, value);
+            }
+        }
+
+        if (uriConverterMap != null) {
+            for (URI from : uriConverterMap.keySet()) {
+                URI to = uriConverterMap.get(from);
+                log.debug(String.format("    Registering URI converter: %s -> %s", from.toString(), to.toString()));
+                targetResourceSet.getURIConverter().getURIMap().put(from, to);
+            }
+        }
+
+        for (String key : new HashSet<String>(sourceResourceSet.getPackageRegistry().keySet())) {
+            EPackage ePackage = sourceResourceSet.getPackageRegistry().getEPackage(key);
+            targetResourceSet.getPackageRegistry().put(ePackage.getNsURI(), ePackage);
+        }
+    }
+
 
 }
