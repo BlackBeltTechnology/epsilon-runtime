@@ -137,6 +137,11 @@ public class WrappedEmfModelContext implements ModelContext {
                             super.setupContainmentChangeListeners();
                             success = true;
                         } catch (ConcurrentModificationException e) {
+                            try {
+                                Thread.sleep(10);
+                            } catch (InterruptedException ex) {
+                                throw new RuntimeException(ex);
+                            }
                             exception = e;
                         }
                     }
@@ -175,7 +180,7 @@ public class WrappedEmfModelContext implements ModelContext {
             emfModel.setCachingEnabled(true);
         }
 
-        synchronized ($LOCK) {
+        synchronized (resource) {
             emfModel.load(properties);
 
             if (validateModel) {
