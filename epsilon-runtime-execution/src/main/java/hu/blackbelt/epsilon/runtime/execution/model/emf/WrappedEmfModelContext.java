@@ -118,10 +118,9 @@ public class WrappedEmfModelContext implements ModelContext {
 
     private void retry(Runnable executeable) {
         synchronized (resource) {
-            int cnt = 0;
             boolean success = false;
             ConcurrentModificationException exception = null;
-            while (cnt < 10 && !success) {
+            while (!success) {
                 try {
                     executeable.run();
                     success = true;
