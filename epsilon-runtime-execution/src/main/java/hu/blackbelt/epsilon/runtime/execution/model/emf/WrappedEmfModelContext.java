@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.EmfUtils;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.epsilon.emc.emf.InMemoryEmfModel;
@@ -54,7 +55,6 @@ import static java.util.stream.Collectors.joining;
 @Getter
 public class WrappedEmfModelContext implements ModelContext {
 
-    private static final Object $LOCK = new Object[0];
     Logger log;
 
     Resource resource;
@@ -128,8 +128,21 @@ public class WrappedEmfModelContext implements ModelContext {
 
             @Override
             synchronized public void setupContainmentChangeListeners() {
-                synchronized ($LOCK) {
-                    super.setupContainmentChangeListeners();
+                synchronized (resource) {
+                    int cnt = 0;
+                    boolean success = false;
+                    ConcurrentModificationException exception = null;
+                    while (cnt < 10 && !success) {
+                        try {
+                            super.setupContainmentChangeListeners();
+                            success = true;
+                        } catch (ConcurrentModificationException e) {
+                            exception = e;
+                        }
+                    }
+                    if (!success && exception != null) {
+                        throw exception;
+                    }
                 }
             }
         };
