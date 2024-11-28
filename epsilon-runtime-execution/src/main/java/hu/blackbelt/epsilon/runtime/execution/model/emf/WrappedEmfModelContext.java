@@ -54,6 +54,7 @@ import static java.util.stream.Collectors.joining;
 @Getter
 public class WrappedEmfModelContext implements ModelContext {
 
+    private static final Object $LOCK = new Object[0];
     Logger log;
 
     Resource resource;
@@ -115,60 +116,62 @@ public class WrappedEmfModelContext implements ModelContext {
     }
     @Override
     public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
-        synchronized (resource) {
-            emfModel = new InMemoryEmfModel(name, resource, resource.getResourceSet().getPackageRegistry().values().stream().map(o -> (EPackage) o).toList()) {
-                @Override
-                public Object getCacheKeyForType(String type) throws EolModelElementTypeNotFoundException {
-                    try {
-                        return super.getCacheKeyForType(type);
-                    } catch (EolModelElementTypeNotFoundException ex) {
-                    }
-                    return type;
+        emfModel = new InMemoryEmfModel(name, resource, resource.getResourceSet().getPackageRegistry().values().stream().map(o -> (EPackage) o).toList()) {
+            @Override
+            public Object getCacheKeyForType(String type) throws EolModelElementTypeNotFoundException {
+                try {
+                    return super.getCacheKeyForType(type);
+                } catch (EolModelElementTypeNotFoundException ex) {
                 }
+                return type;
+            }
 
-                @Override
-                synchronized public void setupContainmentChangeListeners() {
+            @Override
+            synchronized public void setupContainmentChangeListeners() {
+                synchronized ($LOCK) {
                     super.setupContainmentChangeListeners();
                 }
-            };
-            emfModel.setName(name);
-            this.resourceSet = emfModel.getResource().getResourceSet();
+            }
+        };
+        emfModel.setName(name);
+        this.resourceSet = emfModel.getResource().getResourceSet();
 
-            final StringProperties properties = new StringProperties();
-            properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
-            if (emfModel.getAliases() != null && emfModel.getAliases().size() > 0) {
-                properties.put(EmfModel.PROPERTY_ALIASES, emfModel.getAliases().stream().collect(joining(",")) + "");
-            } else {
-                properties.put(EmfModel.PROPERTY_ALIASES, "");
-            }
-            properties.put(EmfModel.PROPERTY_MODEL_URI, resource.getURI());
+        final StringProperties properties = new StringProperties();
+        properties.put(EmfModel.PROPERTY_NAME, emfModel.getName() + "");
+        if (emfModel.getAliases() != null && emfModel.getAliases().size() > 0) {
+            properties.put(EmfModel.PROPERTY_ALIASES, emfModel.getAliases().stream().collect(joining(",")) + "");
+        } else {
+            properties.put(EmfModel.PROPERTY_ALIASES, "");
+        }
+        properties.put(EmfModel.PROPERTY_MODEL_URI, resource.getURI());
 
-            if (getReferenceUri() != null && !getReferenceUri().trim().equals("")) {
-                properties.put(EmfModel.PROPERTY_MODEL_URI, getReferenceUri());
-                log.debug(String.format("Registering MODEL_URI: %s Alias URI: %s", resource.getURI().toString(), getReferenceUri().toString()));
-                resourceSet.getURIConverter().getURIMap().put(URI.createURI(getReferenceUri()), resource.getURI());
-            } else {
-                log.debug(String.format("Registering MODEL_URI: %s", resource.getURI().toString()));
-            }
-            if (parallel) {
-                properties.put(EmfModel.PROPERTY_CONCURRENT, true);
-                emfModel.setParallelAllOf(true);
-                emfModel.setConcurrent(true);
-            }
-            if (useCache) {
-                properties.put(EmfModel.PROPERTY_CACHED, true);
-                emfModel.setCachingEnabled(true);
-            }
+        if (getReferenceUri() != null && !getReferenceUri().trim().equals("")) {
+            properties.put(EmfModel.PROPERTY_MODEL_URI, getReferenceUri());
+            log.debug(String.format("Registering MODEL_URI: %s Alias URI: %s", resource.getURI().toString(), getReferenceUri().toString()));
+            resourceSet.getURIConverter().getURIMap().put(URI.createURI(getReferenceUri()), resource.getURI());
+        } else {
+            log.debug(String.format("Registering MODEL_URI: %s", resource.getURI().toString()));
+        }
+        if (parallel) {
+            properties.put(EmfModel.PROPERTY_CONCURRENT, true);
+            emfModel.setParallelAllOf(true);
+            emfModel.setConcurrent(true);
+        }
+        if (useCache) {
+            properties.put(EmfModel.PROPERTY_CACHED, true);
+            emfModel.setCachingEnabled(true);
+        }
 
+        synchronized ($LOCK) {
             emfModel.load(properties);
 
             if (validateModel) {
                 ModelValidator.validate(emfModel);
             }
             repository.addModel(emfModel);
-
-            return emfModel;
         }
+
+        return emfModel;
     }
 
     @Override
