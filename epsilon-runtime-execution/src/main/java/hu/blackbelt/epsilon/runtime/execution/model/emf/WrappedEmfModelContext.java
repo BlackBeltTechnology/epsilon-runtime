@@ -107,7 +107,7 @@ public class WrappedEmfModelContext implements ModelContext {
         this.referenceUri = referenceUri;
         this.uriConverterMap = Objects.requireNonNullElseGet(uriConverterMap, () -> ImmutableMap.of());
         this.validateModel = Objects.requireNonNullElse(validateModel, true);
-        this.useCache = Objects.requireNonNullElse(useCache, false);
+        this.useCache = Objects.requireNonNullElse(useCache, true);
         this.parallel = Objects.requireNonNullElse(parallel, true);
         this.expandReference = Objects.requireNonNullElse(expandReference, false);
         this.wrappedResourceSet = Objects.requireNonNullElseGet(wrappedResourceSet, () -> resource.getResourceSet());

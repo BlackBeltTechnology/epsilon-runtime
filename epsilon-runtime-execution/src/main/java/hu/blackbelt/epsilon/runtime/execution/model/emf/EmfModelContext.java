@@ -113,7 +113,7 @@ public class EmfModelContext implements ModelContext {
         this.readOnLoad = Objects.requireNonNullElse(readOnLoad, true);
         this.storeOnDisposal = Objects.requireNonNullElse(storeOnDisposal, false);
         this.cached = Objects.requireNonNullElse(cached, true);
-        this.parallel = Objects.requireNonNullElse(parallel, false);
+        this.parallel = Objects.requireNonNullElse(parallel, true);
         this.expand = Objects.requireNonNullElse(expand, true);
         this.validateModel = Objects.requireNonNullElse(validateModel, true);
         this.emfModelFactory = Objects.requireNonNullElseGet(emfModelFactory, () -> new DefaultRuntimeEmfModelFactory(this.log));
