@@ -48,6 +48,7 @@ import org.eclipse.epsilon.eol.models.ModelRepository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 
@@ -114,6 +115,31 @@ public class WrappedEmfModelContext implements ModelContext {
 
     public WrappedEmfModelContext() {
     }
+
+    private void retry(Runnable executeable) {
+        synchronized (resource) {
+            int cnt = 0;
+            boolean success = false;
+            ConcurrentModificationException exception = null;
+            while (cnt < 10 && !success) {
+                try {
+                    executeable.run();
+                    success = true;
+                } catch (ConcurrentModificationException e) {
+                    try {
+                        Thread.sleep(new Random().nextInt(10) + 10);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    exception = e;
+                }
+            }
+            if (!success && exception != null) {
+                throw exception;
+            }
+        }
+
+    }
     @Override
     public IModel load(Logger log, ResourceSet resourceSet, ModelRepository repository, Map<String, URI> uris, Map<URI, URI> uriConverterMap) throws EolModelLoadingException, ModelValidationException {
         emfModel = new InMemoryEmfModel(name, resource, resource.getResourceSet().getPackageRegistry().values().stream().map(o -> (EPackage) o).toList()) {
@@ -128,27 +154,17 @@ public class WrappedEmfModelContext implements ModelContext {
 
             @Override
             synchronized public void setupContainmentChangeListeners() {
-                synchronized (resource) {
-                    int cnt = 0;
-                    boolean success = false;
-                    ConcurrentModificationException exception = null;
-                    while (cnt < 10 && !success) {
-                        try {
-                            super.setupContainmentChangeListeners();
-                            success = true;
-                        } catch (ConcurrentModificationException e) {
-                            try {
-                                Thread.sleep(10);
-                            } catch (InterruptedException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            exception = e;
-                        }
-                    }
-                    if (!success && exception != null) {
-                        throw exception;
-                    }
-                }
+                retry(() -> super.setupContainmentChangeListeners());
+            }
+
+            @Override
+            protected void removeContentsAdapter() {
+                retry(() -> super.removeContentsAdapter());
+            }
+
+            @Override
+            protected void addContentsAdapter() {
+                retry(() -> super.addContentsAdapter());
             }
         };
         emfModel.setName(name);
