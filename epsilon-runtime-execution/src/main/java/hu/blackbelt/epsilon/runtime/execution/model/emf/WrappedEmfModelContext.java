@@ -28,6 +28,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.epsilon.emc.emf.InMemoryEmfModel;
+import org.eclipse.epsilon.eol.exceptions.models.EolEnumerationValueNotFoundException;
 import org.eclipse.epsilon.eol.exceptions.models.EolModelElementTypeNotFoundException;
 import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.api.ModelContext;
@@ -165,6 +166,19 @@ public class WrappedEmfModelContext implements ModelContext {
             protected void addContentsAdapter() {
                 retry(() -> super.addContentsAdapter());
             }
+
+            @Override
+            protected synchronized void initCaches() {
+                retry(() -> super.initCaches());
+            }
+
+            @Override
+            public synchronized Object getEnumerationValue(String enumeration, String label) throws EolEnumerationValueNotFoundException {
+                synchronized (resource) {
+                    return super.getEnumerationValue(enumeration, label);
+                }
+            }
+
         };
         emfModel.setName(name);
         this.resourceSet = emfModel.getResource().getResourceSet();
@@ -185,6 +199,7 @@ public class WrappedEmfModelContext implements ModelContext {
         } else {
             log.debug(String.format("Registering MODEL_URI: %s", resource.getURI().toString()));
         }
+
         if (parallel) {
             properties.put(EmfModel.PROPERTY_CONCURRENT, true);
             emfModel.setParallelAllOf(true);
@@ -195,14 +210,12 @@ public class WrappedEmfModelContext implements ModelContext {
             emfModel.setCachingEnabled(true);
         }
 
-        synchronized (resource) {
-            emfModel.load(properties);
+        emfModel.load(properties);
 
-            if (validateModel) {
-                ModelValidator.validate(emfModel);
-            }
-            repository.addModel(emfModel);
+        if (validateModel) {
+            ModelValidator.validate(emfModel);
         }
+        repository.addModel(emfModel);
 
         return emfModel;
     }
