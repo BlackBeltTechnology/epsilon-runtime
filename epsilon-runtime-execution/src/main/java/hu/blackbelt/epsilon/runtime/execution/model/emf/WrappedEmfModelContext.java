@@ -179,6 +179,10 @@ public class WrappedEmfModelContext implements ModelContext {
                 }
             }
 
+            @Override
+            public synchronized void setCachingEnabled(boolean cachingEnabled) {
+                retry(() -> super.setCachingEnabled(cachingEnabled));
+            }
         };
         emfModel.setName(name);
         this.resourceSet = emfModel.getResource().getResourceSet();
