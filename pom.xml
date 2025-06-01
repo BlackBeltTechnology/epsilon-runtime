@@ -37,8 +37,8 @@
         <logback-version>1.5.12</logback-version>
         <lombok-version>1.18.34</lombok-version>
 
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
         <karaf-features-version>2.0.2-SNAPSHOT</karaf-features-version>
 
