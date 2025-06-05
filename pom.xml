@@ -15,7 +15,7 @@
     </issueManagement>
     <properties>
 
-        <revision>1.5.1-SNAPSHOT</revision>
+        <revision>2.8.0-SNAPSHOT</revision>
         <maven>3.9.4</maven>
 
         <deployOnly>false</deployOnly>
@@ -31,16 +31,16 @@
 
         <emf-xsd-version>2.17.0</emf-xsd-version>
         <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
-        <epsilon-version>2.5.0</epsilon-version>
-        <karaf-version>4.4.5</karaf-version>
+        <epsilon-version>2.8.0</epsilon-version>
+        <karaf-version>4.4.7</karaf-version>
         <cxf-version>3.3.1</cxf-version>
         <logback-version>1.5.12</logback-version>
         <lombok-version>1.18.34</lombok-version>
 
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
-        <karaf-features-version>2.0.2.20241127_150036_5c40ade0_develop</karaf-features-version>
+        <karaf-features-version>2.0.2.20250604_194930_75d69105_feature_JNG_6310_UpdateEpsilon</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
@@ -710,7 +710,7 @@
                     <plugin>
                         <groupId>org.simplify4u.plugins</groupId>
                         <artifactId>sign-maven-plugin</artifactId>
-                        <version>1.0.1</version>
+                        <version>1.1.0</version>
                         <executions>
                             <execution>
                                 <goals>
