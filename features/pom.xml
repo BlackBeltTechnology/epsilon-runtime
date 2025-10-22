@@ -62,6 +62,7 @@
                                 <descriptor>mvn:hu.blackbelt.karaf.features/apache-poi-features/${karaf-features-version}/xml/features</descriptor>
                                 <descriptor>mvn:hu.blackbelt.karaf.features/eclipse-emf-features/${karaf-features-version}/xml/features</descriptor>
                                 <descriptor>mvn:hu.blackbelt.karaf.features/eclipse-epsilon-features/${karaf-features-version}/xml/features</descriptor>
+                                <descriptor>mvn:hu.blackbelt.karaf.features/jackson-features/${karaf-features-version}/xml/features</descriptor>
                                 <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                             </descriptors>
                             <distribution>org.apache.karaf.features:framework</distribution>
