@@ -36,6 +36,44 @@ Key facts:
 
 - [epsilon-runtime-reports/pom.xml](epsilon-runtime-reports/pom.xml): JaCoCo aggregate code coverage reports across all modules
 
+## Depends on
+
+- [karaf-features](../../packages/karaf-features): packages/karaf-features
+
+## Used by
+
+- [judo-jql-ide-eclipse](../../eclipse/judo-jql-ide-eclipse): eclipse/judo-jql-ide-eclipse
+- [judo-meta-asm](../../models/judo-meta-asm): models/judo-meta-asm
+- [judo-meta-esm](../../models/judo-meta-esm): models/judo-meta-esm
+- [judo-meta-expression](../../models/judo-meta-expression): models/judo-meta-expression
+- [judo-meta-expression-asm](../../models/judo-meta-expression-asm): models/judo-meta-expression-asm
+- [judo-meta-expression-esm](../../models/judo-meta-expression-esm): models/judo-meta-expression-esm
+- [judo-meta-expression-psm](../../models/judo-meta-expression-psm): models/judo-meta-expression-psm
+- [judo-meta-keycloak](../../models/judo-meta-keycloak): models/judo-meta-keycloak
+- [judo-meta-liquibase](../../models/judo-meta-liquibase): models/judo-meta-liquibase
+- [judo-meta-measure](../../models/judo-meta-measure): models/judo-meta-measure
+- [judo-meta-openapi](../../models/judo-meta-openapi): models/judo-meta-openapi
+- [judo-meta-psm](../../models/judo-meta-psm): models/judo-meta-psm
+- [judo-meta-query](../../models/judo-meta-query): models/judo-meta-query
+- [judo-meta-rdbms](../../models/judo-meta-rdbms): models/judo-meta-rdbms
+- [judo-meta-script](../../models/judo-meta-script): models/judo-meta-script
+- [judo-meta-ui](../../models/judo-meta-ui): models/judo-meta-ui
+- [judo-platform](../../runtime/judo-platform): runtime/judo-platform
+- [judo-rdbms-schema](../../runtime/judo-rdbms-schema): runtime/judo-rdbms-schema
+- [judo-runtime-core](../../runtime/judo-runtime-core): runtime/judo-runtime-core
+- [judo-runtime-core-esm-itest](../../runtime/judo-runtime-core-esm-itest): runtime/judo-runtime-core-esm-itest
+- [judo-services](../../runtime/judo-services): runtime/judo-services
+- [judo-tatami](../../runtime/judo-tatami): runtime/judo-tatami
+- [judo-tatami-base](../../runtime/judo-tatami-base): runtime/judo-tatami-base
+- [judo-tatami-client](../../runtime/judo-tatami-client): runtime/judo-tatami-client
+- [judo-tatami-jsl](../../runtime/judo-tatami-jsl): runtime/judo-tatami-jsl
+- [judo-tatami-jsl-tests](../../runtime/judo-tatami-jsl-tests): runtime/judo-tatami-jsl-tests
+- [judo-tatami-tests](../../runtime/judo-tatami-tests): runtime/judo-tatami-tests
+- [judo-tatami-util](../../runtime/judo-tatami-util): runtime/judo-tatami-util
+- [judo-jsl-springboot-parent](../../spring/judo-jsl-springboot-parent): spring/judo-jsl-springboot-parent
+- [epsilon-maven-plugin](../epsilon-maven-plugin): tools/epsilon-maven-plugin
+- [judo-esm-schema-merge-maven-plugin](../judo-esm-schema-merge-maven-plugin): tools/judo-esm-schema-merge-maven-plugin
+
 ## Optional
 
 - [.github/workflows/build.yml](.github/workflows/build.yml): CI/CD build pipeline
