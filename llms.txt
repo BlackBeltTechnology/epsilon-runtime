@@ -1,0 +1,43 @@
+# epsilon-runtime
+
+> Eclipse Epsilon runtime for Maven and OSGi — wraps the Eclipse Epsilon model transformation, validation, and code generation framework for use outside the Eclipse IDE.
+
+Key facts:
+- Java 21 (Zulu JDK), built with Maven 3.9.4+ (wrapper included: `./mvnw`)
+- Maven multi-module project, 7 modules (3 core, 3 OSGi/Karaf deployment, 1 reporting)
+- Eclipse Epsilon 2.8.0 for model transformation (ETL), validation (EVL), code generation (EGL/EGX), and more
+- Eclipse EMF 2.17.0 for metamodel-based model handling
+- Supports EMF/Ecore, XML/XSD, and Excel model types
+- Dual deployment: standalone Maven and Apache Karaf 4.4.7 / OSGi containers
+- Fluent builder API via Lombok (`@Builder`) for all execution contexts
+- License: Apache 2.0
+
+## Docs
+
+- [README.md](README.md): Project overview with architecture diagrams and transformation example
+- [AGENTS.md](AGENTS.md): Developer guide with build commands, module descriptions, and coding conventions
+- [CONTRIBUTING.md](CONTRIBUTING.md): Development setup and contribution guidelines
+- [epsilon-development.md](epsilon-development.md): Epsilon framework gotchas and pitfalls
+- [.github/CIFLOW.md](.github/CIFLOW.md): CI/CD pipeline and branching strategy with flow diagrams
+
+## Modules — Core
+
+- [epsilon-runtime-execution/pom.xml](epsilon-runtime-execution/pom.xml): Core execution engine — ExecutionContext orchestrator, ModelContext abstraction, language-specific contexts (EOL/ETL/EVL/EGL/EGX/ECL/EML/HUTN), URI handlers, model loading
+- [epsilon-runtime-utils/pom.xml](epsilon-runtime-utils/pom.xml): Small utilities — UUID v3 generation, MD5 hashing, string abbreviation by vowel removal
+- [epsilon-runtime-eol-patch/pom.xml](epsilon-runtime-eol-patch/pom.xml): Patches to Epsilon EOL internals — optimized exception handling and enhanced reflection-based method discovery
+
+## Modules — OSGi Deployment
+
+- [epsilon-runtime-osgi/pom.xml](epsilon-runtime-osgi/pom.xml): BundleURIHandler — read-only EMF URIHandler that resolves resources from OSGi bundles
+- [features/src/main/feature/feature.xml](features/src/main/feature/feature.xml): Karaf feature descriptor listing all OSGi bundles for deployment
+- [kar/pom.xml](kar/pom.xml): Karaf KAR archive assembly packaging all bundles and features
+
+## Modules — Reporting
+
+- [epsilon-runtime-reports/pom.xml](epsilon-runtime-reports/pom.xml): JaCoCo aggregate code coverage reports across all modules
+
+## Optional
+
+- [.github/workflows/build.yml](.github/workflows/build.yml): CI/CD build pipeline
+- [LICENSE.txt](LICENSE.txt): Apache License 2.0 text
+- [pom.xml](pom.xml): Parent POM with all dependency and plugin version management
