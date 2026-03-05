@@ -38,41 +38,41 @@ Key facts:
 
 ## Depends on
 
-- [karaf-features](../../packages/karaf-features): packages/karaf-features
+- [karaf-features](../../packages/karaf-features): Apache Karaf feature descriptors for 20+ third-party libraries
 
 ## Used by
 
-- [judo-jql-ide-eclipse](../../eclipse/judo-jql-ide-eclipse): eclipse/judo-jql-ide-eclipse
-- [judo-meta-asm](../../models/judo-meta-asm): models/judo-meta-asm
-- [judo-meta-esm](../../models/judo-meta-esm): models/judo-meta-esm
-- [judo-meta-expression](../../models/judo-meta-expression): models/judo-meta-expression
-- [judo-meta-expression-asm](../../models/judo-meta-expression-asm): models/judo-meta-expression-asm
-- [judo-meta-expression-esm](../../models/judo-meta-expression-esm): models/judo-meta-expression-esm
-- [judo-meta-expression-psm](../../models/judo-meta-expression-psm): models/judo-meta-expression-psm
-- [judo-meta-keycloak](../../models/judo-meta-keycloak): models/judo-meta-keycloak
-- [judo-meta-liquibase](../../models/judo-meta-liquibase): models/judo-meta-liquibase
-- [judo-meta-measure](../../models/judo-meta-measure): models/judo-meta-measure
-- [judo-meta-openapi](../../models/judo-meta-openapi): models/judo-meta-openapi
-- [judo-meta-psm](../../models/judo-meta-psm): models/judo-meta-psm
-- [judo-meta-query](../../models/judo-meta-query): models/judo-meta-query
-- [judo-meta-rdbms](../../models/judo-meta-rdbms): models/judo-meta-rdbms
-- [judo-meta-script](../../models/judo-meta-script): models/judo-meta-script
-- [judo-meta-ui](../../models/judo-meta-ui): models/judo-meta-ui
-- [judo-platform](../../runtime/judo-platform): runtime/judo-platform
-- [judo-rdbms-schema](../../runtime/judo-rdbms-schema): runtime/judo-rdbms-schema
-- [judo-runtime-core](../../runtime/judo-runtime-core): runtime/judo-runtime-core
-- [judo-runtime-core-esm-itest](../../runtime/judo-runtime-core-esm-itest): runtime/judo-runtime-core-esm-itest
-- [judo-services](../../runtime/judo-services): runtime/judo-services
-- [judo-tatami](../../runtime/judo-tatami): runtime/judo-tatami
-- [judo-tatami-base](../../runtime/judo-tatami-base): runtime/judo-tatami-base
-- [judo-tatami-client](../../runtime/judo-tatami-client): runtime/judo-tatami-client
-- [judo-tatami-jsl](../../runtime/judo-tatami-jsl): runtime/judo-tatami-jsl
-- [judo-tatami-jsl-tests](../../runtime/judo-tatami-jsl-tests): runtime/judo-tatami-jsl-tests
-- [judo-tatami-tests](../../runtime/judo-tatami-tests): runtime/judo-tatami-tests
-- [judo-tatami-util](../../runtime/judo-tatami-util): runtime/judo-tatami-util
-- [judo-jsl-springboot-parent](../../spring/judo-jsl-springboot-parent): spring/judo-jsl-springboot-parent
-- [epsilon-maven-plugin](../epsilon-maven-plugin): tools/epsilon-maven-plugin
-- [judo-esm-schema-merge-maven-plugin](../judo-esm-schema-merge-maven-plugin): tools/judo-esm-schema-merge-maven-plugin
+- [judo-jql-ide-eclipse](../../eclipse/judo-jql-ide-eclipse): Eclipse plugin for JQL editing with content assist and validation
+- [judo-meta-asm](../../models/judo-meta-asm): ASM metamodel — Ecore-based architecture model with builders and validation
+- [judo-meta-esm](../../models/judo-meta-esm): ESM metamodel — business entities, operations, access points, and UI structures
+- [judo-meta-expression](../../models/judo-meta-expression): Expression metamodel — type-safe numeric, string, temporal, and collection expressions
+- [judo-meta-expression-asm](../../models/judo-meta-expression-asm): Bridges Expression metamodel with ASM for symbolic reference resolution
+- [judo-meta-expression-esm](../../models/judo-meta-expression-esm): Bridges Expression metamodel with ESM for expression evaluation and validation
+- [judo-meta-expression-psm](../../models/judo-meta-expression-psm): Bridges Expression metamodel with PSM for type resolution and measurement support
+- [judo-meta-keycloak](../../models/judo-meta-keycloak): Keycloak IAM configuration metamodel
+- [judo-meta-liquibase](../../models/judo-meta-liquibase): Liquibase database change management metamodel
+- [judo-meta-measure](../../models/judo-meta-measure): SI units metamodel — measures, units, and conversion rates
+- [judo-meta-openapi](../../models/judo-meta-openapi): OpenAPI 2.0 metamodel with bidirectional JSON/YAML transformation
+- [judo-meta-psm](../../models/judo-meta-psm): PSM metamodel — foundational platform-specific data model
+- [judo-meta-query](../../models/judo-meta-query): Query metamodel — expression-based RDBMS query generation
+- [judo-meta-rdbms](../../models/judo-meta-rdbms): RDBMS schema metamodel with incremental evolution tracking
+- [judo-meta-script](../../models/judo-meta-script): Script metamodel — typed scripting language with ASM/ESM adapters
+- [judo-meta-ui](../../models/judo-meta-ui): UI metamodel — pages, containers, tables, inputs, and data bindings
+- [judo-platform](../../runtime/judo-platform): Model-driven OSGi runtime platform with REST APIs and Karaf deployment
+- [judo-rdbms-schema](../../runtime/judo-rdbms-schema): Incremental database schema migration via RDBMS model comparison
+- [judo-runtime-core](../../runtime/judo-runtime-core): Multi-module runtime engine — data access, business logic, REST, and security
+- [judo-runtime-core-esm-itest](../../runtime/judo-runtime-core-esm-itest): Integration tests for ESM-to-RDBMS transformation pipeline
+- [judo-services](../../runtime/judo-services): OSGi runtime services enabling multiple data models in a single Karaf container
+- [judo-tatami](../../runtime/judo-tatami): Model transformation pipeline — ESM/PSM to deployable application artifacts
+- [judo-tatami-base](../../runtime/judo-tatami-base): PSM transformation pipeline — models to schemas, expressions, and configurations
+- [judo-tatami-client](../../runtime/judo-tatami-client): ESM-to-UI model transformation using Eclipse Epsilon ETL
+- [judo-tatami-jsl](../../runtime/judo-tatami-jsl): JSL-to-runtime model transformation engine (PSM, ASM, UI, RDBMS, etc.)
+- [judo-tatami-jsl-tests](../../runtime/judo-tatami-jsl-tests): Full-stack test application generation from JSL model definitions
+- [judo-tatami-tests](../../runtime/judo-tatami-tests): Integration test suite demonstrating platform capabilities
+- [judo-tatami-util](../../runtime/judo-tatami-util): Utility facade for EMF model transformation traces
+- [judo-jsl-springboot-parent](../../spring/judo-jsl-springboot-parent): Parent POM for JUDO JSL Spring Boot applications
+- [epsilon-maven-plugin](../epsilon-maven-plugin): Maven plugin for Epsilon model transformation scripts
+- [judo-esm-schema-merge-maven-plugin](../judo-esm-schema-merge-maven-plugin): Maven plugin merging ESM entity definitions across split schemas
 
 ## Optional
 
