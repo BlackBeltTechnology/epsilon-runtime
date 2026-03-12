@@ -40,7 +40,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <karaf-features-version>2.0.2.20251022_061140_127091e3_develop</karaf-features-version>
+        <karaf-features-version>2.0.2.20260311_090833_f7f05880_develop</karaf-features-version>
 
         <!--suppress UnresolvedMavenProperty -->
         <logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
