@@ -29,7 +29,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <emf-xsd-version>2.17.0</emf-xsd-version>
+        <emf-xsd-version>2.19.0</emf-xsd-version>
         <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
         <epsilon-version>2.8.0</epsilon-version>
         <karaf-version>4.4.7</karaf-version>
